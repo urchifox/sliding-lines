@@ -1,0 +1,8 @@
+__MACOSX
+node_modules
+dist
+*.json
+*.md
+*.txt
+README
+filterDbg.txt
