@@ -12,7 +12,6 @@ dist
 dist-ssr
 .eslintcache
 *.local
-package-lock.json
 vite.config.js.timestamp-*
 .vite
 
