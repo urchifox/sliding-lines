@@ -1,0 +1,126 @@
+import { deleteFromArray, randomInteger, randomPick } from "./utils"
+
+export type Position = {
+	row: number
+	column: number
+}
+
+export type PuzzleItem = {
+	original: Position
+	current: Position
+	isEmpty: boolean
+}
+
+export type Level = LevelConfig & {
+	items: Array<PuzzleItem>
+	emptySlotIndex: number
+}
+
+export type LevelConfig = {
+	rows: number
+	columns: number
+	shuffleSteps: {
+		min: number
+		max: number
+	}
+}
+
+export function createLevel({
+	rows,
+	columns,
+	shuffleSteps,
+}: LevelConfig): Level {
+	const items = []
+	for (let row = 1; row <= rows; row++) {
+		for (let column = 1; column <= columns; column++) {
+			items.push({
+				original: { row, column },
+				current: { row, column },
+				isEmpty: false,
+			})
+		}
+	}
+
+	const emptySlotIndex = randomInteger(0, items.length - 1)
+	items[emptySlotIndex].isEmpty = true
+
+	const level = { items, columns, rows, emptySlotIndex, shuffleSteps }
+
+	shuffleLevel(level)
+
+	return level
+}
+
+function shuffleLevel(level: Level) {
+	const { items, emptySlotIndex, shuffleSteps } = level
+	const emptySlot = items[emptySlotIndex]
+
+	let steps = randomInteger(shuffleSteps.min, shuffleSteps.max)
+	let lastItem: PuzzleItem | undefined = undefined
+
+	while (steps > 0) {
+		const neighbors = getNeighborsOf(emptySlot, items)
+
+		if (lastItem !== undefined) {
+			deleteFromArray(neighbors, lastItem)
+		}
+
+		const item = randomPick(neighbors)
+		swap({ emptySlot, item })
+		lastItem = item
+
+		steps--
+	}
+}
+
+function getNeighborsOf(item: PuzzleItem, items: Array<PuzzleItem>) {
+	const { row, column } = item.current
+	const neighbors = [
+		{ row: row - 1, column },
+		{ row: row + 1, column },
+		{ row, column: column - 1 },
+		{ row, column: column + 1 },
+	]
+
+	const elements = []
+	for (const neighbor of neighbors) {
+		const neighborElement = items.find(
+			(element) =>
+				element.current.row === neighbor.row &&
+				element.current.column === neighbor.column
+		)
+
+		if (neighborElement !== undefined) {
+			elements.push(neighborElement)
+		}
+	}
+
+	return elements
+}
+
+export function tryMove(item: PuzzleItem, items: Array<PuzzleItem>) {
+	const neighbors = getNeighborsOf(item, items)
+	const emptySlot = neighbors.find((element) => element.isEmpty)
+
+	if (emptySlot === undefined) {
+		return false
+	}
+
+	swap({ emptySlot, item })
+
+	return true
+}
+
+function swap({
+	emptySlot,
+	item,
+}: {
+	emptySlot: PuzzleItem
+	item: PuzzleItem
+}) {
+	const itemPosition = item.current
+	const emptyPosition = emptySlot.current
+
+	item.current = emptyPosition
+	emptySlot.current = itemPosition
+}
