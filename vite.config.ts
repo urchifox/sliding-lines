@@ -8,6 +8,15 @@ export default defineConfig({
 	base: "/sliding-lines/",
 	plugins: [react(), dynamicImport()],
 	css: {
+		preprocessorOptions: {
+			scss: {
+				additionalData: `
+					@use "src/assets/styles/mixins.scss" as *;
+					@use "src/assets/styles/functions.scss" as *;
+					@use "src/assets/styles/variables.scss" as *;
+				`,
+			},
+		},
 		postcss: {
 			plugins: [
 				autoprefixer({}), // add options if needed
