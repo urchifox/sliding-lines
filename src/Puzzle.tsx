@@ -7,7 +7,13 @@ function getKey({ row, column }: Position) {
 	return `${row}-${column}`
 }
 
-export function Puzzle({ level }: { level: Level }) {
+export function Puzzle({
+	level,
+	setLevelNumber,
+}: {
+	level: Level
+	setLevelNumber: React.Dispatch<React.SetStateAction<number>>
+}) {
 	const { items, columns, rows } = level
 	const refs = useRef<Record<string, HTMLLIElement | null>>({})
 
@@ -38,6 +44,7 @@ export function Puzzle({ level }: { level: Level }) {
 				}
 			}, 500)
 		}
+		return isReady
 	}
 
 	useEffect(updateLevel, [])
@@ -49,7 +56,10 @@ export function Puzzle({ level }: { level: Level }) {
 			const result = tryMove(item, items)
 			if (result) {
 				updateLevel()
-				checkLevel()
+				const isWin = checkLevel()
+				if (isWin) {
+					setLevelNumber((current) => current++)
+				}
 			}
 		}
 

@@ -1,18 +1,18 @@
+import { useState } from "react"
 import "./App.scss"
 import { Puzzle } from "./Puzzle"
-import { type LevelConfig, createLevel } from "./game"
+import { createLevel } from "./game"
+import { levels } from "./levels"
 
 export function App() {
-	const levelConfig: LevelConfig = {
-		columns: 3,
-		rows: 3,
-		shuffleSteps: { min: 3, max: 10 },
-	}
+	const [levelNumber, setLevelNumber] = useState(0)
+
+	const levelConfig = levels[levelNumber]
 	const level = createLevel(levelConfig)
 
 	return (
 		<>
-			<Puzzle {...{ level }} />
+			<Puzzle {...{ level, setLevelNumber }} />
 		</>
 	)
 }
