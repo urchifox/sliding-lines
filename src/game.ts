@@ -27,11 +27,10 @@ export type LevelConfig = {
 		  }
 }
 
-export function createLevel({
-	rows,
-	columns,
-	shuffleSteps,
-}: LevelConfig): Level {
+export function createLevel(config?: LevelConfig): Level {
+	const levelConfig = config ?? generateConfig()
+
+	const { rows, columns, shuffleSteps } = levelConfig
 	const items = []
 	for (let row = 1; row <= rows; row++) {
 		for (let column = 1; column <= columns; column++) {
@@ -51,6 +50,14 @@ export function createLevel({
 	shuffleLevel(level)
 
 	return level
+}
+
+function generateConfig(): LevelConfig {
+	return {
+		rows: randomInteger(3, 5),
+		columns: randomInteger(3, 5),
+		shuffleSteps: randomInteger(5, 10)
+	}
 }
 
 function shuffleLevel(level: Level) {
