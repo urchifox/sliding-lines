@@ -64,7 +64,7 @@ export function Puzzle({
 				updateLevel()
 				const isWin = checkLevel()
 				if (isWin) {
-					setLevelNumber((current) => current++)
+					setLevelNumber((current) => current + 1)
 					setPage(AppRoute.Win)
 				}
 			}
