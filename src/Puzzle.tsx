@@ -52,9 +52,12 @@ export function Puzzle({
 						element.classList.add("puzzle__item--ready")
 					}
 				}
+				setTimeout(() => {
+					setLevelNumber((current) => current + 1)
+					setPage(AppRoute.Win)
+				}, 2000)
 			}, 500)
 		}
-		return isReady
 	}
 
 	useEffect(updateLevel, [])
@@ -66,11 +69,7 @@ export function Puzzle({
 			const result = tryMove(item, items)
 			if (result) {
 				updateLevel()
-				const isWin = checkLevel()
-				if (isWin) {
-					setLevelNumber((current) => current + 1)
-					setPage(AppRoute.Win)
-				}
+				checkLevel()
 			}
 		}
 
