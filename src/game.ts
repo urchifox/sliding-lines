@@ -56,7 +56,7 @@ function generateConfig(): LevelConfig {
 	return {
 		rows: randomInteger(3, 5),
 		columns: randomInteger(3, 5),
-		shuffleSteps: randomInteger(5, 10)
+		shuffleSteps: randomInteger(5, 10),
 	}
 }
 

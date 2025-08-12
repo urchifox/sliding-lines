@@ -89,7 +89,7 @@ export function Puzzle({
 						"--row": current.row,
 						"--col": current.column,
 						"--sp-row": original.row,
-						"--sp-column": original.column
+						"--sp-column": original.column,
 					} as React.CSSProperties
 				}
 			>

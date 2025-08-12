@@ -24,7 +24,7 @@ export function App() {
 		switch (page) {
 			case AppRoute.Start:
 				return <StartPage {...{ setPage }} />
-			case AppRoute.Game: 
+			case AppRoute.Game:
 				return imageInfo === null ? (
 					<div>Загрузка…</div>
 				) : (

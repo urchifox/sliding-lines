@@ -1,18 +1,18 @@
 import { AppRoute } from "./App"
 
 export function WinPage({
-    setPage,
+	setPage,
 }: {
-    setPage: React.Dispatch<React.SetStateAction<AppRoute>>
+	setPage: React.Dispatch<React.SetStateAction<AppRoute>>
 }) {
-    const handleStartClick = () => {
-        setPage(AppRoute.Game)
-    }
+	const handleStartClick = () => {
+		setPage(AppRoute.Game)
+	}
 
-    return (
-        <section>
-            <h1>Вы выиграли!</h1>
-            <button onClick={handleStartClick}>Сыграть еще</button>
-        </section>
-    )
+	return (
+		<section>
+			<h1>Вы выиграли!</h1>
+			<button onClick={handleStartClick}>Сыграть еще</button>
+		</section>
+	)
 }

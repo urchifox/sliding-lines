@@ -1,14 +1,14 @@
 import { getImageSize, randomPick } from "./utils"
 
 export type ImageInfo = {
-    imageUrl: string
-    width: number
-    height: number
-    ratio: number
+	imageUrl: string
+	width: number
+	height: number
+	ratio: number
 }
 
 const imagesNames = (function () {
-    const pathStart = "/src/assets/images/puzzle-img-"
+	const pathStart = "/src/assets/images/puzzle-img-"
 	const allImages = import.meta.glob(`/src/assets/images/*`, {
 		eager: true,
 	})
