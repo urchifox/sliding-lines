@@ -1,22 +1,25 @@
 import { useEffect, useRef } from "react"
 
-import "./Puzzle.scss"
-import { type Level, type Position, tryMove } from "./game"
 import { AppRoute } from "./App"
+import "./Puzzle.scss"
+import { type Position, createLevel, tryMove } from "./game"
+import { levels } from "./levels"
 
 function getKey({ row, column }: Position) {
 	return `${row}-${column}`
 }
 
 export function Puzzle({
-	level,
+	levelNumber,
 	setLevelNumber,
 	setPage,
 }: {
-	level: Level
+	levelNumber: number
 	setLevelNumber: React.Dispatch<React.SetStateAction<number>>
 	setPage: React.Dispatch<React.SetStateAction<AppRoute>>
 }) {
+	const levelConfig = levels[levelNumber]
+	const level = createLevel(levelConfig)
 	const { items, columns, rows } = level
 	const refs = useRef<Record<string, HTMLLIElement | null>>({})
 
