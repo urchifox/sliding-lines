@@ -16,3 +16,22 @@ export function deleteFromArray<T>(array: T[], element: T) {
 	}
 	array.splice(index, 1)
 }
+
+export function getImageSize(
+	url: string
+): Promise<{ width: number; height: number; ratio: number } | null> {
+	return new Promise((resolve) => {
+		const img = new Image()
+		img.onload = () => {
+			resolve({
+				width: img.naturalWidth,
+				height: img.naturalHeight,
+				ratio: img.naturalWidth / img.naturalHeight,
+			})
+		}
+		img.onerror = () => {
+			resolve(null)
+		}
+		img.src = url
+	})
+}

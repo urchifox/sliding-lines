@@ -19,17 +19,18 @@ export type Level = LevelConfig & {
 export type LevelConfig = {
 	rows: number
 	columns: number
-	shuffleSteps: {
-		min: number
-		max: number
-	}
+	shuffleSteps:
+		| number
+		| {
+				min: number
+				max: number
+		  }
 }
 
-export function createLevel({
-	rows,
-	columns,
-	shuffleSteps,
-}: LevelConfig): Level {
+export function createLevel(config?: LevelConfig): Level {
+	const levelConfig = config ?? generateConfig()
+
+	const { rows, columns, shuffleSteps } = levelConfig
 	const items = []
 	for (let row = 1; row <= rows; row++) {
 		for (let column = 1; column <= columns; column++) {
@@ -51,11 +52,22 @@ export function createLevel({
 	return level
 }
 
+function generateConfig(): LevelConfig {
+	return {
+		rows: randomInteger(3, 5),
+		columns: randomInteger(3, 5),
+		shuffleSteps: randomInteger(5, 10),
+	}
+}
+
 function shuffleLevel(level: Level) {
 	const { items, emptySlotIndex, shuffleSteps } = level
 	const emptySlot = items[emptySlotIndex]
 
-	let steps = randomInteger(shuffleSteps.min, shuffleSteps.max)
+	let steps =
+		typeof shuffleSteps === "number"
+			? shuffleSteps
+			: randomInteger(shuffleSteps.min, shuffleSteps.max)
 	let lastItem: PuzzleItem | undefined = undefined
 
 	while (steps > 0) {

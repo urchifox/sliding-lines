@@ -5,7 +5,7 @@
 
 	border-radius: 5px;
 	width: 300px;
-	height: 300px;
+	height: calc(300px / var(--ratio));
 	background-color: grey;
 
 	display: grid;
@@ -21,6 +21,12 @@
 	--offsetY: calc(100% * (var(--row) - 1));
 	--offsetX: calc(100% * (var(--col) - 1));
 
+	--ss-gap: 0px;
+	--ss-columns: var(--columns);
+	--ss-rows: var(--rows);
+	--sp-width: calc(var(--ss-width) / var(--ss-columns));
+	--sp-height: calc(var(--ss-height) / var(--ss-rows));
+
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -34,6 +40,18 @@
 
 	list-style: none;
 	background-color: lightgrey;
+
+	background-repeat: no-repeat;
+	background-size: calc(var(--ss-width) / var(--sp-width) * 100%)
+		calc(var(--ss-height) / var(--sp-height) * 100%);
+	background-position-x: calc(
+		(var(--sp-column) - 1) / max(1, (var(--ss-columns) - 1)) * 100%
+	);
+	background-position-y: calc(
+		(var(--sp-row) - 1) / max(1, (var(--ss-rows) - 1)) * 100%
+	);
+	background-image: var(--image);
+
 	transform: translate(var(--offsetX), var(--offsetY));
 	transition:
 		transform 0.3s ease,
@@ -43,6 +61,7 @@
 	&--empty {
 		border-color: transparent;
 		background-color: transparent;
+		background-image: none;
 	}
 
 	&--ready {

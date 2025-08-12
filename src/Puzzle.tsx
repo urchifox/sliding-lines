@@ -1,13 +1,29 @@
 import { useEffect, useRef } from "react"
 
+import { AppRoute } from "./App"
 import "./Puzzle.scss"
-import { type Level, type Position, tryMove } from "./game"
+import { type Position, createLevel, tryMove } from "./game"
+import type { ImageInfo } from "./images"
+import { levels } from "./levels"
 
 function getKey({ row, column }: Position) {
 	return `${row}-${column}`
 }
 
-export function Puzzle({ level }: { level: Level }) {
+export function Puzzle({
+	levelNumber,
+	setLevelNumber,
+	setPage,
+	imageInfo,
+}: {
+	levelNumber: number
+	setLevelNumber: React.Dispatch<React.SetStateAction<number>>
+	setPage: React.Dispatch<React.SetStateAction<AppRoute>>
+	imageInfo: ImageInfo
+}) {
+	const { imageUrl, width, height, ratio } = imageInfo
+	const levelConfig = levels[levelNumber - 1]
+	const level = createLevel(levelConfig)
 	const { items, columns, rows } = level
 	const refs = useRef<Record<string, HTMLLIElement | null>>({})
 
@@ -36,6 +52,10 @@ export function Puzzle({ level }: { level: Level }) {
 						element.classList.add("puzzle__item--ready")
 					}
 				}
+				setTimeout(() => {
+					setLevelNumber((current) => current + 1)
+					setPage(AppRoute.Win)
+				}, 2000)
 			}, 500)
 		}
 	}
@@ -67,6 +87,8 @@ export function Puzzle({ level }: { level: Level }) {
 					{
 						"--row": current.row,
 						"--col": current.column,
+						"--sp-row": original.row,
+						"--sp-column": original.column,
 					} as React.CSSProperties
 				}
 			>
@@ -80,8 +102,12 @@ export function Puzzle({ level }: { level: Level }) {
 			className="puzzle"
 			style={
 				{
+					"--ss-width": width,
+					"--ss-height": height,
+					"--ratio": ratio,
 					"--columns": columns,
 					"--rows": rows,
+					"--image": `url(${imageUrl})`,
 				} as React.CSSProperties
 			}
 		>

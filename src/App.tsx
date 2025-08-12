@@ -1,18 +1,41 @@
+import { useEffect, useState } from "react"
+
 import "./App.scss"
 import { Puzzle } from "./Puzzle"
-import { type LevelConfig, createLevel } from "./game"
+import { StartPage } from "./StartPage"
+import { WinPage } from "./WinPage"
+import { type ImageInfo, getImageInfo } from "./images"
+
+export enum AppRoute {
+	Start,
+	Game,
+	Win,
+}
 
 export function App() {
-	const levelConfig: LevelConfig = {
-		columns: 3,
-		rows: 3,
-		shuffleSteps: { min: 3, max: 10 },
-	}
-	const level = createLevel(levelConfig)
+	const [page, setPage] = useState<AppRoute>(AppRoute.Start)
+	const [levelNumber, setLevelNumber] = useState(1)
+	const [imageInfo, setImageInfo] = useState<ImageInfo | null>(null)
+	useEffect(() => {
+		getImageInfo(levelNumber).then(setImageInfo)
+	}, [levelNumber])
 
-	return (
-		<>
-			<Puzzle {...{ level }} />
-		</>
-	)
+	const getPage = (page: AppRoute) => {
+		switch (page) {
+			case AppRoute.Start:
+				return <StartPage {...{ setPage }} />
+			case AppRoute.Game:
+				return imageInfo === null ? (
+					<div>Загрузка…</div>
+				) : (
+					<Puzzle {...{ levelNumber, setLevelNumber, setPage, imageInfo }} />
+				)
+			case AppRoute.Win:
+				return <WinPage {...{ setPage }} />
+			default:
+				return null
+		}
+	}
+
+	return getPage(page)
 }
