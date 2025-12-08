@@ -73,9 +73,10 @@ export function Puzzle({
 				current.row === original.row && current.column === original.column
 		)
 		if (isFinished) {
-			puzzleListRef.current[0]?.classList.add("disabled")
+			const puzzleElement = puzzleListRef.current[0]
+			puzzleElement?.classList.add("disabled")
 			setTimeout(() => {
-				puzzleListRef.current[0]?.classList.add("ready")
+				puzzleElement?.classList.add("ready")
 				setTimeout(() => {
 					levelNumber++
 					setPage(AppRoute.Win)
