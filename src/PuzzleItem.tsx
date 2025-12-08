@@ -56,7 +56,7 @@ const PuzzleItemStyled = styled.li<{
 		border-color 0.3s ease,
 		background-color 0.3s ease;
 
-	&.ready {
+	.ready & {
 		border-radius: 0;
 		border-color: transparent;
 		pointer-events: none;

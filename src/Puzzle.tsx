@@ -58,21 +58,16 @@ export function Puzzle({
 	const { items, columns, rows } = level
 	const emptyItemInfo = items.find((item) => item.isEmpty) as PuzzleItemInfo
 	const refs = useRef<Record<string, HTMLLIElement | null>>({})
+	const puzzleRef = useRef<Record<string, HTMLElement | null>>({})
 
 	const checkLevel = () => {
 		const isReady = items.every(
-			(item) =>
-				item.current.row === item.original.row &&
-				item.current.column === item.original.column
+			({ current, original }) =>
+				current.row === original.row && current.column === original.column
 		)
 		if (isReady) {
 			setTimeout(() => {
-				for (const item of items) {
-					const element = refs.current[getKey(item.original)]
-					if (element) {
-						element.classList.add("ready")
-					}
-				}
+				puzzleRef.current[0]?.classList.add("ready")
 				setTimeout(() => {
 					setLevelNumber((current) => current + 1)
 					setPage(AppRoute.Win)
@@ -109,6 +104,9 @@ export function Puzzle({
 
 	return (
 		<PuzzleStyled
+			ref={(el) => {
+				puzzleRef.current[0] = el
+			}}
 			ssWidth={width}
 			ssHeight={height}
 			ratio={ratio}
