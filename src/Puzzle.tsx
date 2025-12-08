@@ -8,22 +8,38 @@ import { type PuzzleItemInfo, createLevel, tryMove } from "./game"
 import type { ImageInfo } from "./images"
 import { levels } from "./levels"
 
-const PuzzleStyled = styled.ul`
-	${clearList}
+const PuzzleStyled = styled.ul<{
+	ssWidth: number
+	ssHeight: number
+	ratio: number
+	columns: number
+	rows: number
+	image: string
+}>(
+	({ ssWidth, ssHeight, ratio, columns, rows, image }) => `
+		${clearList};
 
-	position: relative;
+		--ss-width: ${ssWidth};
+		--ss-height: ${ssHeight};
+		--ratio: ${ratio};
+		--columns: ${columns};
+		--rows: ${rows};
+		--image: url(${image});
 
-	border-radius: 5px;
-	width: 300px;
-	height: calc(300px / var(--ratio));
-	background-color: grey;
+		position: relative;
 
-	display: grid;
-	grid-template-rows: 1fr;
-	grid-template-columns: 1fr;
+		border-radius: 5px;
+		width: 300px;
+		height: calc(300px / var(--ratio));
+		background-color: grey;
 
-	overflow: hidden;
-`
+		display: grid;
+		grid-template-rows: 1fr;
+		grid-template-columns: 1fr;
+
+		overflow: hidden;
+	`
+)
 
 export function Puzzle({
 	levelNumber,
@@ -93,17 +109,12 @@ export function Puzzle({
 
 	return (
 		<PuzzleStyled
-			className="puzzle"
-			style={
-				{
-					"--ss-width": width,
-					"--ss-height": height,
-					"--ratio": ratio,
-					"--columns": columns,
-					"--rows": rows,
-					"--image": `url(${imageUrl})`,
-				} as React.CSSProperties
-			}
+			ssWidth={width}
+			ssHeight={height}
+			ratio={ratio}
+			columns={columns}
+			rows={rows}
+			image={imageUrl}
 		>
 			{[...elements]}
 		</PuzzleStyled>
