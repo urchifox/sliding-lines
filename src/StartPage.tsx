@@ -1,4 +1,5 @@
 import { AppRoute } from "./App"
+import { Button } from "./Button"
 
 export function StartPage({
 	setPage,
@@ -11,7 +12,7 @@ export function StartPage({
 
 	return (
 		<section>
-			<button onClick={handleStartClick}>Играть</button>
+			<Button onClick={handleStartClick} text="Играть"/>
 		</section>
 	)
 }

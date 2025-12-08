@@ -1,14 +1,29 @@
+import styled from "@emotion/styled"
 import { useEffect, useRef } from "react"
 
 import { AppRoute } from "./App"
-import "./Puzzle.scss"
-import { type Position, createLevel, tryMove } from "./game"
+import { clearList } from "./assets/styles/mixins"
+import { createLevel, tryMove } from "./game"
 import type { ImageInfo } from "./images"
 import { levels } from "./levels"
+import { getKey, PuzzleItem } from "./PuzzleItem"
 
-function getKey({ row, column }: Position) {
-	return `${row}-${column}`
-}
+const PuzzleStyled = styled.ul`
+	${clearList}
+
+	position: relative;
+
+	border-radius: 5px;
+	width: 300px;
+	height: calc(300px / var(--ratio));
+	background-color: grey;
+
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-template-columns: 1fr;
+
+	overflow: hidden;
+`
 
 export function Puzzle({
 	levelNumber,
@@ -48,8 +63,7 @@ export function Puzzle({
 				for (const item of items) {
 					const element = refs.current[getKey(item.original)]
 					if (element) {
-						element.classList.remove("puzzle__item--empty")
-						element.classList.add("puzzle__item--ready")
+						element.classList.add("ready")
 					}
 				}
 				setTimeout(() => {
@@ -63,8 +77,6 @@ export function Puzzle({
 	useEffect(updateLevel, [])
 
 	const elements = items.map((item, index) => {
-		const { current, original, isEmpty } = item
-
 		const handleClick = () => {
 			const result = tryMove(item, items)
 			if (result) {
@@ -73,32 +85,11 @@ export function Puzzle({
 			}
 		}
 
-		const key = getKey(original)
-
-		return (
-			<li
-				className={`puzzle__item ${isEmpty ? "puzzle__item--empty" : ""}`}
-				ref={(el) => {
-					refs.current[key] = el
-				}}
-				key={key}
-				onClick={handleClick}
-				style={
-					{
-						"--row": current.row,
-						"--col": current.column,
-						"--sp-row": original.row,
-						"--sp-column": original.column,
-					} as React.CSSProperties
-				}
-			>
-				{`${index + 1} (${key})`}
-			</li>
-		)
+		return PuzzleItem({item, index, handleClick, refs})
 	})
 
 	return (
-		<ul
+		<PuzzleStyled
 			className="puzzle"
 			style={
 				{
@@ -112,6 +103,6 @@ export function Puzzle({
 			}
 		>
 			{[...elements]}
-		</ul>
+		</PuzzleStyled>
 	)
 }

@@ -5,14 +5,14 @@ export type Position = {
 	column: number
 }
 
-export type PuzzleItem = {
+export type PuzzleItemInfo = {
 	original: Position
 	current: Position
 	isEmpty: boolean
 }
 
 export type Level = LevelConfig & {
-	items: Array<PuzzleItem>
+	items: Array<PuzzleItemInfo>
 	emptySlotIndex: number
 }
 
@@ -68,7 +68,7 @@ function shuffleLevel(level: Level) {
 		typeof shuffleSteps === "number"
 			? shuffleSteps
 			: randomInteger(shuffleSteps.min, shuffleSteps.max)
-	let lastItem: PuzzleItem | undefined = undefined
+	let lastItem: PuzzleItemInfo | undefined = undefined
 
 	while (steps > 0) {
 		const neighbors = getNeighborsOf(emptySlot, items)
@@ -85,7 +85,7 @@ function shuffleLevel(level: Level) {
 	}
 }
 
-function getNeighborsOf(item: PuzzleItem, items: Array<PuzzleItem>) {
+function getNeighborsOf(item: PuzzleItemInfo, items: Array<PuzzleItemInfo>) {
 	const { row, column } = item.current
 	const neighbors = [
 		{ row: row - 1, column },
@@ -110,7 +110,7 @@ function getNeighborsOf(item: PuzzleItem, items: Array<PuzzleItem>) {
 	return elements
 }
 
-export function tryMove(item: PuzzleItem, items: Array<PuzzleItem>) {
+export function tryMove(item: PuzzleItemInfo, items: Array<PuzzleItemInfo>) {
 	const neighbors = getNeighborsOf(item, items)
 	const emptySlot = neighbors.find((element) => element.isEmpty)
 
@@ -127,8 +127,8 @@ function swap({
 	emptySlot,
 	item,
 }: {
-	emptySlot: PuzzleItem
-	item: PuzzleItem
+	emptySlot: PuzzleItemInfo
+	item: PuzzleItemInfo
 }) {
 	const itemPosition = item.current
 	const emptyPosition = emptySlot.current

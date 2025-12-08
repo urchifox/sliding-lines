@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 
-import "./App.scss"
 import { Puzzle } from "./Puzzle"
 import { StartPage } from "./StartPage"
 import { WinPage } from "./WinPage"
