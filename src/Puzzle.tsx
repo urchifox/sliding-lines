@@ -4,9 +4,8 @@ import { useRef } from "react"
 import { AppRoute } from "./App"
 import { PuzzleItem } from "./PuzzleItem"
 import { clearList } from "./assets/styles/mixins"
-import { type PuzzleItemInfo, createLevel, tryMove } from "./game"
+import { type Level, type PuzzleItemInfo, tryMove } from "./game"
 import type { ImageInfo } from "./images"
-import { levels } from "./levels"
 
 const PuzzleStyled = styled.ul<{
 	ssWidth: number
@@ -46,19 +45,18 @@ const PuzzleStyled = styled.ul<{
 )
 
 export function Puzzle({
-	levelNumber,
+	level,
 	setLevelNumber,
 	setPage,
 	imageInfo,
 }: {
-	levelNumber: number
+	
+	level: Level
 	setLevelNumber: React.Dispatch<React.SetStateAction<number>>
 	setPage: React.Dispatch<React.SetStateAction<AppRoute>>
 	imageInfo: ImageInfo
 }) {
 	const { imageUrl, width, height, ratio } = imageInfo
-	const levelConfig = levels[levelNumber - 1]
-	const level = createLevel(levelConfig)
 	const { items, columns, rows, emptySlotIndex } = level
 	const emptyItemInfo = items[emptySlotIndex]
 	const puzzleItemsRefs = useRef<Record<string, HTMLLIElement | null>>({})

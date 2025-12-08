@@ -4,6 +4,8 @@ import { Puzzle } from "./Puzzle"
 import { StartPage } from "./StartPage"
 import { WinPage } from "./WinPage"
 import { type ImageInfo, getImageInfo } from "./images"
+import { levels } from "./levels"
+import { createLevel } from "./game"
 
 export enum AppRoute {
 	Start,
@@ -24,10 +26,13 @@ export function App() {
 			case AppRoute.Start:
 				return <StartPage {...{ setPage }} />
 			case AppRoute.Game:
+				const levelConfig = levels[levelNumber - 1]
+				const level = createLevel(levelConfig)
+
 				return imageInfo === null ? (
 					<div>Загрузка…</div>
 				) : (
-					<Puzzle {...{ levelNumber, setLevelNumber, setPage, imageInfo }} />
+					<Puzzle {...{ level, setLevelNumber, setPage, imageInfo }} />
 				)
 			case AppRoute.Win:
 				return <WinPage {...{ setPage }} />
