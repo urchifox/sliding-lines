@@ -38,6 +38,10 @@ const PuzzleStyled = styled.ul<{
 		grid-template-columns: 1fr;
 
 		overflow: hidden;
+
+		&.disabled {
+			pointer-events: none;
+		}
 	`
 )
 
@@ -61,11 +65,12 @@ export function Puzzle({
 	const puzzleListRef = useRef<Record<string, HTMLElement | null>>({})
 
 	const checkLevel = () => {
-		const isReady = items.every(
+		const isFinished = items.every(
 			({ current, original }) =>
 				current.row === original.row && current.column === original.column
 		)
-		if (isReady) {
+		if (isFinished) {
+			puzzleListRef.current[0]?.classList.add("disabled")
 			setTimeout(() => {
 				puzzleListRef.current[0]?.classList.add("ready")
 				setTimeout(() => {
