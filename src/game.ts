@@ -6,6 +6,7 @@ export type Position = {
 }
 
 export type PuzzleItemInfo = {
+	key: string
 	original: Position
 	current: Position
 	isEmpty: boolean
@@ -35,6 +36,7 @@ export function createLevel(config?: LevelConfig): Level {
 	for (let row = 1; row <= rows; row++) {
 		for (let column = 1; column <= columns; column++) {
 			items.push({
+				key: `${row}-${column}`,
 				original: { row, column },
 				current: { row, column },
 				isEmpty: false,

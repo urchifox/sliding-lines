@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { useRef } from "react"
 
 import { AppRoute } from "./App"
-import { PuzzleItem, getKey } from "./PuzzleItem"
+import { PuzzleItem } from "./PuzzleItem"
 import { clearList } from "./assets/styles/mixins"
 import { type PuzzleItemInfo, createLevel, tryMove } from "./game"
 import type { ImageInfo } from "./images"
@@ -85,7 +85,7 @@ export function Puzzle({
 		const isMoved = tryMove(clickedItemInfo, items)
 		if (isMoved) {
 			;[clickedItemInfo, emptyItemInfo].forEach((info) => {
-				const changedElement = puzzleItemsRefs.current[getKey(info.original)]
+				const changedElement = puzzleItemsRefs.current[info.key]
 
 				if (changedElement) {
 					const { row, column } = info.current

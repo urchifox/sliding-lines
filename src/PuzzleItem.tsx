@@ -1,10 +1,6 @@
 import styled from "@emotion/styled"
 
-import type { Position, PuzzleItemInfo } from "./game"
-
-export function getKey({ row, column }: Position) {
-	return `${row}-${column}`
-}
+import type { PuzzleItemInfo } from "./game"
 
 const PuzzleItemStyled = styled.li<{
 	isEmpty?: boolean
@@ -75,9 +71,7 @@ export function PuzzleItem({
     handleClick: () => void
     refs: React.RefObject<Record<string, HTMLLIElement | null>>
 }) {
-	const { current, original, isEmpty } = item
-
-	const key = getKey(original)
+	const { key, current, original, isEmpty } = item
 
 	return (
 		<PuzzleItemStyled
