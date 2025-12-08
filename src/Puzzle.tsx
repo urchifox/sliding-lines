@@ -1,11 +1,12 @@
 import styled from "@emotion/styled"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 
 import { AppRoute } from "./App"
 import { PuzzleItem } from "./PuzzleItem"
 import { clearList } from "./assets/styles/mixins"
-import { type Level, type PuzzleItemInfo, tryMove } from "./game"
-import type { ImageInfo } from "./images"
+import { createLevel, type PuzzleItemInfo, tryMove } from "./game"
+import { type ImageInfo, getImageInfo } from "./images"
+import { levels } from "./levels"
 
 const PuzzleStyled = styled.ul<{
 	ssWidth: number
@@ -45,21 +46,29 @@ const PuzzleStyled = styled.ul<{
 )
 
 export function Puzzle({
-	level,
+	levelNumber,
 	setLevelNumber,
 	setPage,
-	imageInfo,
 }: {
-	level: Level
+	levelNumber: number
 	setLevelNumber: React.Dispatch<React.SetStateAction<number>>
 	setPage: React.Dispatch<React.SetStateAction<AppRoute>>
-	imageInfo: ImageInfo
 }) {
+	const puzzleItemsRefs = useRef<Record<string, HTMLLIElement | null>>({})
+	const puzzleListRef = useRef<Record<string, HTMLElement | null>>({})
+	const [imageInfo, setImageInfo] = useState<ImageInfo | null>(null)
+
+	if (imageInfo === null) {
+		getImageInfo(levelNumber).then(setImageInfo)
+		return <div>Загрузка…</div>
+	}
+
+	const levelConfig = levels[levelNumber - 1]
+	const level = createLevel(levelConfig)
+
 	const { imageUrl, width, height, ratio } = imageInfo
 	const { items, columns, rows, emptySlotIndex } = level
 	const emptyItemInfo = items[emptySlotIndex]
-	const puzzleItemsRefs = useRef<Record<string, HTMLLIElement | null>>({})
-	const puzzleListRef = useRef<Record<string, HTMLElement | null>>({})
 
 	const checkLevel = () => {
 		const isFinished = items.every(
