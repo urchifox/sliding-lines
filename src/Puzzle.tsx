@@ -61,9 +61,9 @@ export function Puzzle({
 			const isMoved = tryMove(item, items)
 			
 			if (isMoved) {
-				;[item, emptyItemInfo].forEach((info) => {
-					const { row, column } = info.current
-					const changedElement = puzzleRef.current[info.key]
+				;[item, emptyItemInfo].forEach(({current, key}) => {
+					const { row, column } = current
+					const changedElement = puzzleRef.current[key]
 					changedElement?.style.setProperty("--row", row.toString())
 					changedElement?.style.setProperty("--col", column.toString())
 				})
