@@ -13,11 +13,9 @@ const PuzzleItemStyled = styled.li<{
 	col: number
 	spRow: number
 	spCol: number
-}>`
-	--row: ${({ row }) => row};
-	--col: ${({ col }) => col};
-	--sp-row: ${({ spRow }) => spRow};
-	--sp-column: ${({ spCol }) => spCol};
+}>(({isEmpty, row, col, spRow, spCol}) => `
+	--row: ${row};
+	--col: ${col};
 
 	--offsetY: calc(100% * (var(--row) - 1));
 	--offsetX: calc(100% * (var(--col) - 1));
@@ -35,24 +33,22 @@ const PuzzleItemStyled = styled.li<{
 	grid-column: 1 / 2;
 
 	border-radius: inherit;
-	border: 2px solid ${({ isEmpty }) => (isEmpty ? "transparent" : "black")};
+	border: 2px solid ${isEmpty ? "transparent" : "black"};
 	width: calc(100% / var(--columns));
 	height: calc(100% / var(--rows));
 
 	list-style: none;
-	background-color: ${({ isEmpty }) => (isEmpty ? "transparent" : "lightgrey")};
 
 	background-repeat: no-repeat;
 	background-size: calc(var(--ss-width) / var(--sp-width) * 100%)
 		calc(var(--ss-height) / var(--sp-height) * 100%);
 	background-position-x: calc(
-		(var(--sp-column) - 1) / max(1, (var(--ss-columns) - 1)) * 100%
+		(${spCol} - 1) / max(1, (var(--ss-columns) - 1)) * 100%
 	);
 	background-position-y: calc(
-		(var(--sp-row) - 1) / max(1, (var(--ss-rows) - 1)) * 100%
+		(${spRow} - 1) / max(1, (var(--ss-rows) - 1)) * 100%
 	);
-	background-image: ${({ isEmpty }) =>
-		isEmpty ? "transparent" : "var(--image)"};
+	background-image: ${isEmpty ? "transparent" : "var(--image)"};
 
 	transform: translate(var(--offsetX), var(--offsetY));
 	transition:
@@ -64,8 +60,9 @@ const PuzzleItemStyled = styled.li<{
 		border-radius: 0;
 		border-color: transparent;
 		pointer-events: none;
+        background-image: var(--image);
 	}
-`
+`)
 
 export function PuzzleItem({
 	item,
