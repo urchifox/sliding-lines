@@ -59,8 +59,8 @@ export function Puzzle({
 	const { imageUrl, width, height, ratio } = imageInfo
 	const levelConfig = levels[levelNumber - 1]
 	const level = createLevel(levelConfig)
-	const { items, columns, rows } = level
-	const emptyItemInfo = items.find((item) => item.isEmpty) as PuzzleItemInfo
+	const { items, columns, rows, emptySlotIndex } = level
+	const emptyItemInfo = items[emptySlotIndex]
 	const puzzleItemsRefs = useRef<Record<string, HTMLLIElement | null>>({})
 	const puzzleListRef = useRef<Record<string, HTMLElement | null>>({})
 
