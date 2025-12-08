@@ -66,12 +66,12 @@ export function PuzzleItem({
 	item,
 	index,
 	handleClick,
-	refs,
+	puzzleRef,
 }: {
 	item: PuzzleItemInfo
 	index: number
 	handleClick: () => void
-	refs: React.RefObject<Record<string, HTMLLIElement | null>>
+	puzzleRef: React.RefObject<Record<string, HTMLElement | null>>
 }) {
 	const { key, current, original, isEmpty } = item
 
@@ -79,7 +79,7 @@ export function PuzzleItem({
 		<PuzzleItemStyled
 			isEmpty={isEmpty}
 			ref={(el) => {
-				refs.current[key] = el
+				puzzleRef.current[key] = el
 			}}
 			key={key}
 			onClick={handleClick}

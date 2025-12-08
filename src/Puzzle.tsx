@@ -1,5 +1,4 @@
 import styled from "@emotion/styled"
-import { useRef } from "react"
 
 import { PuzzleItem } from "./PuzzleItem"
 import { clearList } from "./assets/styles/mixins"
@@ -47,16 +46,15 @@ export function Puzzle({
 	level,
 	imageInfo,
 	checkLevel,
-	puzzleListRef
+	puzzleRef
 }: {
 	level: Level
 	imageInfo: ImageInfo
-	puzzleListRef: React.RefObject<Record<string, HTMLElement | null>>
+	puzzleRef: React.RefObject<Record<string, HTMLElement | null>>
 	checkLevel: () => void
 }) {
 	const { items, columns, rows, emptySlotIndex } = level
 	const emptyItemInfo = items[emptySlotIndex]
-	const puzzleItemsRefs = useRef<Record<string, HTMLLIElement | null>>({})
 
 	const elements = items.map((item, index) => {
 		const handleClick = () => {
@@ -65,7 +63,7 @@ export function Puzzle({
 			if (isMoved) {
 				;[item, emptyItemInfo].forEach((info) => {
 					const { row, column } = info.current
-					const changedElement = puzzleItemsRefs.current[info.key]
+					const changedElement = puzzleRef.current[info.key]
 					changedElement?.style.setProperty("--row", row.toString())
 					changedElement?.style.setProperty("--col", column.toString())
 				})
@@ -78,14 +76,14 @@ export function Puzzle({
 			item,
 			index,
 			handleClick,
-			refs: puzzleItemsRefs,
+			puzzleRef,
 		})
 	})
 
 	return (
 		<PuzzleStyled
 			ref={(el) => {
-				puzzleListRef.current[0] = el
+				puzzleRef.current.list = el
 			}}
 			{...imageInfo}
 			columns={columns}
