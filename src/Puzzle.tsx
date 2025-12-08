@@ -1,12 +1,12 @@
 import styled from "@emotion/styled"
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
 
 import { AppRoute } from "./App"
+import { PuzzleItem, getKey } from "./PuzzleItem"
 import { clearList } from "./assets/styles/mixins"
-import { createLevel, tryMove } from "./game"
+import { type PuzzleItemInfo, createLevel, tryMove } from "./game"
 import type { ImageInfo } from "./images"
 import { levels } from "./levels"
-import { getKey, PuzzleItem } from "./PuzzleItem"
 
 const PuzzleStyled = styled.ul`
 	${clearList}
@@ -40,17 +40,8 @@ export function Puzzle({
 	const levelConfig = levels[levelNumber - 1]
 	const level = createLevel(levelConfig)
 	const { items, columns, rows } = level
+	const emptyItemInfo = items.find((item) => item.isEmpty) as PuzzleItemInfo
 	const refs = useRef<Record<string, HTMLLIElement | null>>({})
-
-	const updateLevel = () => {
-		for (const item of items) {
-			const element = refs.current[getKey(item.original)]
-			if (element) {
-				element.style.setProperty("--row", item.current.row.toString())
-				element.style.setProperty("--col", item.current.column.toString())
-			}
-		}
-	}
 
 	const checkLevel = () => {
 		const isReady = items.every(
@@ -74,18 +65,30 @@ export function Puzzle({
 		}
 	}
 
-	useEffect(updateLevel, [])
+	const onItemClick = (clickedItemInfo: PuzzleItemInfo) => {
+		const isMoved = tryMove(clickedItemInfo, items)
+		if (isMoved) {
+			;[clickedItemInfo, emptyItemInfo].forEach((info) => {
+				const changedElement = refs.current[getKey(info.original)]
+
+				if (changedElement) {
+					const { row, column } = info.current
+					changedElement.style.setProperty("--row", row.toString())
+					changedElement.style.setProperty("--col", column.toString())
+				}
+			})
+
+			checkLevel()
+		}
+	}
 
 	const elements = items.map((item, index) => {
-		const handleClick = () => {
-			const result = tryMove(item, items)
-			if (result) {
-				updateLevel()
-				checkLevel()
-			}
-		}
-
-		return PuzzleItem({item, index, handleClick, refs})
+		return PuzzleItem({
+			item,
+			index,
+			handleClick: () => onItemClick(item),
+			refs,
+		})
 	})
 
 	return (
