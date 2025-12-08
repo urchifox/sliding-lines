@@ -1,8 +1,8 @@
 import { useState } from "react"
 
+import { PuzzlePage } from "./PuzzlePage"
 import { StartPage } from "./StartPage"
 import { WinPage } from "./WinPage"
-import { PuzzlePage } from "./PuzzlePage"
 
 export enum AppRoute {
 	Start,

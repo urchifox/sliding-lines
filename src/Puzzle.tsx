@@ -46,7 +46,7 @@ export function Puzzle({
 	level,
 	imageInfo,
 	checkLevel,
-	puzzleRef
+	puzzleRef,
 }: {
 	level: Level
 	imageInfo: ImageInfo
@@ -59,9 +59,9 @@ export function Puzzle({
 	const elements = items.map((item, index) => {
 		const handleClick = () => {
 			const isMoved = tryMove(item, items)
-			
+
 			if (isMoved) {
-				;[item, emptyItemInfo].forEach(({current, key}) => {
+				;[item, emptyItemInfo].forEach(({ current, key }) => {
 					const { row, column } = current
 					const changedElement = puzzleRef.current[key]
 					changedElement?.style.setProperty("--row", row.toString())

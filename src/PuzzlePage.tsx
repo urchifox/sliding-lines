@@ -18,6 +18,7 @@ export function PuzzlePage({
 
 	if (imageInfo === null) {
 		getImageInfo(levelNumber).then(setImageInfo)
+
 		return (
 			<section>
 				<p>Загрузка…</p>
@@ -33,11 +34,14 @@ export function PuzzlePage({
 			({ current, original }) =>
 				current.row === original.row && current.column === original.column
 		)
+
 		if (isFinished) {
 			const puzzleElement = puzzleRef.current.list
 			puzzleElement?.classList.add("disabled")
+
 			setTimeout(() => {
 				puzzleElement?.classList.add("ready")
+
 				setTimeout(() => {
 					levelNumber++
 					setPage(AppRoute.Win)
