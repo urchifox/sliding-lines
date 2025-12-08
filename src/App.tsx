@@ -1,8 +1,8 @@
 import { useState } from "react"
 
-import { Puzzle } from "./Puzzle"
 import { StartPage } from "./StartPage"
 import { WinPage } from "./WinPage"
+import { PuzzlePage } from "./PuzzlePage"
 
 export enum AppRoute {
 	Start,
@@ -17,7 +17,7 @@ export function App() {
 		case AppRoute.Start:
 			return <StartPage {...{ setPage }} />
 		case AppRoute.Game:
-			return <Puzzle {...{ setPage }} />
+			return <PuzzlePage {...{ setPage }} />
 		case AppRoute.Win:
 			return <WinPage {...{ setPage }} />
 		default:

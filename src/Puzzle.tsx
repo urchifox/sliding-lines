@@ -1,14 +1,10 @@
 import styled from "@emotion/styled"
-import { useRef, useState } from "react"
+import { useRef } from "react"
 
-import { AppRoute } from "./App"
 import { PuzzleItem } from "./PuzzleItem"
 import { clearList } from "./assets/styles/mixins"
-import { type PuzzleItemInfo, createLevel, tryMove } from "./game"
-import { type ImageInfo, getImageInfo } from "./images"
-import { levels } from "./levels"
-
-let levelNumber = 1
+import { type Level, tryMove } from "./game"
+import { type ImageInfo } from "./images"
 
 const PuzzleStyled = styled.ul<{
 	width: number
@@ -48,65 +44,40 @@ const PuzzleStyled = styled.ul<{
 )
 
 export function Puzzle({
-	setPage,
+	level,
+	imageInfo,
+	checkLevel,
+	puzzleListRef
 }: {
-	setPage: React.Dispatch<React.SetStateAction<AppRoute>>
+	level: Level
+	imageInfo: ImageInfo
+	puzzleListRef: React.RefObject<Record<string, HTMLElement | null>>
+	checkLevel: () => void
 }) {
-	const puzzleItemsRefs = useRef<Record<string, HTMLLIElement | null>>({})
-	const puzzleListRef = useRef<Record<string, HTMLElement | null>>({})
-	const [imageInfo, setImageInfo] = useState<ImageInfo | null>(null)
-
-	if (imageInfo === null) {
-		getImageInfo(levelNumber).then(setImageInfo)
-		return <div>Загрузка…</div>
-	}
-
-	const levelConfig = levels[levelNumber - 1]
-	const level = createLevel(levelConfig)
-
 	const { items, columns, rows, emptySlotIndex } = level
 	const emptyItemInfo = items[emptySlotIndex]
-
-	const checkLevel = () => {
-		const isFinished = items.every(
-			({ current, original }) =>
-				current.row === original.row && current.column === original.column
-		)
-		if (isFinished) {
-			const puzzleElement = puzzleListRef.current[0]
-			puzzleElement?.classList.add("disabled")
-			setTimeout(() => {
-				puzzleElement?.classList.add("ready")
-				setTimeout(() => {
-					levelNumber++
-					setPage(AppRoute.Win)
-				}, 2000)
-			}, 500)
-		}
-	}
-
-	const onItemClick = (clickedItemInfo: PuzzleItemInfo) => {
-		const isMoved = tryMove(clickedItemInfo, items)
-		if (isMoved) {
-			;[clickedItemInfo, emptyItemInfo].forEach((info) => {
-				const changedElement = puzzleItemsRefs.current[info.key]
-
-				if (changedElement) {
-					const { row, column } = info.current
-					changedElement.style.setProperty("--row", row.toString())
-					changedElement.style.setProperty("--col", column.toString())
-				}
-			})
-
-			checkLevel()
-		}
-	}
+	const puzzleItemsRefs = useRef<Record<string, HTMLLIElement | null>>({})
 
 	const elements = items.map((item, index) => {
+		const handleClick = () => {
+			const isMoved = tryMove(item, items)
+			
+			if (isMoved) {
+				;[item, emptyItemInfo].forEach((info) => {
+					const { row, column } = info.current
+					const changedElement = puzzleItemsRefs.current[info.key]
+					changedElement?.style.setProperty("--row", row.toString())
+					changedElement?.style.setProperty("--col", column.toString())
+				})
+
+				checkLevel()
+			}
+		}
+
 		return PuzzleItem({
 			item,
 			index,
-			handleClick: () => onItemClick(item),
+			handleClick,
 			refs: puzzleItemsRefs,
 		})
 	})
