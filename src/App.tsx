@@ -3,9 +3,9 @@ import { useEffect, useState } from "react"
 import { Puzzle } from "./Puzzle"
 import { StartPage } from "./StartPage"
 import { WinPage } from "./WinPage"
+import { createLevel } from "./game"
 import { type ImageInfo, getImageInfo } from "./images"
 import { levels } from "./levels"
-import { createLevel } from "./game"
 
 export enum AppRoute {
 	Start,

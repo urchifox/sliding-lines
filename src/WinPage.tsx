@@ -13,7 +13,7 @@ export function WinPage({
 	return (
 		<section>
 			<h1>Вы выиграли!</h1>
-			<Button onClick={handleStartClick} text="Сыграть еще"/>
+			<Button onClick={handleStartClick} text="Сыграть еще" />
 		</section>
 	)
 }

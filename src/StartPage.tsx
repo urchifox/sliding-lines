@@ -12,7 +12,7 @@ export function StartPage({
 
 	return (
 		<section>
-			<Button onClick={handleStartClick} text="Играть"/>
+			<Button onClick={handleStartClick} text="Играть" />
 		</section>
 	)
 }

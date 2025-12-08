@@ -9,7 +9,8 @@ const PuzzleItemStyled = styled.li<{
 	col: number
 	spRow: number
 	spCol: number
-}>(({isEmpty, row, col, spRow, spCol}) => `
+}>(
+	({ isEmpty, row, col, spRow, spCol }) => `
 	--row: ${row};
 	--col: ${col};
 
@@ -58,18 +59,19 @@ const PuzzleItemStyled = styled.li<{
 		pointer-events: none;
         background-image: var(--image);
 	}
-`)
+`
+)
 
 export function PuzzleItem({
 	item,
 	index,
-    handleClick,
-    refs
+	handleClick,
+	refs,
 }: {
 	item: PuzzleItemInfo
 	index: number
-    handleClick: () => void
-    refs: React.RefObject<Record<string, HTMLLIElement | null>>
+	handleClick: () => void
+	refs: React.RefObject<Record<string, HTMLLIElement | null>>
 }) {
 	const { key, current, original, isEmpty } = item
 

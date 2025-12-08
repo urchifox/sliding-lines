@@ -50,7 +50,6 @@ export function Puzzle({
 	setPage,
 	imageInfo,
 }: {
-	
 	level: Level
 	setLevelNumber: React.Dispatch<React.SetStateAction<number>>
 	setPage: React.Dispatch<React.SetStateAction<AppRoute>>
