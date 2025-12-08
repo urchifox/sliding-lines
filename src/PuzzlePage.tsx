@@ -14,7 +14,10 @@ export function PuzzlePage({
 	setPage: React.Dispatch<React.SetStateAction<AppRoute>>
 }) {
 	const [imageInfo, setImageInfo] = useState<ImageInfo | null>(null)
-	const puzzleRef = useRef<Record<string, HTMLElement | null>>({})
+    const [isDisabled, setDisabledState] = useState<boolean>(false)
+    const [isFinished, setFinishedState] = useState<boolean>(false)
+	const levelConfig = levels[levelNumber - 1]
+	const level = useRef(createLevel(levelConfig)).current
 
 	if (imageInfo === null) {
 		getImageInfo(levelNumber).then(setImageInfo)
@@ -26,9 +29,6 @@ export function PuzzlePage({
 		)
 	}
 
-	const levelConfig = levels[levelNumber - 1]
-	const level = createLevel(levelConfig)
-
 	const checkLevel = () => {
 		const isFinished = level.items.every(
 			({ current, original }) =>
@@ -36,11 +36,10 @@ export function PuzzlePage({
 		)
 
 		if (isFinished) {
-			const puzzleElement = puzzleRef.current.list
-			puzzleElement?.classList.add("disabled")
+            setDisabledState(true)
 
 			setTimeout(() => {
-				puzzleElement?.classList.add("ready")
+                setFinishedState(true)
 
 				setTimeout(() => {
 					levelNumber++
@@ -56,7 +55,8 @@ export function PuzzlePage({
 				level={level}
 				imageInfo={imageInfo}
 				checkLevel={checkLevel}
-				puzzleRef={puzzleRef}
+                isDisabled={isDisabled}
+                isFinished={isFinished}
 			/>
 		</section>
 	)

@@ -4,13 +4,14 @@ import type { PuzzleItemInfo } from "./game"
 
 const PuzzleItemStyled = styled.li<{
 	isEmpty?: boolean
-	isReady?: boolean
 	row: number
 	col: number
 	spRow: number
 	spCol: number
+	isDisabled: boolean
+	isFinished: boolean
 }>(
-	({ isEmpty, row, col, spRow, spCol }) => `
+	({ isEmpty, row, col, spRow, spCol, isDisabled, isFinished }) => `
 	--row: ${row};
 	--col: ${col};
 
@@ -29,8 +30,8 @@ const PuzzleItemStyled = styled.li<{
 	grid-row: 1 / 2;
 	grid-column: 1 / 2;
 
-	border-radius: inherit;
-	border: 2px solid ${isEmpty ? "transparent" : "black"};
+	border-radius: ${isFinished ? "0" : "inherit"};
+	border: 2px solid ${isEmpty || isFinished ? "transparent" : "black"};
 	width: calc(100% / var(--columns));
 	height: calc(100% / var(--rows));
 
@@ -45,7 +46,7 @@ const PuzzleItemStyled = styled.li<{
 	background-position-y: calc(
 		(${spRow} - 1) / max(1, (var(--ss-rows) - 1)) * 100%
 	);
-	background-image: ${isEmpty ? "transparent" : "var(--image)"};
+	background-image: ${isEmpty && !isFinished ? "transparent" : "var(--image)"};
 
 	transform: translate(var(--offsetX), var(--offsetY));
 	transition:
@@ -53,12 +54,7 @@ const PuzzleItemStyled = styled.li<{
 		border-color 0.3s ease,
 		background-color 0.3s ease;
 
-	.ready & {
-		border-radius: 0;
-		border-color: transparent;
-		pointer-events: none;
-        background-image: var(--image);
-	}
+    pointer-events: ${isDisabled || isEmpty ? "none" : "auto"}
 `
 )
 
@@ -67,11 +63,15 @@ export function PuzzleItem({
 	index,
 	handleClick,
 	puzzleRef,
+	isDisabled,
+	isFinished,
 }: {
 	item: PuzzleItemInfo
 	index: number
 	handleClick: () => void
 	puzzleRef: React.RefObject<Record<string, HTMLElement | null>>
+	isDisabled: boolean
+	isFinished: boolean
 }) {
 	const { key, current, original, isEmpty } = item
 
@@ -87,6 +87,8 @@ export function PuzzleItem({
 			col={current.column}
 			spRow={original.row}
 			spCol={original.column}
+            isDisabled={isDisabled}
+            isFinished={isFinished}
 		>
 			{`${index + 1} (${key})`}
 		</PuzzleItemStyled>
