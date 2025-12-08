@@ -4,27 +4,27 @@ import { useRef, useState } from "react"
 import { AppRoute } from "./App"
 import { PuzzleItem } from "./PuzzleItem"
 import { clearList } from "./assets/styles/mixins"
-import { createLevel, type PuzzleItemInfo, tryMove } from "./game"
+import { type PuzzleItemInfo, createLevel, tryMove } from "./game"
 import { type ImageInfo, getImageInfo } from "./images"
 import { levels } from "./levels"
 
 const PuzzleStyled = styled.ul<{
-	ssWidth: number
-	ssHeight: number
+	width: number
+	height: number
 	ratio: number
 	columns: number
 	rows: number
-	image: string
+	imageUrl: string
 }>(
-	({ ssWidth, ssHeight, ratio, columns, rows, image }) => `
+	({ width, height, ratio, columns, rows, imageUrl }) => `
 		${clearList};
 
-		--ss-width: ${ssWidth};
-		--ss-height: ${ssHeight};
+		--ss-width: ${width};
+		--ss-height: ${height};
 		--ratio: ${ratio};
 		--columns: ${columns};
 		--rows: ${rows};
-		--image: url(${image});
+		--image: url(${imageUrl});
 
 		position: relative;
 
@@ -66,7 +66,6 @@ export function Puzzle({
 	const levelConfig = levels[levelNumber - 1]
 	const level = createLevel(levelConfig)
 
-	const { imageUrl, width, height, ratio } = imageInfo
 	const { items, columns, rows, emptySlotIndex } = level
 	const emptyItemInfo = items[emptySlotIndex]
 
@@ -118,12 +117,9 @@ export function Puzzle({
 			ref={(el) => {
 				puzzleListRef.current[0] = el
 			}}
-			ssWidth={width}
-			ssHeight={height}
-			ratio={ratio}
+			{...imageInfo}
 			columns={columns}
 			rows={rows}
-			image={imageUrl}
 		>
 			{[...elements]}
 		</PuzzleStyled>
