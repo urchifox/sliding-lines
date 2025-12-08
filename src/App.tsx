@@ -12,13 +12,12 @@ export enum AppRoute {
 
 export function App() {
 	const [page, setPage] = useState<AppRoute>(AppRoute.Start)
-	const [levelNumber, setLevelNumber] = useState(1)
 
 	switch (page) {
 		case AppRoute.Start:
 			return <StartPage {...{ setPage }} />
 		case AppRoute.Game:
-			return <Puzzle {...{ levelNumber, setLevelNumber, setPage }} />
+			return <Puzzle {...{ setPage }} />
 		case AppRoute.Win:
 			return <WinPage {...{ setPage }} />
 		default:

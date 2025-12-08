@@ -8,6 +8,8 @@ import { type PuzzleItemInfo, createLevel, tryMove } from "./game"
 import { type ImageInfo, getImageInfo } from "./images"
 import { levels } from "./levels"
 
+let levelNumber = 1
+
 const PuzzleStyled = styled.ul<{
 	width: number
 	height: number
@@ -46,12 +48,8 @@ const PuzzleStyled = styled.ul<{
 )
 
 export function Puzzle({
-	levelNumber,
-	setLevelNumber,
 	setPage,
 }: {
-	levelNumber: number
-	setLevelNumber: React.Dispatch<React.SetStateAction<number>>
 	setPage: React.Dispatch<React.SetStateAction<AppRoute>>
 }) {
 	const puzzleItemsRefs = useRef<Record<string, HTMLLIElement | null>>({})
@@ -79,7 +77,7 @@ export function Puzzle({
 			setTimeout(() => {
 				puzzleListRef.current[0]?.classList.add("ready")
 				setTimeout(() => {
-					setLevelNumber((current) => current + 1)
+					levelNumber++
 					setPage(AppRoute.Win)
 				}, 2000)
 			}, 500)
