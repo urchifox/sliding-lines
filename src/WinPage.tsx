@@ -1,4 +1,5 @@
 import { AppRoute } from "./App"
+import { Button } from "./Button"
 
 export function WinPage({
 	setPage,
@@ -12,7 +13,7 @@ export function WinPage({
 	return (
 		<section>
 			<h1>Вы выиграли!</h1>
-			<button onClick={handleStartClick}>Сыграть еще</button>
+			<Button onClick={handleStartClick} text="Сыграть еще" />
 		</section>
 	)
 }

@@ -1,117 +1,96 @@
-import { useEffect, useRef } from "react"
+import styled from "@emotion/styled"
+import { useRef } from "react"
 
-import { AppRoute } from "./App"
-import "./Puzzle.scss"
-import { type Position, createLevel, tryMove } from "./game"
-import type { ImageInfo } from "./images"
-import { levels } from "./levels"
+import { PuzzleItem } from "./PuzzleItem"
+import { clearList } from "./assets/styles/mixins"
+import { type Level, tryMove } from "./game"
+import { type ImageInfo } from "./images"
 
-function getKey({ row, column }: Position) {
-	return `${row}-${column}`
-}
+const PuzzleStyled = styled.ul<{
+	width: number
+	height: number
+	ratio: number
+	columns: number
+	rows: number
+	imageUrl: string
+}>(
+	({ width, height, ratio, columns, rows, imageUrl }) => `
+		${clearList};
+
+		--ss-width: ${width};
+		--ss-height: ${height};
+		--ratio: ${ratio};
+		--columns: ${columns};
+		--rows: ${rows};
+		--image: url(${imageUrl});
+
+		position: relative;
+
+		border-radius: 5px;
+		width: 300px;
+		height: calc(300px / var(--ratio));
+		background-color: grey;
+
+		display: grid;
+		grid-template-rows: 1fr;
+		grid-template-columns: 1fr;
+
+		overflow: hidden;
+	`
+)
 
 export function Puzzle({
-	levelNumber,
-	setLevelNumber,
-	setPage,
+	level,
 	imageInfo,
+	onCompleteLevel,
+	isDisabled,
+	isFinished,
 }: {
-	levelNumber: number
-	setLevelNumber: React.Dispatch<React.SetStateAction<number>>
-	setPage: React.Dispatch<React.SetStateAction<AppRoute>>
+	level: Level
 	imageInfo: ImageInfo
+	onCompleteLevel: () => void
+	isDisabled: boolean
+	isFinished: boolean
 }) {
-	const { imageUrl, width, height, ratio } = imageInfo
-	const levelConfig = levels[levelNumber - 1]
-	const level = createLevel(levelConfig)
-	const { items, columns, rows } = level
-	const refs = useRef<Record<string, HTMLLIElement | null>>({})
-
-	const updateLevel = () => {
-		for (const item of items) {
-			const element = refs.current[getKey(item.original)]
-			if (element) {
-				element.style.setProperty("--row", item.current.row.toString())
-				element.style.setProperty("--col", item.current.column.toString())
-			}
-		}
-	}
-
-	const checkLevel = () => {
-		const isReady = items.every(
-			(item) =>
-				item.current.row === item.original.row &&
-				item.current.column === item.original.column
-		)
-		if (isReady) {
-			setTimeout(() => {
-				for (const item of items) {
-					const element = refs.current[getKey(item.original)]
-					if (element) {
-						element.classList.remove("puzzle__item--empty")
-						element.classList.add("puzzle__item--ready")
-					}
-				}
-				setTimeout(() => {
-					setLevelNumber((current) => current + 1)
-					setPage(AppRoute.Win)
-				}, 2000)
-			}, 500)
-		}
-	}
-
-	useEffect(updateLevel, [])
+	const { items, columns, rows, emptySlotIndex } = level
+	const emptyItemInfo = items[emptySlotIndex]
+	const puzzleRef = useRef<Record<string, HTMLElement | null>>({})
 
 	const elements = items.map((item, index) => {
-		const { current, original, isEmpty } = item
-
 		const handleClick = () => {
-			const result = tryMove(item, items)
-			if (result) {
-				updateLevel()
-				checkLevel()
+			const isMoved = tryMove(item, items)
+
+			if (isMoved) {
+				;[item, emptyItemInfo].forEach(({ current, key }) => {
+					const { row, column } = current
+					const changedElement = puzzleRef.current[key]
+					changedElement?.style.setProperty("--row", row.toString())
+					changedElement?.style.setProperty("--col", column.toString())
+				})
+
+				const isFinished = items.every(
+					({ current, original }) =>
+						current.row === original.row && current.column === original.column
+				)
+				if (isFinished) {
+					onCompleteLevel()
+				}
 			}
 		}
 
-		const key = getKey(original)
-
-		return (
-			<li
-				className={`puzzle__item ${isEmpty ? "puzzle__item--empty" : ""}`}
-				ref={(el) => {
-					refs.current[key] = el
-				}}
-				key={key}
-				onClick={handleClick}
-				style={
-					{
-						"--row": current.row,
-						"--col": current.column,
-						"--sp-row": original.row,
-						"--sp-column": original.column,
-					} as React.CSSProperties
-				}
-			>
-				{`${index + 1} (${key})`}
-			</li>
-		)
+		return PuzzleItem({
+			item,
+			index,
+			handleClick,
+			puzzleRef,
+			isDisabled,
+			isFinished,
+		})
 	})
 
 	return (
-		<ul
-			className="puzzle"
-			style={
-				{
-					"--ss-width": width,
-					"--ss-height": height,
-					"--ratio": ratio,
-					"--columns": columns,
-					"--rows": rows,
-					"--image": `url(${imageUrl})`,
-				} as React.CSSProperties
-			}
-		>
+		<PuzzleStyled {...imageInfo} columns={columns} rows={rows}>
 			{[...elements]}
-		</ul>
+		</PuzzleStyled>
 	)
 }
