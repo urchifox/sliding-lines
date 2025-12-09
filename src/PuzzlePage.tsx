@@ -3,10 +3,10 @@ import { useState } from "react"
 import { AppRoute } from "./App"
 import { PageStyled } from "./Page"
 import { Puzzle } from "./Puzzle"
-import { upgradeLevel } from "./game"
-import { type ImageInfo, getImageInfo } from "./images"
 import { TextStyled } from "./Text"
 import { theme } from "./assets/styles/theme"
+import { upgradeLevel } from "./game"
+import { type ImageInfo, getImageInfo } from "./images"
 
 export function PuzzlePage({
 	setPage,
