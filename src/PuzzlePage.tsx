@@ -5,6 +5,7 @@ import { Puzzle } from "./Puzzle"
 import { createLevel } from "./game"
 import { type ImageInfo, getImageInfo } from "./images"
 import { levels } from "./levels"
+import { PageStyled } from "./Page"
 
 let levelNumber = 1
 
@@ -43,7 +44,7 @@ export function PuzzlePage({
 	}
 
 	return (
-		<section>
+		<PageStyled>
 			<Puzzle
 				level={level}
 				imageInfo={imageInfo}
@@ -51,6 +52,6 @@ export function PuzzlePage({
 				isDisabled={isDisabled}
 				isFinished={isFinished}
 			/>
-		</section>
+		</PageStyled>
 	)
 }

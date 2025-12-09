@@ -1,5 +1,6 @@
 import { AppRoute } from "./App"
 import { Button } from "./Button"
+import { PageStyled } from "./Page"
 
 export function StartPage({
 	setPage,
@@ -11,8 +12,8 @@ export function StartPage({
 	}
 
 	return (
-		<section>
+		<PageStyled>
 			<Button onClick={handleStartClick} text="Играть" />
-		</section>
+		</PageStyled>
 	)
 }
