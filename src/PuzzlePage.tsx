@@ -22,9 +22,9 @@ export function PuzzlePage({
 		getImageInfo(levelNumber).then(setImageInfo)
 
 		return (
-			<section>
+			<PageStyled>
 				<p>Загрузка…</p>
-			</section>
+			</PageStyled>
 		)
 	}
 
