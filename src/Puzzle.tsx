@@ -41,16 +41,32 @@ const PuzzleStyled = styled.ul<{
 		aspect-ratio: var(--ratio);
 
 		background-color: ${theme.color.secondary};
-		background-repeat: no-repeat;
-		background-size: cover;
-		background-position: center;
-		background-image: ${isFinished ? "var(--image)" : "transparent"};
 
 		display: grid;
 		grid-template-rows: 1fr;
 		grid-template-columns: 1fr;
 
 		overflow: hidden;
+
+		&::before {
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+
+			width: 100%;
+			height: 100%;
+
+			background-repeat: no-repeat;
+			background-size: cover;
+			background-position: center;
+			background-image: var(--image);
+			
+			opacity: ${isFinished ? 1 : 0};
+			transition: opacity 0.3s ease;
+		}
 	`
 )
 

@@ -3,6 +3,8 @@ import { useState } from "react"
 import { AppRoute } from "./App"
 import { PageStyled } from "./Page"
 import { Puzzle } from "./Puzzle"
+import { TextStyled } from "./Text"
+import { theme } from "./assets/styles/theme"
 import { upgradeLevel } from "./game"
 import { type ImageInfo, getImageInfo } from "./images"
 
@@ -20,7 +22,7 @@ export function PuzzlePage({
 
 		return (
 			<PageStyled>
-				<p>Загрузка…</p>
+				<TextStyled color={theme.color.secondary}>Loading…</TextStyled>
 			</PageStyled>
 		)
 	}
