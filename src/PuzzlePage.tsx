@@ -29,24 +29,17 @@ export function PuzzlePage({
 		)
 	}
 
-	const checkLevel = () => {
-		const isFinished = level.items.every(
-			({ current, original }) =>
-				current.row === original.row && current.column === original.column
-		)
+	const onCompleteLevel = () => {
+		setDisabledState(true)
 
-		if (isFinished) {
-			setDisabledState(true)
+		setTimeout(() => {
+			setFinishedState(true)
 
 			setTimeout(() => {
-				setFinishedState(true)
-
-				setTimeout(() => {
-					levelNumber++
-					setPage(AppRoute.Win)
-				}, 2000)
-			}, 500)
-		}
+				levelNumber++
+				setPage(AppRoute.Win)
+			}, 2000)
+		}, 500)
 	}
 
 	return (
@@ -54,7 +47,7 @@ export function PuzzlePage({
 			<Puzzle
 				level={level}
 				imageInfo={imageInfo}
-				checkLevel={checkLevel}
+				onCompleteLevel={onCompleteLevel}
 				isDisabled={isDisabled}
 				isFinished={isFinished}
 			/>

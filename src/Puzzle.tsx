@@ -42,13 +42,13 @@ const PuzzleStyled = styled.ul<{
 export function Puzzle({
 	level,
 	imageInfo,
-	checkLevel,
+	onCompleteLevel,
 	isDisabled,
 	isFinished,
 }: {
 	level: Level
 	imageInfo: ImageInfo
-	checkLevel: () => void
+	onCompleteLevel: () => void
 	isDisabled: boolean
 	isFinished: boolean
 }) {
@@ -68,7 +68,13 @@ export function Puzzle({
 					changedElement?.style.setProperty("--col", column.toString())
 				})
 
-				checkLevel()
+				const isFinished = items.every(
+					({ current, original }) =>
+						current.row === original.row && current.column === original.column
+				)
+				if (isFinished) {
+					onCompleteLevel()
+				}
 			}
 		}
 
