@@ -87,8 +87,8 @@ export function PuzzleItem({
 			col={current.column}
 			spRow={original.row}
 			spCol={original.column}
-            isDisabled={isDisabled}
-            isFinished={isFinished}
+			isDisabled={isDisabled}
+			isFinished={isFinished}
 		>
 			{`${index + 1} (${key})`}
 		</PuzzleItemStyled>
