@@ -30,8 +30,8 @@ const PuzzleItemStyled = styled.li<{
 	grid-row: 1 / 2;
 	grid-column: 1 / 2;
 
-	border-radius: ${isFinished ? "0" : "inherit"};
-	border: 2px solid ${isEmpty || isFinished ? "transparent" : "black"};
+	border-radius: inherit;
+	border: 1px solid ${isEmpty || isFinished ? "transparent" : "#d4c9eb"};
 	width: calc(100% / var(--columns));
 	height: calc(100% / var(--rows));
 
@@ -46,7 +46,7 @@ const PuzzleItemStyled = styled.li<{
 	background-position-y: calc(
 		(${spRow} - 1) / max(1, (var(--ss-rows) - 1)) * 100%
 	);
-	background-image: ${isEmpty && !isFinished ? "transparent" : "var(--image)"};
+	background-image: ${isEmpty ? "transparent" : "var(--image)"};
 
 	transform: translate(var(--offsetX), var(--offsetY));
 	transition:
@@ -54,7 +54,9 @@ const PuzzleItemStyled = styled.li<{
 		border-color 0.3s ease,
 		background-color 0.3s ease;
 
-    pointer-events: ${isDisabled || isEmpty ? "none" : "auto"}
+    pointer-events: ${isDisabled || isEmpty ? "none" : "auto"};
+
+	color: transparent;
 `
 )
 

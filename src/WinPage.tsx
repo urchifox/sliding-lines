@@ -1,5 +1,7 @@
 import { AppRoute } from "./App"
 import { Button } from "./Button"
+import { HeaderStyled } from "./Header"
+import { PageStyled } from "./Page"
 
 export function WinPage({
 	setPage,
@@ -11,9 +13,9 @@ export function WinPage({
 	}
 
 	return (
-		<section>
-			<h1>Вы выиграли!</h1>
-			<Button onClick={handleStartClick} text="Сыграть еще" />
-		</section>
+		<PageStyled>
+			<HeaderStyled>You have won!</HeaderStyled>
+			<Button onClick={handleStartClick} text="Solve next puzzle" />
+		</PageStyled>
 	)
 }

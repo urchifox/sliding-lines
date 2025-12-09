@@ -1,12 +1,10 @@
-import { useRef, useState } from "react"
+import { useState } from "react"
 
 import { AppRoute } from "./App"
+import { PageStyled } from "./Page"
 import { Puzzle } from "./Puzzle"
-import { createLevel } from "./game"
+import { upgradeLevel } from "./game"
 import { type ImageInfo, getImageInfo } from "./images"
-import { levels } from "./levels"
-
-let levelNumber = 1
 
 export function PuzzlePage({
 	setPage,
@@ -16,16 +14,14 @@ export function PuzzlePage({
 	const [imageInfo, setImageInfo] = useState<ImageInfo | null>(null)
 	const [isDisabled, setDisabledState] = useState<boolean>(false)
 	const [isFinished, setFinishedState] = useState<boolean>(false)
-	const levelConfig = levels[levelNumber - 1]
-	const level = useRef(createLevel(levelConfig)).current
 
 	if (imageInfo === null) {
-		getImageInfo(levelNumber).then(setImageInfo)
+		getImageInfo().then(setImageInfo)
 
 		return (
-			<section>
+			<PageStyled>
 				<p>Загрузка…</p>
-			</section>
+			</PageStyled>
 		)
 	}
 
@@ -36,21 +32,20 @@ export function PuzzlePage({
 			setFinishedState(true)
 
 			setTimeout(() => {
-				levelNumber++
+				upgradeLevel()
 				setPage(AppRoute.Win)
 			}, 2000)
 		}, 500)
 	}
 
 	return (
-		<section>
+		<PageStyled>
 			<Puzzle
-				level={level}
 				imageInfo={imageInfo}
 				onCompleteLevel={onCompleteLevel}
 				isDisabled={isDisabled}
 				isFinished={isFinished}
 			/>
-		</section>
+		</PageStyled>
 	)
 }

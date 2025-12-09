@@ -28,8 +28,35 @@ export type LevelConfig = {
 		  }
 }
 
-export function createLevel(config?: LevelConfig): Level {
-	const levelConfig = config ?? generateConfig()
+let levelNumber = 0
+
+export function getLevelNumber() {
+	return levelNumber
+}
+
+export function upgradeLevel() {
+	levelNumber++
+}
+
+const levelExtreme = {
+	rows: {
+		min: 3,
+		max: 5,
+	},
+	columns: {
+		min: 3,
+		max: 5,
+	},
+	shuffleSteps: {
+		min: 5,
+		max: 10,
+	},
+} as const
+
+const maxDifficultyLevel = 10
+
+export function createLevel(levelNumber?: number): Level {
+	const levelConfig = generateConfig(levelNumber)
 
 	const { rows, columns, shuffleSteps } = levelConfig
 	const items = []
@@ -54,12 +81,21 @@ export function createLevel(config?: LevelConfig): Level {
 	return level
 }
 
-function generateConfig(): LevelConfig {
-	return {
-		rows: randomInteger(3, 5),
-		columns: randomInteger(3, 5),
-		shuffleSteps: randomInteger(5, 10),
-	}
+function generateConfig(levelNumber?: number): LevelConfig {
+	const config = {} as LevelConfig
+
+	Object.entries(levelExtreme).forEach(([name, { min, max }]) => {
+		const difficulty = (levelNumber ?? getLevelNumber()) / maxDifficultyLevel
+		const extremeDiff = max - min
+		const randomisationDiff = difficulty > 1 ? Math.round(0.3 * extremeDiff) : 0
+		const minValue = min + extremeDiff * difficulty
+		const maxValue = minValue + randomisationDiff
+		const value = randomInteger(minValue, maxValue)
+
+		config[name as keyof typeof levelExtreme] = value
+	})
+
+	return config
 }
 
 function shuffleLevel(level: Level) {

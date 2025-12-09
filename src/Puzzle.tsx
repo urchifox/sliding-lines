@@ -3,7 +3,8 @@ import { useRef } from "react"
 
 import { PuzzleItem } from "./PuzzleItem"
 import { clearList } from "./assets/styles/mixins"
-import { type Level, tryMove } from "./game"
+import { theme } from "./assets/styles/theme"
+import { type Level, createLevel, tryMove } from "./game"
 import { type ImageInfo } from "./images"
 
 const PuzzleStyled = styled.ul<{
@@ -13,23 +14,37 @@ const PuzzleStyled = styled.ul<{
 	columns: number
 	rows: number
 	imageUrl: string
+	isFinished: boolean
 }>(
-	({ width, height, ratio, columns, rows, imageUrl }) => `
+	({ width, height, ratio, columns, rows, imageUrl, isFinished }) => `
 		${clearList};
 
-		--ss-width: ${width};
-		--ss-height: ${height};
+		--ss-width: ${width}px;
+		--ss-height: ${height}px;
 		--ratio: ${ratio};
 		--columns: ${columns};
 		--rows: ${rows};
 		--image: url(${imageUrl});
 
+		--max-width: 80vw;
+		--max-height: 80vh;
+
+		--max-size: min(80vw,80vh);
+
 		position: relative;
 
 		border-radius: 5px;
-		width: 300px;
-		height: calc(300px / var(--ratio));
-		background-color: grey;
+		border: 2px solid ${theme.color.secondary};
+		width: min(var(--max-width), calc(var(--max-height) * var(--ratio)));
+		height: min(var(--max-height), calc(var(--max-width) / var(--ratio)));
+
+		aspect-ratio: var(--ratio);
+
+		background-color: ${theme.color.secondary};
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-position: center;
+		background-image: ${isFinished ? "var(--image)" : "transparent"};
 
 		display: grid;
 		grid-template-rows: 1fr;
@@ -40,19 +55,22 @@ const PuzzleStyled = styled.ul<{
 )
 
 export function Puzzle({
-	level,
 	imageInfo,
 	onCompleteLevel,
 	isDisabled,
 	isFinished,
 }: {
-	level: Level
 	imageInfo: ImageInfo
 	onCompleteLevel: () => void
 	isDisabled: boolean
 	isFinished: boolean
 }) {
-	const { items, columns, rows, emptySlotIndex } = level
+	const levelRef = useRef<Level | null>(null)
+	if (levelRef.current === null) {
+		levelRef.current = createLevel()
+	}
+
+	const { items, columns, rows, emptySlotIndex } = levelRef.current
 	const emptyItemInfo = items[emptySlotIndex]
 	const puzzleRef = useRef<Record<string, HTMLElement | null>>({})
 
@@ -89,7 +107,12 @@ export function Puzzle({
 	})
 
 	return (
-		<PuzzleStyled {...imageInfo} columns={columns} rows={rows}>
+		<PuzzleStyled
+			{...imageInfo}
+			columns={columns}
+			rows={rows}
+			isFinished={isFinished}
+		>
 			{[...elements]}
 		</PuzzleStyled>
 	)
