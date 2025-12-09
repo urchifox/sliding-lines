@@ -4,7 +4,6 @@ import { AppRoute } from "./App"
 import { Puzzle } from "./Puzzle"
 import { createLevel } from "./game"
 import { type ImageInfo, getImageInfo } from "./images"
-import { levels } from "./levels"
 import { PageStyled } from "./Page"
 
 let levelNumber = 0
@@ -17,8 +16,7 @@ export function PuzzlePage({
 	const [imageInfo, setImageInfo] = useState<ImageInfo | null>(null)
 	const [isDisabled, setDisabledState] = useState<boolean>(false)
 	const [isFinished, setFinishedState] = useState<boolean>(false)
-	const levelConfig = levels[levelNumber]
-	const level = useRef(createLevel(levelConfig)).current
+	const level = useRef(createLevel(levelNumber)).current
 
 	if (imageInfo === null) {
 		getImageInfo(levelNumber).then(setImageInfo)
