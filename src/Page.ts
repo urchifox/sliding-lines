@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 
 export const PageStyled = styled.section`
+    padding: 2em;
 	width: 100%;
 	height: 100vh;
 	height: 100dvh;
@@ -10,5 +11,5 @@ export const PageStyled = styled.section`
 	justify-content: center;
 	align-items: center;
 	align-content: center;
-    gap: 16px;
+    gap: 1em;
 `

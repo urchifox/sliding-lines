@@ -5,6 +5,7 @@ import { PuzzleItem } from "./PuzzleItem"
 import { clearList } from "./assets/styles/mixins"
 import { type Level, createLevel, tryMove } from "./game"
 import { type ImageInfo } from "./images"
+import { theme } from "./assets/styles/theme"
 
 const PuzzleStyled = styled.ul<{
 	width: number
@@ -33,13 +34,13 @@ const PuzzleStyled = styled.ul<{
 		position: relative;
 
 		border-radius: 5px;
-		border: 2px solid #d4c9eb;
+		border: 2px solid ${theme.color.secondary};
 		width: min(var(--max-width), calc(var(--max-height) * var(--ratio)));
 		height: min(var(--max-height), calc(var(--max-width) / var(--ratio)));
 
 		aspect-ratio: var(--ratio);
 
-		background-color: #d4c9eb;
+		background-color: ${theme.color.secondary};
 		background-repeat: no-repeat;
 		background-size: cover;
 		background-position: center;

@@ -21,8 +21,8 @@ export function StartPage({
 
 	return (
 		<StartPageStyled>
-			<HeaderStyled marginBottom={32}>Sliding lines</HeaderStyled>
-			<TextStyled marginBottom={16}>
+			<HeaderStyled>Sliding lines</HeaderStyled>
+			<TextStyled>
 				A small game by <LinkStyled href="https://github.com/urchifox">urchifox</LinkStyled> with
 				arts from{" "}
 				<LinkStyled href="https://www.instagram.com/playful.lines/">playful.lines</LinkStyled>
