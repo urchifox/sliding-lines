@@ -5,6 +5,7 @@ import { theme } from "./assets/styles/theme"
 export const TextStyled = styled.p<{
 	marginTop?: number
 	marginBottom?: number
+    color?: string
 }>(
 	({ marginTop, marginBottom }) => `
     margin-inline: 0;

@@ -5,6 +5,8 @@ import { PageStyled } from "./Page"
 import { Puzzle } from "./Puzzle"
 import { upgradeLevel } from "./game"
 import { type ImageInfo, getImageInfo } from "./images"
+import { TextStyled } from "./Text"
+import { theme } from "./assets/styles/theme"
 
 export function PuzzlePage({
 	setPage,
@@ -20,7 +22,7 @@ export function PuzzlePage({
 
 		return (
 			<PageStyled>
-				<p>Загрузка…</p>
+				<TextStyled color={theme.color.secondary}>Loading…</TextStyled>
 			</PageStyled>
 		)
 	}
