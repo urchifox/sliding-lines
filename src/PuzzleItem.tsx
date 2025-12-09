@@ -31,7 +31,7 @@ const PuzzleItemStyled = styled.li<{
 	grid-column: 1 / 2;
 
 	border-radius: ${isFinished ? "0" : "inherit"};
-	border: 2px solid ${isEmpty || isFinished ? "transparent" : "black"};
+	border: 1px solid ${isEmpty || isFinished ? "transparent" : "#d4c9eb"};
 	width: calc(100% / var(--columns));
 	height: calc(100% / var(--rows));
 
@@ -54,7 +54,9 @@ const PuzzleItemStyled = styled.li<{
 		border-color 0.3s ease,
 		background-color 0.3s ease;
 
-    pointer-events: ${isDisabled || isEmpty ? "none" : "auto"}
+    pointer-events: ${isDisabled || isEmpty ? "none" : "auto"};
+
+	color: transparent;
 `
 )
 

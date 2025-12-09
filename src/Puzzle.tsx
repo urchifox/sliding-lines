@@ -17,19 +17,27 @@ const PuzzleStyled = styled.ul<{
 	({ width, height, ratio, columns, rows, imageUrl }) => `
 		${clearList};
 
-		--ss-width: ${width};
-		--ss-height: ${height};
+		--ss-width: ${width}px;
+		--ss-height: ${height}px;
 		--ratio: ${ratio};
 		--columns: ${columns};
 		--rows: ${rows};
 		--image: url(${imageUrl});
 
+		--max-width: 80vw;
+		--max-height: 80vh;
+
+		--max-size: min(80vw,80vh);
+
 		position: relative;
 
 		border-radius: 5px;
-		width: 300px;
-		height: calc(300px / var(--ratio));
-		background-color: grey;
+		border: 2px solid #d4c9eb;
+		width: min(var(--max-width), calc(var(--max-height) * var(--ratio)));
+		height: min(var(--max-height), calc(var(--max-width) / var(--ratio)));
+
+		aspect-ratio: var(--ratio);
+		background-color: #d4c9eb;
 
 		display: grid;
 		grid-template-rows: 1fr;
