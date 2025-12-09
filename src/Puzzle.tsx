@@ -3,7 +3,7 @@ import { useRef } from "react"
 
 import { PuzzleItem } from "./PuzzleItem"
 import { clearList } from "./assets/styles/mixins"
-import { type Level, tryMove } from "./game"
+import { type Level, createLevel, tryMove } from "./game"
 import { type ImageInfo } from "./images"
 
 const PuzzleStyled = styled.ul<{
@@ -48,19 +48,22 @@ const PuzzleStyled = styled.ul<{
 )
 
 export function Puzzle({
-	level,
 	imageInfo,
 	onCompleteLevel,
 	isDisabled,
 	isFinished,
 }: {
-	level: Level
 	imageInfo: ImageInfo
 	onCompleteLevel: () => void
 	isDisabled: boolean
 	isFinished: boolean
 }) {
-	const { items, columns, rows, emptySlotIndex } = level
+	const levelRef = useRef<Level | null>(null)
+	if (levelRef.current === null) {
+		levelRef.current = createLevel()
+	}
+
+	const { items, columns, rows, emptySlotIndex } = levelRef.current
 	const emptyItemInfo = items[emptySlotIndex]
 	const puzzleRef = useRef<Record<string, HTMLElement | null>>({})
 
