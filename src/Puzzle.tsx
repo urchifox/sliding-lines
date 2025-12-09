@@ -3,9 +3,9 @@ import { useRef } from "react"
 
 import { PuzzleItem } from "./PuzzleItem"
 import { clearList } from "./assets/styles/mixins"
+import { theme } from "./assets/styles/theme"
 import { type Level, createLevel, tryMove } from "./game"
 import { type ImageInfo } from "./images"
-import { theme } from "./assets/styles/theme"
 
 const PuzzleStyled = styled.ul<{
 	width: number
@@ -44,7 +44,7 @@ const PuzzleStyled = styled.ul<{
 		background-repeat: no-repeat;
 		background-size: cover;
 		background-position: center;
-		background-image: ${isFinished ? "var(--image)" : "transparent" };
+		background-image: ${isFinished ? "var(--image)" : "transparent"};
 
 		display: grid;
 		grid-template-rows: 1fr;
@@ -107,7 +107,12 @@ export function Puzzle({
 	})
 
 	return (
-		<PuzzleStyled {...imageInfo} columns={columns} rows={rows} isFinished={isFinished}>
+		<PuzzleStyled
+			{...imageInfo}
+			columns={columns}
+			rows={rows}
+			isFinished={isFinished}
+		>
 			{[...elements]}
 		</PuzzleStyled>
 	)

@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+
 import { AppRoute } from "./App"
 import { Button } from "./Button"
 import { HeaderStyled } from "./Header"
@@ -23,9 +24,12 @@ export function StartPage({
 		<StartPageStyled>
 			<HeaderStyled>Sliding lines</HeaderStyled>
 			<TextStyled>
-				A small game by <LinkStyled href="https://github.com/urchifox">urchifox</LinkStyled> with
-				arts from{" "}
-				<LinkStyled href="https://www.instagram.com/playful.lines/">playful.lines</LinkStyled>
+				A small game by{" "}
+				<LinkStyled href="https://github.com/urchifox">urchifox</LinkStyled>{" "}
+				with arts from{" "}
+				<LinkStyled href="https://www.instagram.com/playful.lines/">
+					playful.lines
+				</LinkStyled>
 			</TextStyled>
 			<Button onClick={handleStartClick} text="Play" />
 		</StartPageStyled>

@@ -21,7 +21,8 @@ const imagesNames = (function () {
 })()
 
 export async function getImageInfo(levelNumber?: number): Promise<ImageInfo> {
-	const imageName = imagesNames[levelNumber ?? getLevelNumber()] ?? randomPick(imagesNames)
+	const imageName =
+		imagesNames[levelNumber ?? getLevelNumber()] ?? randomPick(imagesNames)
 	const imageUrl = new URL(
 		`/src/assets/images/puzzle-img-${imageName}`,
 		import.meta.url

@@ -87,12 +87,11 @@ function generateConfig(levelNumber?: number): LevelConfig {
 	Object.entries(levelExtreme).forEach(([name, { min, max }]) => {
 		const difficulty = (levelNumber ?? getLevelNumber()) / maxDifficultyLevel
 		const extremeDiff = max - min
-		const randomisationDiff =
-			difficulty > 1 ? Math.round(0.3 * extremeDiff) : 0
+		const randomisationDiff = difficulty > 1 ? Math.round(0.3 * extremeDiff) : 0
 		const minValue = min + extremeDiff * difficulty
 		const maxValue = minValue + randomisationDiff
 		const value = randomInteger(minValue, maxValue)
-		
+
 		config[name as keyof typeof levelExtreme] = value
 	})
 

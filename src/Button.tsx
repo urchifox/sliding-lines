@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+
 import { theme } from "./assets/styles/theme"
 
 const ButtonStyled = styled.button`
@@ -10,17 +11,17 @@ const ButtonStyled = styled.button`
 	cursor: pointer;
 	background-color: ${theme.color.interactive.basic};
 	transition: background-color 0.3s ease;
-	
+
 	color: ${theme.color.background};
 	font-size: ${theme.fontSize.l};
 	font-weight: 900;
 
 	&:hover {
-		background-color:  ${theme.color.interactive.hover};
+		background-color: ${theme.color.interactive.hover};
 	}
 
 	&:active {
-		background-color:  ${theme.color.interactive.active};
+		background-color: ${theme.color.interactive.active};
 	}
 `
 
