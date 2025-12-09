@@ -13,8 +13,9 @@ const PuzzleStyled = styled.ul<{
 	columns: number
 	rows: number
 	imageUrl: string
+	isFinished: boolean
 }>(
-	({ width, height, ratio, columns, rows, imageUrl }) => `
+	({ width, height, ratio, columns, rows, imageUrl, isFinished }) => `
 		${clearList};
 
 		--ss-width: ${width}px;
@@ -37,7 +38,12 @@ const PuzzleStyled = styled.ul<{
 		height: min(var(--max-height), calc(var(--max-width) / var(--ratio)));
 
 		aspect-ratio: var(--ratio);
+
 		background-color: #d4c9eb;
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-position: center;
+		background-image: ${isFinished ? "var(--image)" : "transparent" };
 
 		display: grid;
 		grid-template-rows: 1fr;
@@ -100,7 +106,7 @@ export function Puzzle({
 	})
 
 	return (
-		<PuzzleStyled {...imageInfo} columns={columns} rows={rows}>
+		<PuzzleStyled {...imageInfo} columns={columns} rows={rows} isFinished={isFinished}>
 			{[...elements]}
 		</PuzzleStyled>
 	)
