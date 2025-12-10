@@ -22,7 +22,7 @@ export function StartPage({
 
 	return (
 		<StartPageStyled>
-			<HeaderStyled>Sliding lines</HeaderStyled>
+			<HeaderStyled>Sliding Lines</HeaderStyled>
 			<TextStyled>
 				A small game by{" "}
 				<LinkStyled href="https://github.com/urchifox">urchifox</LinkStyled>{" "}
