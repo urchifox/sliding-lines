@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { useRef } from "react"
+
 import { Line, type LinePropertyManager } from "./Line"
 import { getRandomFloat, getRandomInteger } from "./utils"
 

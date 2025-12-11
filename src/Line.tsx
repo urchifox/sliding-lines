@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
+
 import { theme } from "./assets/styles/theme"
 import { getRandomInteger } from "./utils"
 
