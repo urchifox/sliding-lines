@@ -6,9 +6,14 @@ import { HeaderStyled } from "./Header"
 import { LinkStyled } from "./Link"
 import { PageStyled } from "./Page"
 import { TextStyled } from "./Text"
+import { Lines } from "./Lines"
 
 const StartPageStyled = styled(PageStyled)`
 	grid-template-rows: repeat(3, auto);
+`
+
+const HeaderWithLinesStyled = styled.div`
+	width: fit-content;
 `
 
 export function StartPage({
@@ -22,7 +27,10 @@ export function StartPage({
 
 	return (
 		<StartPageStyled>
-			<HeaderStyled>Sliding Lines</HeaderStyled>
+			<HeaderWithLinesStyled>
+				<HeaderStyled marginBottom={"0.5em"}>Sliding Lines</HeaderStyled>
+				<Lines />
+			</HeaderWithLinesStyled>
 			<TextStyled>
 				A small game by{" "}
 				<LinkStyled href="https://github.com/urchifox">urchifox</LinkStyled>{" "}
