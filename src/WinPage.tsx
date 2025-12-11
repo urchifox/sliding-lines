@@ -1,13 +1,16 @@
+import styled from "@emotion/styled"
 import { useState } from "react"
+
 import { AppRoute } from "./App"
 import { Button } from "./Button"
 import { HeaderStyled } from "./Header"
-import { getImageInfo, type ImageInfo } from "./images"
 import { PageStyled } from "./Page"
-import styled from "@emotion/styled"
 import { getLevelNumber } from "./game"
+import { type ImageInfo, getImageInfo } from "./images"
 
-const WinPageStyled = styled(PageStyled)<{background: string}>(({background}) => {
+const WinPageStyled = styled(PageStyled)<{ background: string }>(({
+	background,
+}) => {
 	return `
 		background-image: url(${background});
 		background-repeat: no-repeat;
