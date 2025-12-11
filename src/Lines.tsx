@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { useRef } from "react"
 import { Line, type LinePropertyManager } from "./Line"
-import { randomFloat, randomInteger } from "./utils"
+import { getRandomFloat, getRandomInteger } from "./utils"
 
 const LinesContainerStyled = styled.div`
 	position: relative;
@@ -38,11 +38,11 @@ export function Lines() {
 	const occupiedTops = useRef(new Set<number>())
 
 	const secondsManager = createLineManager(occupiedSeconds.current, () =>
-		randomFloat(0, 3)
+		getRandomFloat(0, 3)
 	)
 	const topManager = createLineManager(
 		occupiedTops.current,
-		() => 0.5 * randomInteger(0, 8)
+		() => 0.5 * getRandomInteger(0, 8)
 	)
 
 	return (

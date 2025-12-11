@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { useState, useEffect } from "react"
 import { theme } from "./assets/styles/theme"
-import { randomInteger } from "./utils"
+import { getRandomInteger } from "./utils"
 
 export type LinePropertyManager<T> = {
 	get: () => T
@@ -56,9 +56,9 @@ export function Line({
 	}
 
 	const animName = `slide${seconds?.toString().replace(".", "")}`
-	const width = randomInteger(30, 100)
-	const height = randomInteger(1, 5)
-	const direction = randomInteger(0, 1) === 1 ? "normal" : "reverse"
+	const width = getRandomInteger(30, 100)
+	const height = getRandomInteger(1, 5)
+	const direction = getRandomInteger(0, 1) === 1 ? "normal" : "reverse"
 
 	useEffect(() => {
 		return () => {

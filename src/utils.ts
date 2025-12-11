@@ -1,10 +1,10 @@
-export function randomFloat(min: number, max: number) {
+export function getRandomFloat(min: number, max: number) {
 	const rand = min + Math.random() * (max + 1 - min)
 	return rand
 }
 
-export function randomInteger(min: number, max: number) {
-	return Math.floor(randomFloat(min, max))
+export function getRandomInteger(min: number, max: number) {
+	return Math.floor(getRandomFloat(min, max))
 }
 
 export function randomPick<Element>(
