@@ -17,7 +17,16 @@ const PuzzleStyled = styled.ul<{
 	isFinished: boolean
 	isUpdating: boolean
 }>(
-	({ width, height, ratio, columns, rows, imageUrl, isFinished, isUpdating }) => `
+	({
+		width,
+		height,
+		ratio,
+		columns,
+		rows,
+		imageUrl,
+		isFinished,
+		isUpdating,
+	}) => `
 		${clearList};
 
 		--ss-width: ${width}px;

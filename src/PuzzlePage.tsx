@@ -76,7 +76,9 @@ export function PuzzlePage() {
 
 	return (
 		<PageStyled>
-			<WinHeader isFinished={isFinished} isUpdating={isUpdating}>You have won!</WinHeader>
+			<WinHeader isFinished={isFinished} isUpdating={isUpdating}>
+				You have won!
+			</WinHeader>
 			<Puzzle
 				imageInfo={imageInfo}
 				onCompleteLevel={onCompleteLevel}
@@ -88,7 +90,9 @@ export function PuzzlePage() {
 				isFinished={isFinished}
 				isUpdating={isUpdating}
 				onClick={handleStartClick}
-			>Solve next puzzle</PlayButton>
+			>
+				Solve next puzzle
+			</PlayButton>
 		</PageStyled>
 	)
 }

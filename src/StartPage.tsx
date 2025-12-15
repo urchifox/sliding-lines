@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { useState } from "react"
 
 import { AppRoute } from "./App"
 import { ButtonStyled } from "./Button"
@@ -7,7 +8,6 @@ import { Lines } from "./Lines"
 import { LinkStyled } from "./Link"
 import { PageStyled } from "./Page"
 import { TextStyled } from "./Text"
-import { useState } from "react"
 
 const StartPageStyled = styled(PageStyled)`
 	grid-template-rows: repeat(3, auto);
@@ -58,7 +58,9 @@ export function StartPage({
 	return (
 		<StartPageStyled>
 			<HeaderWithLinesStyled>
-				<StartHeader isUpdating={isUpdating} marginBottom={"0.5em"}>Sliding Lines</StartHeader>
+				<StartHeader isUpdating={isUpdating} marginBottom={"0.5em"}>
+					Sliding Lines
+				</StartHeader>
 				<Lines />
 			</HeaderWithLinesStyled>
 			<StartText isUpdating={isUpdating}>
@@ -69,7 +71,9 @@ export function StartPage({
 					playful.lines
 				</LinkStyled>
 			</StartText>
-			<PlayButton isUpdating={isUpdating} onClick={handleStartClick}>Play</PlayButton>
+			<PlayButton isUpdating={isUpdating} onClick={handleStartClick}>
+				Play
+			</PlayButton>
 		</StartPageStyled>
 	)
 }

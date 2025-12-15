@@ -4,7 +4,7 @@ const slideSize = 2
 
 export const PageStyled = styled.section`
 	position: relative;
-	
+
 	padding: 2em;
 	width: 100%;
 	height: 100vh;
