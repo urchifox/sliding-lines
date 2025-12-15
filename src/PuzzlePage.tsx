@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import { useState } from "react"
 
+import { ButtonStyled } from "./Button"
 import { HeaderStyled } from "./Header"
 import { PageStyled } from "./Page"
 import { Puzzle } from "./Puzzle"
@@ -8,77 +9,33 @@ import { TextStyled } from "./Text"
 import { theme } from "./assets/styles/theme"
 import { upgradeLevel } from "./game"
 import { type ImageInfo, getImageInfo } from "./images"
-import { ButtonStyled } from "./Button"
 
-
-
-const WinHeader = styled(HeaderStyled)<{ isFinished: boolean }>(({
-	isFinished,
-}) => {
+const WinHeader = styled(HeaderStyled)<{
+	isFinished: boolean
+	isUpdating: boolean
+}>(({ isFinished, isUpdating }) => {
 	return `
 	position: absolute;
 	z-index: 1;
 	top: 1em;
-	display: ${isFinished ? "block" : "none"};
+	display: ${isFinished || isUpdating ? "block" : "none"};
 
-	animation: ${isFinished ? "appear-header" : "none"} 1s 0.3s ease;
+	animation: ${isFinished ? "slide-in-from-left" : isUpdating ? "slide-out-to-right" : "none"} 1s 0.3s ease both;
 	animation-fill-mode: both;
-
-	@keyframes appear-header {
-		from {
-			opacity: 0;
-			transform: translateX(-1em);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
-
-	@keyframes disappear-header {
-		from {
-			opacity: 1;
-			transform: translateX(0);
-		}
-		to {
-			opacity: 0;
-			transform: translateX(-1em);
-		}
-	}
 `
 })
 
-const PlayButton = styled(ButtonStyled)<{ isFinished: boolean }>(({ isFinished }) => {
+const PlayButton = styled(ButtonStyled)<{
+	isFinished: boolean
+	isUpdating: boolean
+}>(({ isFinished, isUpdating }) => {
 	return `
 	position: absolute;
 	z-index: 1;
 	bottom: 1em;
-	display: ${isFinished ? "block" : "none"};
+	display: ${isFinished || isUpdating ? "block" : "none"};
 
-	animation: ${isFinished ? "appear-button" : "none"} 1s 0.3s ease;
-	animation-fill-mode: both;
-	
-	@keyframes appear-button {
-		from {
-			opacity: 0;
-			transform: translateX(1em);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
-
-	@keyframes disappear-header {
-		from {
-			opacity: 1;
-			transform: translateX(0);
-		}
-		to {
-			opacity: 0;
-			transform: translateX(1em);
-		}
-	}
+	animation: ${isFinished ? "slide-in-from-right" : isUpdating ? "slide-out-to-left" : "none"} 1s 0.3s ease both;
 `
 })
 
@@ -86,6 +43,7 @@ export function PuzzlePage() {
 	const [imageInfo, setImageInfo] = useState<ImageInfo | null>(null)
 	const [isDisabled, setDisabledState] = useState<boolean>(false)
 	const [isFinished, setFinishedState] = useState<boolean>(false)
+	const [isUpdating, setUpdateState] = useState<boolean>(false)
 
 	if (imageInfo === null) {
 		getImageInfo().then(setImageInfo)
@@ -107,22 +65,28 @@ export function PuzzlePage() {
 	}
 
 	const handleStartClick = () => {
-		setImageInfo(null)
-		setDisabledState(false)
 		setFinishedState(false)
+		setUpdateState(true)
+		setTimeout(() => {
+			setImageInfo(null)
+			setUpdateState(false)
+			setDisabledState(false)
+		}, 1 * 1000)
 	}
 
 	return (
 		<PageStyled>
-			<WinHeader isFinished={isFinished}>You have won!</WinHeader>
+			<WinHeader isFinished={isFinished} isUpdating={isUpdating}>You have won!</WinHeader>
 			<Puzzle
 				imageInfo={imageInfo}
 				onCompleteLevel={onCompleteLevel}
 				isDisabled={isDisabled}
 				isFinished={isFinished}
+				isUpdating={isUpdating}
 			/>
 			<PlayButton
 				isFinished={isFinished}
+				isUpdating={isUpdating}
 				onClick={handleStartClick}
 			>Solve next puzzle</PlayButton>
 		</PageStyled>

@@ -15,8 +15,9 @@ const PuzzleStyled = styled.ul<{
 	rows: number
 	imageUrl: string
 	isFinished: boolean
+	isUpdating: boolean
 }>(
-	({ width, height, ratio, columns, rows, imageUrl, isFinished }) => `
+	({ width, height, ratio, columns, rows, imageUrl, isFinished, isUpdating }) => `
 		${clearList};
 
 		--ss-width: ${width}px;
@@ -34,19 +35,21 @@ const PuzzleStyled = styled.ul<{
 		position: relative;
 
 		border-radius: 5px;
-		border: 2px solid ${isFinished ? "transparent" : theme.color.secondary};
+		border: 2px solid ${isFinished || isUpdating ? "transparent" : theme.color.secondary};
 		width: min(var(--max-width), calc(var(--max-height) * var(--ratio)));
 		height: min(var(--max-height), calc(var(--max-width) / var(--ratio)));
 
 		aspect-ratio: var(--ratio);
 
-		background-color: ${isFinished ? "transparent" : theme.color.secondary};
+		background-color: ${isFinished || isUpdating ? "transparent" : theme.color.secondary};
 
 		display: grid;
 		grid-template-rows: 1fr;
 		grid-template-columns: 1fr;
 
 		overflow: hidden;
+
+		animation: ${isUpdating ? "disappear" : "appear"} 0.3s ease both;
 
 		transition: background-color 0.3s ease, border-color 0.3s ease;
 
@@ -77,11 +80,13 @@ export function Puzzle({
 	onCompleteLevel,
 	isDisabled,
 	isFinished,
+	isUpdating,
 }: {
 	imageInfo: ImageInfo
 	onCompleteLevel: () => void
 	isDisabled: boolean
 	isFinished: boolean
+	isUpdating: boolean
 }) {
 	const levelRef = useRef<Level | null>(null)
 	if (levelRef.current === null) {
@@ -130,6 +135,7 @@ export function Puzzle({
 			columns={columns}
 			rows={rows}
 			isFinished={isFinished}
+			isUpdating={isUpdating}
 		>
 			{[...elements]}
 		</PuzzleStyled>
