@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 
 import { AppRoute } from "./App"
-import { Button } from "./Button"
+import { ButtonStyled } from "./Button"
 import { HeaderStyled } from "./Header"
 import { Lines } from "./Lines"
 import { LinkStyled } from "./Link"
@@ -39,7 +39,7 @@ export function StartPage({
 					playful.lines
 				</LinkStyled>
 			</TextStyled>
-			<Button onClick={handleStartClick} text="Play" />
+			<ButtonStyled onClick={handleStartClick}>Play</ButtonStyled>
 		</StartPageStyled>
 	)
 }

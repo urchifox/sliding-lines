@@ -34,19 +34,21 @@ const PuzzleStyled = styled.ul<{
 		position: relative;
 
 		border-radius: 5px;
-		border: 2px solid ${theme.color.secondary};
+		border: 2px solid ${isFinished ? "transparent" : theme.color.secondary};
 		width: min(var(--max-width), calc(var(--max-height) * var(--ratio)));
 		height: min(var(--max-height), calc(var(--max-width) / var(--ratio)));
 
 		aspect-ratio: var(--ratio);
 
-		background-color: ${theme.color.secondary};
+		background-color: ${isFinished ? "transparent" : theme.color.secondary};
 
 		display: grid;
 		grid-template-rows: 1fr;
 		grid-template-columns: 1fr;
 
 		overflow: hidden;
+
+		transition: background-color 0.3s ease, border-color 0.3s ease;
 
 		&::before {
 			content: "";

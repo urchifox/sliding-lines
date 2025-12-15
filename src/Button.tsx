@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 
 import { theme } from "./assets/styles/theme"
 
-const ButtonStyled = styled.button`
+export const ButtonStyled = styled.button`
 	border: none;
 	border-radius: ${theme.borderRadius.m};
 	padding: 0.3em 1.2em;
@@ -24,13 +24,3 @@ const ButtonStyled = styled.button`
 		background-color: ${theme.color.interactive.active};
 	}
 `
-
-export function Button({
-	text,
-	onClick,
-}: {
-	text: string
-	onClick?: () => void
-}) {
-	return <ButtonStyled onClick={onClick}>{text}</ButtonStyled>
-}
