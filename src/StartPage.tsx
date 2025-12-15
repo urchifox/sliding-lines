@@ -1,7 +1,8 @@
 import styled from "@emotion/styled"
+import { useState } from "react"
 
 import { AppRoute } from "./App"
-import { Button } from "./Button"
+import { ButtonStyled } from "./Button"
 import { HeaderStyled } from "./Header"
 import { Lines } from "./Lines"
 import { LinkStyled } from "./Link"
@@ -16,30 +17,63 @@ const HeaderWithLinesStyled = styled.div`
 	width: fit-content;
 `
 
+const StartHeader = styled(HeaderStyled)<{
+	isUpdating: boolean
+}>(({ isUpdating }) => {
+	return `
+	animation: ${isUpdating ? "slide-out-to-right" : "slide-in-from-left"} 1s 0.3s ease both;
+`
+})
+
+const PlayButton = styled(ButtonStyled)<{
+	isUpdating: boolean
+}>(({ isUpdating }) => {
+	return `
+	animation: ${isUpdating ? "slide-out-to-left" : "slide-in-from-right"} 1s 0.3s ease both;
+`
+})
+
+const StartText = styled(TextStyled)<{
+	isUpdating: boolean
+}>(({ isUpdating }) => {
+	return `
+	animation:${isUpdating ? "disappear" : "appear"} 1s 0.3s ease both;
+`
+})
+
 export function StartPage({
 	setPage,
 }: {
 	setPage: React.Dispatch<React.SetStateAction<AppRoute>>
 }) {
+	const [isUpdating, setUpdateState] = useState<boolean>(false)
+
 	const handleStartClick = () => {
-		setPage(AppRoute.Game)
+		setUpdateState(true)
+		setTimeout(() => {
+			setPage(AppRoute.Game)
+		}, 1 * 1000)
 	}
 
 	return (
 		<StartPageStyled>
 			<HeaderWithLinesStyled>
-				<HeaderStyled marginBottom={"0.5em"}>Sliding Lines</HeaderStyled>
+				<StartHeader isUpdating={isUpdating} marginBottom={"0.5em"}>
+					Sliding Lines
+				</StartHeader>
 				<Lines />
 			</HeaderWithLinesStyled>
-			<TextStyled>
+			<StartText isUpdating={isUpdating}>
 				A small game by{" "}
 				<LinkStyled href="https://github.com/urchifox">urchifox</LinkStyled>{" "}
 				with arts from{" "}
 				<LinkStyled href="https://www.instagram.com/playful.lines/">
 					playful.lines
 				</LinkStyled>
-			</TextStyled>
-			<Button onClick={handleStartClick} text="Play" />
+			</StartText>
+			<PlayButton isUpdating={isUpdating} onClick={handleStartClick}>
+				Play
+			</PlayButton>
 		</StartPageStyled>
 	)
 }

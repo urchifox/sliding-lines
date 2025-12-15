@@ -2,12 +2,10 @@ import { useState } from "react"
 
 import { PuzzlePage } from "./PuzzlePage"
 import { StartPage } from "./StartPage"
-import { WinPage } from "./WinPage"
 
 export enum AppRoute {
 	Start,
 	Game,
-	Win,
 }
 
 export function App() {
@@ -17,9 +15,7 @@ export function App() {
 		case AppRoute.Start:
 			return <StartPage {...{ setPage }} />
 		case AppRoute.Game:
-			return <PuzzlePage {...{ setPage }} />
-		case AppRoute.Win:
-			return <WinPage {...{ setPage }} />
+			return <PuzzlePage />
 		default:
 			return null
 	}
