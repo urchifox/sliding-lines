@@ -10,6 +10,10 @@ import { theme } from "./assets/styles/theme"
 import { upgradeLevel } from "./game"
 import { type ImageInfo, getImageInfo } from "./images"
 
+const LoadingText = styled(TextStyled)`
+	animation: appear 1s 0.3s ease both;
+`
+
 const WinHeader = styled(HeaderStyled)<{
 	isFinished: boolean
 	isUpdating: boolean
@@ -44,13 +48,22 @@ export function PuzzlePage() {
 	const [isDisabled, setDisabledState] = useState<boolean>(false)
 	const [isFinished, setFinishedState] = useState<boolean>(false)
 	const [isUpdating, setUpdateState] = useState<boolean>(false)
+	const [isError, setError] = useState<boolean>(false)
 
 	if (imageInfo === null) {
-		getImageInfo().then(setImageInfo)
+		getImageInfo()
+			.then((value) => {
+				setImageInfo(value)
+			})
+			.catch(() => {
+				setError(true)
+			})
 
 		return (
 			<PageStyled>
-				<TextStyled color={theme.color.secondary}>Loading…</TextStyled>
+				<LoadingText color={theme.color.secondary}>
+					{isError ? "An error occured, try to reload the page" : "Loading…"}
+				</LoadingText>
 			</PageStyled>
 		)
 	}
