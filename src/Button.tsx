@@ -7,6 +7,7 @@ export const ButtonStyled = styled.button`
 	border-radius: ${theme.borderRadius.m};
 	padding: 0.3em 1.2em;
 	width: fit-content;
+	height: fit-content;
 
 	cursor: pointer;
 	background-color: ${theme.color.interactive.basic};

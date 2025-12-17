@@ -106,7 +106,7 @@ export function Puzzle({
 	const emptyItemInfo = items[emptySlotIndex]
 	const puzzleRef = useRef<Record<string, HTMLElement | null>>({})
 
-	const elements = items.map((item, index) => {
+	const elements = items.map((item) => {
 		const handleClick = () => {
 			const isMoved = tryMove(item, items)
 
@@ -130,7 +130,6 @@ export function Puzzle({
 
 		return PuzzleItem({
 			item,
-			index,
 			handleClick,
 			puzzleRef,
 			isDisabled,

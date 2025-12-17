@@ -1,5 +1,5 @@
 import { getLevelNumber } from "./game"
-import { getImageSize, randomPick } from "./utils"
+import { getImageSize } from "./utils"
 
 export type ImageInfo = {
 	imageUrl: string
@@ -20,9 +20,11 @@ const imagesNames = (function () {
 	return puzzleImages
 })()
 
-export async function getImageInfo(levelNumber?: number): Promise<ImageInfo> {
-	const imageName =
-		imagesNames[levelNumber ?? getLevelNumber()] ?? randomPick(imagesNames)
+export async function getImageInfo(
+	levelNumber: number = getLevelNumber()
+): Promise<ImageInfo> {
+	const imageNameIndex = levelNumber % imagesNames.length
+	const imageName = imagesNames[imageNameIndex]
 	const imageUrl = new URL(
 		`/src/assets/images/puzzle-img-${imageName}`,
 		import.meta.url

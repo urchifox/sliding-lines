@@ -62,14 +62,12 @@ const PuzzleItemStyled = styled.li<{
 
 export function PuzzleItem({
 	item,
-	index,
 	handleClick,
 	puzzleRef,
 	isDisabled,
 	isFinished,
 }: {
 	item: PuzzleItemInfo
-	index: number
 	handleClick: () => void
 	puzzleRef: React.RefObject<Record<string, HTMLElement | null>>
 	isDisabled: boolean
@@ -91,8 +89,6 @@ export function PuzzleItem({
 			spCol={original.column}
 			isDisabled={isDisabled}
 			isFinished={isFinished}
-		>
-			{`${index + 1} (${key})`}
-		</PuzzleItemStyled>
+		/>
 	)
 }
