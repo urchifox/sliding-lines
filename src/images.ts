@@ -23,9 +23,7 @@ const imagesNames = (function () {
 export async function getImageInfo(
 	levelNumber: number = getLevelNumber()
 ): Promise<ImageInfo> {
-	const imagesNumber = imagesNames.length
-	const imageNameIndex =
-		levelNumber === 0 ? 0 : (levelNumber % imagesNumber || imagesNumber) - 1
+	const imageNameIndex = levelNumber % imagesNames.length
 	const imageName = imagesNames[imageNameIndex]
 	const imageUrl = new URL(
 		`/src/assets/images/puzzle-img-${imageName}`,
