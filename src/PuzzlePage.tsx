@@ -14,18 +14,24 @@ const LoadingText = styled(TextStyled)`
 	animation: appear 1s 0.3s ease both;
 `
 
+const PageWrapper = styled.section`
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr;
+	justify-items: center;
+`
+
 const WinHeader = styled(HeaderStyled)<{
 	isFinished: boolean
 	isUpdating: boolean
 }>(({ isFinished, isUpdating }) => {
 	return `
-	position: absolute;
+	grid-column: 1 / -1;
+	grid-row: 1 / -1;
 	z-index: 1;
-	top: 1em;
 	display: ${isFinished || isUpdating ? "block" : "none"};
 
 	animation: ${isFinished ? "slide-in-from-left" : isUpdating ? "slide-out-to-right" : "none"} 1s 0.3s ease both;
-	animation-fill-mode: both;
 `
 })
 
@@ -34,14 +40,20 @@ const PlayButton = styled(ButtonStyled)<{
 	isUpdating: boolean
 }>(({ isFinished, isUpdating }) => {
 	return `
-	position: absolute;
+	grid-column: 1 / -1;
+	grid-row: 1 / -1;
+	align-self: end;
 	z-index: 1;
-	bottom: 1em;
 	display: ${isFinished || isUpdating ? "block" : "none"};
 
 	animation: ${isFinished ? "slide-in-from-right" : isUpdating ? "slide-out-to-left" : "none"} 1s 0.3s ease both;
 `
 })
+
+const PuzzleWrapper = styled.div`
+	grid-column: 1 / -1;
+	grid-row: 1 / -1;
+`
 
 export function PuzzlePage() {
 	const [imageInfo, setImageInfo] = useState<ImageInfo | null>(null)
@@ -89,23 +101,27 @@ export function PuzzlePage() {
 
 	return (
 		<PageStyled>
-			<WinHeader isFinished={isFinished} isUpdating={isUpdating}>
-				You have won!
-			</WinHeader>
-			<Puzzle
-				imageInfo={imageInfo}
-				onCompleteLevel={onCompleteLevel}
-				isDisabled={isDisabled}
-				isFinished={isFinished}
-				isUpdating={isUpdating}
-			/>
-			<PlayButton
-				isFinished={isFinished}
-				isUpdating={isUpdating}
-				onClick={handleStartClick}
-			>
-				Solve next puzzle
-			</PlayButton>
+			<PageWrapper>
+				<WinHeader isFinished={isFinished} isUpdating={isUpdating}>
+					You have won!
+				</WinHeader>
+				<PuzzleWrapper>
+					<Puzzle
+						imageInfo={imageInfo}
+						onCompleteLevel={onCompleteLevel}
+						isDisabled={isDisabled}
+						isFinished={isFinished}
+						isUpdating={isUpdating}
+					/>
+				</PuzzleWrapper>
+				<PlayButton
+					isFinished={isFinished}
+					isUpdating={isUpdating}
+					onClick={handleStartClick}
+				>
+					Solve next puzzle
+				</PlayButton>
+			</PageWrapper>
 		</PageStyled>
 	)
 }
