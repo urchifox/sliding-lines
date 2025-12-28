@@ -36,17 +36,12 @@ const PuzzleStyled = styled.ul<{
 		--rows: ${rows};
 		--image: url(${imageUrl});
 
-		--max-width: 80vw;
-		--max-height: 80vh;
-
-		--max-size: min(80vw,80vh);
-
 		position: relative;
 
 		border-radius: 5px;
 		border: 2px solid ${isFinished || isUpdating ? "transparent" : theme.color.secondary};
-		width: min(var(--max-width), calc(var(--max-height) * var(--ratio)));
-		height: min(var(--max-height), calc(var(--max-width) / var(--ratio)));
+		width: min(var(--max-puzzle-width), calc(var(--max-puzzle-height) * var(--ratio)));
+		height: min(var(--max-puzzle-height), calc(var(--max-puzzle-width) / var(--ratio)));
 
 		aspect-ratio: var(--ratio);
 

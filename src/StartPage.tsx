@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { useState } from "react"
 
 import { AppRoute } from "./App"
-import { ButtonStyled } from "./Button"
+import { ButtonWithTextStyled } from "./Button"
 import { HeaderStyled } from "./Header"
 import { Lines } from "./Lines"
 import { LinkStyled } from "./Link"
@@ -25,7 +25,7 @@ const StartHeader = styled(HeaderStyled)<{
 `
 })
 
-const PlayButton = styled(ButtonStyled)<{
+const PlayButton = styled(ButtonWithTextStyled)<{
 	isUpdating: boolean
 }>(({ isUpdating }) => {
 	return `

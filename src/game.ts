@@ -1,3 +1,4 @@
+import { saveUserInfo, userInfo } from "./user"
 import { deleteFromArray, getRandomInteger, randomPick } from "./utils"
 
 export type Position = {
@@ -28,14 +29,13 @@ export type LevelConfig = {
 		  }
 }
 
-let levelNumber = 0
-
 export function getLevelNumber() {
-	return levelNumber
+	return userInfo.levelNumber
 }
 
 export function upgradeLevel() {
-	levelNumber++
+	userInfo.levelNumber++
+	saveUserInfo()
 }
 
 const levelExtreme = {

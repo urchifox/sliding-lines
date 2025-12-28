@@ -2,20 +2,13 @@ import styled from "@emotion/styled"
 
 import { theme } from "./assets/styles/theme"
 
-export const ButtonStyled = styled.button`
+const ButtonStyled = styled.button`
 	border: none;
 	border-radius: ${theme.borderRadius.m};
-	padding: 0.3em 1.2em;
-	width: fit-content;
-	height: fit-content;
 
 	cursor: pointer;
 	background-color: ${theme.color.interactive.basic};
 	transition: background-color 0.3s ease;
-
-	color: ${theme.color.background};
-	font-size: ${theme.fontSize.l};
-	font-weight: 900;
 
 	&:hover {
 		background-color: ${theme.color.interactive.hover};
@@ -24,4 +17,24 @@ export const ButtonStyled = styled.button`
 	&:active {
 		background-color: ${theme.color.interactive.active};
 	}
+`
+
+export const ButtonWithTextStyled = styled(ButtonStyled)`
+	padding: 0.3em 1.2em;
+	width: fit-content;
+	height: fit-content;
+
+	color: ${theme.color.background};
+	font-size: ${theme.fontSize.l};
+	font-weight: 900;
+`
+
+export const ButtonIconStyled = styled(ButtonStyled)`
+	padding: 0;
+	width: ${theme.fontSize.l};
+	height: ${theme.fontSize.l};
+
+	mask-repeat: no-repeat;
+	mask-position: center;
+	mask-size: contain;
 `
