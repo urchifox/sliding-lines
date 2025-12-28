@@ -150,7 +150,9 @@ export function PuzzlePage() {
 
 	return (
 		<PuzzlePageStyled>
-			<LevelName isUpdating={isUpdating}>Level {getLevelNumber()}</LevelName>
+			<LevelName isUpdating={isUpdating}>
+				Level {getLevelNumber() + 1}
+			</LevelName>
 			<RestartButton onClick={handleRestrartClick} isUpdating={isUpdating} />
 			<WinHeader isFinished={isFinished} isUpdating={isUpdating}>
 				You have won!
