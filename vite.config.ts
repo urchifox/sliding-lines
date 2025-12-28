@@ -7,6 +7,9 @@ import dynamicImport from "vite-plugin-dynamic-import"
 export default defineConfig({
 	base: "/sliding-lines/",
 	plugins: [react(), dynamicImport()],
+	build: {
+		assetsInlineLimit: 0,
+	},
 	css: {
 		preprocessorOptions: {
 			scss: {
