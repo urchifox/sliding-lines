@@ -1,7 +1,9 @@
+import replayIcon from "./assets/images/replay.svg"
+
 import styled from "@emotion/styled"
 import { useState } from "react"
 
-import { ButtonStyled } from "./Button"
+import { ButtonIconStyled, ButtonWithTextStyled } from "./Button"
 import { HeaderStyled } from "./Header"
 import { PageStyled } from "./Page"
 import { Puzzle } from "./Puzzle"
@@ -17,9 +19,23 @@ const LoadingText = styled(TextStyled)`
 const PageWrapper = styled.section`
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: 1fr;
+	grid-template-rows: auto 1fr;
+	gap: 0.5rem;
 	justify-items: center;
 `
+
+const RestartButton = styled(ButtonIconStyled)<{ isUpdating: boolean }>(
+	({ isUpdating }) => `
+	grid-column: 1 / -1;
+	grid-row: 1 / 2;
+	justify-self: end;
+
+	mask-image: url(${replayIcon});
+
+	opacity: ${isUpdating ? 0 : 1};
+	transition: opacity 0.3s ease;
+`
+)
 
 const WinHeader = styled(HeaderStyled)<{
 	isFinished: boolean
@@ -27,7 +43,7 @@ const WinHeader = styled(HeaderStyled)<{
 }>(({ isFinished, isUpdating }) => {
 	return `
 	grid-column: 1 / -1;
-	grid-row: 1 / -1;
+	grid-row: 2 / 3;
 	z-index: 1;
 	display: ${isFinished || isUpdating ? "block" : "none"};
 
@@ -35,13 +51,13 @@ const WinHeader = styled(HeaderStyled)<{
 `
 })
 
-const PlayButton = styled(ButtonStyled)<{
+const PlayButton = styled(ButtonWithTextStyled)<{
 	isFinished: boolean
 	isUpdating: boolean
 }>(({ isFinished, isUpdating }) => {
 	return `
 	grid-column: 1 / -1;
-	grid-row: 1 / -1;
+	grid-row: 2 / 3;
 	align-self: end;
 	z-index: 1;
 	display: ${isFinished || isUpdating ? "block" : "none"};
@@ -52,7 +68,7 @@ const PlayButton = styled(ButtonStyled)<{
 
 const PuzzleWrapper = styled.div`
 	grid-column: 1 / -1;
-	grid-row: 1 / -1;
+	grid-row: 2 / 3;
 `
 
 export function PuzzlePage() {
@@ -89,6 +105,10 @@ export function PuzzlePage() {
 		}, 500)
 	}
 
+	const handleRestrartClick = () => {
+		setImageInfo(null)
+	}
+
 	const handleStartClick = () => {
 		setFinishedState(false)
 		setUpdateState(true)
@@ -102,6 +122,7 @@ export function PuzzlePage() {
 	return (
 		<PageStyled>
 			<PageWrapper>
+				<RestartButton onClick={handleRestrartClick} isUpdating={isUpdating} />
 				<WinHeader isFinished={isFinished} isUpdating={isUpdating}>
 					You have won!
 				</WinHeader>
