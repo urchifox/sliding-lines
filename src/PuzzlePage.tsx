@@ -9,7 +9,7 @@ import { PageStyled } from "./Page"
 import { Puzzle } from "./Puzzle"
 import { TextStyled } from "./Text"
 import { theme } from "./assets/styles/theme"
-import { upgradeLevel } from "./game"
+import { getLevelNumber, upgradeLevel } from "./game"
 import { type ImageInfo, getImageInfo } from "./images"
 
 const LoadingText = styled(TextStyled)`
@@ -18,15 +18,29 @@ const LoadingText = styled(TextStyled)`
 
 const PageWrapper = styled.section`
 	display: grid;
-	grid-template-columns: 1fr;
+	grid-template-columns: 1fr auto;
 	grid-template-rows: auto 1fr;
 	gap: 0.5rem;
 	justify-items: center;
 `
 
+const LevelName = styled(TextStyled)<{ isUpdating: boolean }>(
+	({ isUpdating }) => `
+	margin: 0;
+	grid-column: 1 / 2;
+	grid-row: 1 / 2;
+	justify-self: start;
+	align-self: center;
+
+	font-size: ${theme.fontSize.l};
+
+	opacity: ${isUpdating ? 0 : 1};
+	transition: opacity 0.3s ease;
+`)
+
 const RestartButton = styled(ButtonIconStyled)<{ isUpdating: boolean }>(
 	({ isUpdating }) => `
-	grid-column: 1 / -1;
+	grid-column: 2 / 3;
 	grid-row: 1 / 2;
 	justify-self: end;
 
@@ -122,6 +136,7 @@ export function PuzzlePage() {
 	return (
 		<PageStyled>
 			<PageWrapper>
+				<LevelName isUpdating={isUpdating}>Level {getLevelNumber()}</LevelName>
 				<RestartButton onClick={handleRestrartClick} isUpdating={isUpdating} />
 				<WinHeader isFinished={isFinished} isUpdating={isUpdating}>
 					You have won!
