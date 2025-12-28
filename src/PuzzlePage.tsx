@@ -16,12 +16,23 @@ const LoadingText = styled(TextStyled)`
 	animation: appear 1s 0.3s ease both;
 `
 
-const PageWrapper = styled.section`
-	display: grid;
+const PuzzlePageStyled = styled(PageStyled)`
+	--padding-block: ${theme.fontSize.l};
+	--padding-inline: ${theme.fontSize.xl};
+	--extreme-rows-height: ${theme.fontSize.l};
+	--max-puzzle-width: calc(100vw - var(--padding-inline) * 2);
+	--max-puzzle-height: calc(
+		100vh - var(--padding-block) * 2 - var(--gap) *
+			2 - var(--extreme-rows-height) * 2
+	);
+	--gap: 1em;
+
+	padding-block: var(--padding-block);
+	padding-inline: var(--padding-inline);
+
 	grid-template-columns: 1fr auto;
-	grid-template-rows: auto 1fr;
-	gap: 0.5rem;
-	justify-items: center;
+	grid-template-rows: var(--extreme-rows-height) 1fr var(--extreme-rows-height);
+	gap: var(--gap);
 `
 
 const LevelName = styled(TextStyled)<{ isUpdating: boolean }>(
@@ -36,7 +47,8 @@ const LevelName = styled(TextStyled)<{ isUpdating: boolean }>(
 
 	opacity: ${isUpdating ? 0 : 1};
 	transition: opacity 0.3s ease;
-`)
+`
+)
 
 const RestartButton = styled(ButtonIconStyled)<{ isUpdating: boolean }>(
 	({ isUpdating }) => `
@@ -59,6 +71,7 @@ const WinHeader = styled(HeaderStyled)<{
 	grid-column: 1 / -1;
 	grid-row: 2 / 3;
 	z-index: 1;
+	align-self: start;
 	display: ${isFinished || isUpdating ? "block" : "none"};
 
 	animation: ${isFinished ? "slide-in-from-left" : isUpdating ? "slide-out-to-right" : "none"} 1s 0.3s ease both;
@@ -134,30 +147,28 @@ export function PuzzlePage() {
 	}
 
 	return (
-		<PageStyled>
-			<PageWrapper>
-				<LevelName isUpdating={isUpdating}>Level {getLevelNumber()}</LevelName>
-				<RestartButton onClick={handleRestrartClick} isUpdating={isUpdating} />
-				<WinHeader isFinished={isFinished} isUpdating={isUpdating}>
-					You have won!
-				</WinHeader>
-				<PuzzleWrapper>
-					<Puzzle
-						imageInfo={imageInfo}
-						onCompleteLevel={onCompleteLevel}
-						isDisabled={isDisabled}
-						isFinished={isFinished}
-						isUpdating={isUpdating}
-					/>
-				</PuzzleWrapper>
-				<PlayButton
+		<PuzzlePageStyled>
+			<LevelName isUpdating={isUpdating}>Level {getLevelNumber()}</LevelName>
+			<RestartButton onClick={handleRestrartClick} isUpdating={isUpdating} />
+			<WinHeader isFinished={isFinished} isUpdating={isUpdating}>
+				You have won!
+			</WinHeader>
+			<PuzzleWrapper>
+				<Puzzle
+					imageInfo={imageInfo}
+					onCompleteLevel={onCompleteLevel}
+					isDisabled={isDisabled}
 					isFinished={isFinished}
 					isUpdating={isUpdating}
-					onClick={handleStartClick}
-				>
-					Solve next puzzle
-				</PlayButton>
-			</PageWrapper>
-		</PageStyled>
+				/>
+			</PuzzleWrapper>
+			<PlayButton
+				isFinished={isFinished}
+				isUpdating={isUpdating}
+				onClick={handleStartClick}
+			>
+				Solve next puzzle
+			</PlayButton>
+		</PuzzlePageStyled>
 	)
 }

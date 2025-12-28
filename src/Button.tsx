@@ -31,8 +31,8 @@ export const ButtonWithTextStyled = styled(ButtonStyled)`
 
 export const ButtonIconStyled = styled(ButtonStyled)`
 	padding: 0;
-	width: 2rem;
-	height: 2rem;
+	width: ${theme.fontSize.l};
+	height: ${theme.fontSize.l};
 
 	mask-repeat: no-repeat;
 	mask-position: center;
