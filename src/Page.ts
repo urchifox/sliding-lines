@@ -1,14 +1,18 @@
 import styled from "@emotion/styled"
+import { theme } from "./assets/styles/theme"
 
 const slideSize = 2
 
 export const PageStyled = styled.section`
 	position: relative;
+	margin: auto;
 
 	padding: 2em;
 	width: 100%;
+	max-width: ${theme.maxWidth};
 	height: 100vh;
 	height: 100dvh;
+	max-height: ${theme.maxHeight};
 
 	display: grid;
 	justify-items: center;

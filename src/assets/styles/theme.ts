@@ -25,4 +25,6 @@ export const theme = {
 		l: "12px",
 		round: "50%",
 	},
+	maxWidth: "800px",
+	maxHeight: "1000px",
 } as const

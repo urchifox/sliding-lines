@@ -20,7 +20,7 @@ const PuzzlePageStyled = styled(PageStyled)`
 	--padding-block: ${theme.fontSize.l};
 	--padding-inline: ${theme.fontSize.xl};
 	--extreme-rows-height: ${theme.fontSize.l};
-	--max-puzzle-width: calc(100vw - var(--padding-inline) * 2);
+	--max-puzzle-width: calc(min(${theme.maxWidth}, 100vw) - var(--padding-inline) * 2);
 	--max-puzzle-height: calc(
 		100vh - var(--padding-block) * 2 - var(--gap) *
 			2 - var(--extreme-rows-height) * 2
