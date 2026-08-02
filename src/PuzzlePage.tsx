@@ -134,7 +134,7 @@ export function PuzzlePage() {
 		return (
 			<PageStyled>
 				<LoadingText color={theme.color.secondary}>
-					{isError ? "An error occured, try to reload the page" : "Loading…"}
+					{isError ? "An error occurred, try to reload the page" : "Loading…"}
 				</LoadingText>
 			</PageStyled>
 		)
