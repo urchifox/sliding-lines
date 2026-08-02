@@ -150,6 +150,9 @@ export function PuzzlePage() {
 	}
 
 	const handleRestartClick = () => {
+		setFinishedState(false)
+		setDisabledState(false)
+		setError(false)
 		setImageInfo(null)
 	}
 
