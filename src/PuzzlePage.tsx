@@ -149,7 +149,7 @@ export function PuzzlePage() {
 		}, 500)
 	}
 
-	const handleRestrartClick = () => {
+	const handleRestartClick = () => {
 		setImageInfo(null)
 	}
 
@@ -170,7 +170,7 @@ export function PuzzlePage() {
 			<LevelName isUpdating={isUpdating}>
 				Level {isFinished || isUpdating ? levelNumber - 1 : levelNumber}
 			</LevelName>
-			<RestartButton onClick={handleRestrartClick} isUpdating={isUpdating} />
+			<RestartButton onClick={handleRestartClick} isUpdating={isUpdating} />
 			<WinHeader isFinished={isFinished} isUpdating={isUpdating}>
 				You have won!
 			</WinHeader>
