@@ -9,12 +9,16 @@ export const userInfo: UserInfo = {
 }
 
 export function initUserInfo() {
-	const savedInfo = localStorage.getItem(LOCAL_STORAGE_USER_INFO_KEY)
-	if (savedInfo !== null) {
-		applyUserInfo(JSON.parse(savedInfo))
-	} else {
-		saveUserInfo()
+	try {
+		const savedInfo = localStorage.getItem(LOCAL_STORAGE_USER_INFO_KEY)
+		if (savedInfo !== null) {
+			applyUserInfo(JSON.parse(savedInfo) as UserInfo)
+			return
+		}
+	} catch {
+		// ignore corrupt storage
 	}
+	saveUserInfo()
 }
 
 function applyUserInfo(info: UserInfo) {
