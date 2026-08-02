@@ -123,13 +123,16 @@ export function Puzzle({
 			}
 		}
 
-		return PuzzleItem({
-			item,
-			handleClick,
-			puzzleRef,
-			isDisabled,
-			isFinished,
-		})
+		return (
+			<PuzzleItem
+				key={item.key}
+				item={item}
+				handleClick={handleClick}
+				puzzleRef={puzzleRef}
+				isDisabled={isDisabled}
+				isFinished={isFinished}
+			/>
+		)
 	})
 
 	return (
@@ -140,7 +143,7 @@ export function Puzzle({
 			isFinished={isFinished}
 			isUpdating={isUpdating}
 		>
-			{[...elements]}
+			{elements}
 		</PuzzleStyled>
 	)
 }
