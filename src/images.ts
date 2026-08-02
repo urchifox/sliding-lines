@@ -10,14 +10,11 @@ export type ImageInfo = {
 
 const imagesNames = (function () {
 	const pathStart = "/src/assets/images/puzzle-img-"
-	const allImages = import.meta.glob(`/src/assets/images/*`, {
-		eager: true,
-	})
-	const allImagesPathes = Object.keys(allImages)
-	const puzzleImages = allImagesPathes
-		.filter((path) => path.startsWith(path))
-		.map((path) => path.replace(pathStart, ""))
-	return puzzleImages
+	const puzzleImages = import.meta.glob(
+		`/src/assets/images/puzzle-img-*.{jpg,jpeg,png,webp}`,
+		{ eager: true }
+	)
+	return Object.keys(puzzleImages).map((path) => path.replace(pathStart, ""))
 })()
 
 export async function getImageInfo(
