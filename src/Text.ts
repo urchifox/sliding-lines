@@ -7,12 +7,12 @@ export const TextStyled = styled.p<{
 	marginBottom?: string
 	color?: string
 }>(
-	({ marginTop, marginBottom }) => `
+	({ marginTop, marginBottom, color }) => `
     margin-inline: 0;
     margin-top: ${marginTop ?? "1em"};
     margin-bottom: ${marginBottom ?? "1em"};
 	text-align: center;
-	color: ${theme.color.primary};
+	color: ${color ?? theme.color.primary};
     font-size: ${theme.fontSize.m};
 `
 )
