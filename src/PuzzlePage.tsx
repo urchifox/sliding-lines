@@ -1,7 +1,7 @@
 import replayIcon from "./assets/images/replay.svg"
 
 import styled from "@emotion/styled"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { ButtonIconStyled, ButtonWithTextStyled } from "./Button"
 import { HeaderStyled } from "./Header"
@@ -107,15 +107,30 @@ export function PuzzlePage() {
 	const [isUpdating, setUpdateState] = useState<boolean>(false)
 	const [isError, setError] = useState<boolean>(false)
 
-	if (imageInfo === null) {
+	useEffect(() => {
+		if (imageInfo !== null) {
+			return
+		}
+
+		let cancelled = false
 		getImageInfo()
 			.then((value) => {
-				setImageInfo(value)
+				if (!cancelled) {
+					setImageInfo(value)
+				}
 			})
 			.catch(() => {
-				setError(true)
+				if (!cancelled) {
+					setError(true)
+				}
 			})
 
+		return () => {
+			cancelled = true
+		}
+	}, [imageInfo])
+
+	if (imageInfo === null) {
 		return (
 			<PageStyled>
 				<LoadingText color={theme.color.secondary}>
