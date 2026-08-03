@@ -8,7 +8,7 @@ import tseslint from "typescript-eslint"
 export default tseslint.config([
 	globalIgnores(["dist"]),
 	{
-		files: ["**/*.ts, **/*.tsx"],
+		files: ["**/*.{ts,tsx}"],
 		extends: [
 			js.configs.recommended,
 			tseslint.configs.recommended,
@@ -19,7 +19,7 @@ export default tseslint.config([
 			ecmaVersion: 2020,
 			globals: globals.browser,
 			parserOptions: {
-				project: true,
+				project: ["./tsconfig.app.json", "./tsconfig.node.json"],
 				tsconfigRootDir: import.meta.dirname,
 			},
 		},

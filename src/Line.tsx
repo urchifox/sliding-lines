@@ -47,46 +47,34 @@ export function Line({
 	secondsManager: LinePropertyManager<number>
 	topManager: LinePropertyManager<number>
 }) {
-	const [seconds, setSeconds] = useState<number | null>(null)
-	const [top, setTop] = useState<number | null>(null)
-	if (seconds === null) {
-		setSeconds(secondsManager.get())
-	}
-	if (top === null) {
-		setTop(topManager.get())
-	}
+	const [seconds, setSeconds] = useState(() => secondsManager.get())
+	const [top, setTop] = useState(() => topManager.get())
 
-	const animName = `slide${seconds?.toString().replace(".", "")}`
+	const animName = `slide${seconds.toString().replace(".", "")}`
 	const width = getRandomInteger(30, 100)
 	const height = getRandomInteger(1, 5)
 	const direction = getRandomInteger(0, 1) === 1 ? "normal" : "reverse"
 
 	useEffect(() => {
+		const id = setTimeout(() => {
+			secondsManager.remove(seconds)
+			topManager.remove(top)
+			setSeconds(secondsManager.get())
+			setTop(topManager.get())
+		}, seconds * 1000)
+
 		return () => {
-			secondsManager.remove(seconds ?? 0)
-			topManager.remove(top ?? 0)
+			clearTimeout(id)
+			secondsManager.remove(seconds)
+			topManager.remove(top)
 		}
-	}, [])
-
-	useEffect(() => {
-		const id = setTimeout(
-			() => {
-				secondsManager.remove(seconds ?? 0)
-				topManager.remove(top ?? 0)
-				setSeconds(secondsManager.get())
-				setTop(topManager.get())
-			},
-			(seconds ?? 0) * 1000
-		)
-
-		return () => clearTimeout(id)
-	}, [seconds])
+	}, [seconds, top, secondsManager, topManager])
 
 	return (
 		<LineStyled
 			{...{
-				seconds: seconds ?? 0,
-				top: top ?? 0,
+				seconds,
+				top,
 				animName,
 				direction,
 				width,
