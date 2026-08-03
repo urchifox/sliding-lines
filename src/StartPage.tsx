@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 import { useState } from "react"
 
-import { AppRoute } from "./App"
+import { AppRoute } from "./AppRoute"
 import { ButtonWithTextStyled } from "./Button"
 import { HeaderStyled } from "./Header"
 import { Lines } from "./Lines"

@@ -1,12 +1,8 @@
 import { useState } from "react"
 
+import { AppRoute } from "./AppRoute"
 import { PuzzlePage } from "./PuzzlePage"
 import { StartPage } from "./StartPage"
-
-export enum AppRoute {
-	Start,
-	Game,
-}
 
 export function App() {
 	const [page, setPage] = useState<AppRoute>(AppRoute.Start)
