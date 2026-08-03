@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { useRef } from "react"
+import { useMemo, useRef } from "react"
 
 import { Line, type LinePropertyManager } from "./Line"
 import { getRandomFloat, getRandomInteger } from "./utils"
@@ -38,12 +38,18 @@ export function Lines() {
 	const occupiedSeconds = useRef(new Set<number>())
 	const occupiedTops = useRef(new Set<number>())
 
-	const secondsManager = createLineManager(occupiedSeconds.current, () =>
-		getRandomFloat(0, 3)
+	const secondsManager = useMemo(
+		() =>
+			createLineManager(occupiedSeconds.current, () => getRandomFloat(0, 3)),
+		[]
 	)
-	const topManager = createLineManager(
-		occupiedTops.current,
-		() => 0.5 * getRandomInteger(0, 8)
+	const topManager = useMemo(
+		() =>
+			createLineManager(
+				occupiedTops.current,
+				() => 0.5 * getRandomInteger(0, 8)
+			),
+		[]
 	)
 
 	return (
