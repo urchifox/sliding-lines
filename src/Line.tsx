@@ -56,13 +56,6 @@ export function Line({
 	const direction = getRandomInteger(0, 1) === 1 ? "normal" : "reverse"
 
 	useEffect(() => {
-		return () => {
-			secondsManager.remove(seconds)
-			topManager.remove(top)
-		}
-	}, [])
-
-	useEffect(() => {
 		const id = setTimeout(() => {
 			secondsManager.remove(seconds)
 			topManager.remove(top)
@@ -70,8 +63,12 @@ export function Line({
 			setTop(topManager.get())
 		}, seconds * 1000)
 
-		return () => clearTimeout(id)
-	}, [seconds])
+		return () => {
+			clearTimeout(id)
+			secondsManager.remove(seconds)
+			topManager.remove(top)
+		}
+	}, [seconds, top, secondsManager, topManager])
 
 	return (
 		<LineStyled
