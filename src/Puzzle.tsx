@@ -4,9 +4,8 @@ import { useRef } from "react"
 import { PuzzleItem } from "./PuzzleItem"
 import { clearList } from "./assets/styles/mixins"
 import { theme } from "./assets/styles/theme"
-import { type Level, createLevel, isSolved, tryMove } from "./game"
+import { type Level, isSolved, tryMove } from "./game"
 import { type ImageInfo } from "./images"
-import { getLevelNumber } from "./user"
 
 const PuzzleStyled = styled.ul<{
 	width: number
@@ -86,16 +85,18 @@ export function Puzzle({
 	isDisabled,
 	isFinished,
 	isUpdating,
+	level,
 }: {
 	imageInfo: ImageInfo
 	onCompleteLevel: () => void
 	isDisabled: boolean
 	isFinished: boolean
 	isUpdating: boolean
+	level: Level
 }) {
 	const levelRef = useRef<Level | null>(null)
 	if (levelRef.current === null) {
-		levelRef.current = createLevel(getLevelNumber())
+		levelRef.current = level
 	}
 
 	const { items, columns, rows, emptySlotIndex } = levelRef.current

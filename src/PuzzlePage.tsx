@@ -9,6 +9,7 @@ import { PageStyled } from "./Page"
 import { Puzzle } from "./Puzzle"
 import { TextStyled } from "./Text"
 import { theme } from "./assets/styles/theme"
+import { createLevel } from "./game"
 import { type ImageInfo, getImageInfo } from "./images"
 import { getLevelNumber, upgradeLevel } from "./user"
 
@@ -184,6 +185,7 @@ export function PuzzlePage() {
 					isDisabled={isDisabled}
 					isFinished={isFinished}
 					isUpdating={isUpdating}
+					level={createLevel(levelNumber)}
 				/>
 			</PuzzleWrapper>
 			<PlayButton
