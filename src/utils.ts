@@ -39,3 +39,15 @@ export function getImageSize(
 		img.src = url
 	})
 }
+
+export function getUniqueValue<T>(occupiedSet: Set<T>, getter: () => T): T {
+	let newValue = getter()
+
+	while (occupiedSet.has(newValue)) {
+		newValue = getter()
+	}
+
+	occupiedSet.add(newValue)
+
+	return newValue
+}

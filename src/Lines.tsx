@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { useMemo, useRef } from "react"
 
 import { Line, type LinePropertyManager } from "./Line"
-import { getRandomFloat, getRandomInteger } from "./utils"
+import { getRandomFloat, getRandomInteger, getUniqueValue } from "./utils"
 
 const LinesContainerStyled = styled.div`
 	position: relative;
@@ -20,18 +20,6 @@ function createLineManager<T>(
 		get: () => getUniqueValue(occupiedSet, getter),
 		remove: (value: T) => occupiedSet.delete(value),
 	}
-}
-
-function getUniqueValue<T>(occupiedSet: Set<T>, getter: () => T): T {
-	let newValue = getter()
-
-	while (occupiedSet.has(newValue)) {
-		newValue = getter()
-	}
-
-	occupiedSet.add(newValue)
-
-	return newValue
 }
 
 export function Lines() {
