@@ -20,8 +20,8 @@
     "prettier": "prettier . --write",
     "format": "npm run lint && npm run prettier",
     "format-check": "prettier . --check && eslint --no-warn-ignored --cache .",
-    "ts": "tsc --noEmit",
-    "tsw": "tsc --noEmit --watch",
+    "ts": "tsc -b",
+    "tsw": "tsc -b --watch",
     "ready": "npm run format && npm run ts"
   },
   "dependencies": {
