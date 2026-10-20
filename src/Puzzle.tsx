@@ -6,6 +6,7 @@ import { clearList } from "./assets/styles/mixins"
 import { theme } from "./assets/styles/theme"
 import { type Level, createLevel, tryMove } from "./game"
 import { type ImageInfo } from "./images"
+import { getLevelNumber } from "./user"
 
 const PuzzleStyled = styled.ul<{
 	width: number
@@ -94,7 +95,7 @@ export function Puzzle({
 }) {
 	const levelRef = useRef<Level | null>(null)
 	if (levelRef.current === null) {
-		levelRef.current = createLevel()
+		levelRef.current = createLevel(getLevelNumber())
 	}
 
 	const { items, columns, rows, emptySlotIndex } = levelRef.current
