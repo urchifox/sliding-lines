@@ -4,21 +4,21 @@ type UserInfo = {
 
 const LOCAL_STORAGE_USER_INFO_KEY = "user"
 
-const userInfo: UserInfo = {
+const initialUserInfo: UserInfo = {
 	levelNumber: 0,
 }
+const userInfo: UserInfo = initialUserInfo
 
 export function initUserInfo() {
 	try {
 		const savedInfo = localStorage.getItem(LOCAL_STORAGE_USER_INFO_KEY)
-		if (savedInfo !== null) {
-			applyUserInfo(JSON.parse(savedInfo) as UserInfo)
+		if (savedInfo === null) {
 			return
 		}
+		applyUserInfo(JSON.parse(savedInfo) as UserInfo)
 	} catch {
 		// ignore corrupt storage
 	}
-	saveUserInfo()
 }
 
 function applyUserInfo(info: UserInfo) {
@@ -28,6 +28,11 @@ function applyUserInfo(info: UserInfo) {
 	for (const [key, sourceValue] of entries) {
 		userInfo[key] = sourceValue
 	}
+	saveUserInfo()
+}
+
+export function resetUserInfo() {
+	applyUserInfo(initialUserInfo)
 }
 
 export function saveUserInfo() {
