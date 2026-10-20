@@ -1,4 +1,4 @@
-import { getLevelNumber } from "./game"
+import { getLevelNumber } from "./user"
 import { getImageSize } from "./utils"
 
 export type ImageInfo = {
