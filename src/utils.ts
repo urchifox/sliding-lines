@@ -1,16 +1,32 @@
-export function getRandomFloat(min: number, max: number) {
-	const rand = min + Math.random() * (max + 1 - min)
-	return rand
-}
+export function getRandomNumber({
+	min,
+	max,
+	step = 1,
+}: {
+	min: number
+	max: number
+	step?: number
+}): number {
+	if (step <= 0) {
+		throw new Error("Step must be greater than 0")
+	}
 
-export function getRandomInteger(min: number, max: number) {
-	return Math.floor(getRandomFloat(min, max))
+	if (max === min) {
+		return min
+	}
+
+	if (max < min) {
+		return getRandomNumber({ min: max, max: min, step })
+	}
+
+	const stepsCount = Math.floor((max - min) / step)
+	return min + Math.floor(Math.random() * (stepsCount + 1)) * step
 }
 
 export function randomPick<Element>(
 	array: Array<Element> | Readonly<Array<Element>>
 ): Element {
-	return array[Math.floor(Math.random() * array.length)]
+	return array[getRandomNumber({ min: 0, max: array.length - 1 })]
 }
 
 export function deleteFromArray<T>(array: T[], element: T) {

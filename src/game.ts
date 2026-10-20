@@ -1,4 +1,4 @@
-import { deleteFromArray, getRandomInteger, randomPick } from "./utils"
+import { deleteFromArray, getRandomNumber, randomPick } from "./utils"
 
 export type Position = {
 	row: number
@@ -61,7 +61,7 @@ export function createLevel(levelNumber: number): Level {
 		}
 	}
 
-	const emptySlotIndex = getRandomInteger(0, items.length - 1)
+	const emptySlotIndex = getRandomNumber({ min: 0, max: items.length - 1 })
 	items[emptySlotIndex].isEmpty = true
 
 	const level = { items, columns, rows, emptySlotIndex, shuffleSteps }
@@ -80,7 +80,7 @@ function generateConfig(levelNumber: number): LevelConfig {
 		const randomisationDiff = difficulty > 1 ? Math.round(0.3 * extremeDiff) : 0
 		const minValue = min + extremeDiff * difficulty
 		const maxValue = minValue + randomisationDiff
-		const value = getRandomInteger(minValue, maxValue)
+		const value = getRandomNumber({ min: minValue, max: maxValue })
 
 		config[name as keyof typeof levelExtreme] = value
 	})
@@ -95,7 +95,7 @@ function shuffleLevel(level: Level) {
 	let steps =
 		typeof shuffleSteps === "number"
 			? shuffleSteps
-			: getRandomInteger(shuffleSteps.min, shuffleSteps.max)
+			: getRandomNumber(shuffleSteps)
 	let lastItem: PuzzleItemInfo | undefined = undefined
 
 	while (steps > 0) {
