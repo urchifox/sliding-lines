@@ -4,7 +4,7 @@ import { useRef } from "react"
 import { PuzzleItem } from "./PuzzleItem"
 import { clearList } from "./assets/styles/mixins"
 import { theme } from "./assets/styles/theme"
-import { type Level, createLevel, tryMove } from "./game"
+import { type Level, createLevel, isSolved, tryMove } from "./game"
 import { type ImageInfo } from "./images"
 import { getLevelNumber } from "./user"
 
@@ -114,10 +114,7 @@ export function Puzzle({
 					changedElement?.style.setProperty("--col", column.toString())
 				})
 
-				const isFinished = items.every(
-					({ current, original }) =>
-						current.row === original.row && current.column === original.column
-				)
+				const isFinished = isSolved(items)
 				if (isFinished) {
 					onCompleteLevel()
 				}

@@ -164,3 +164,10 @@ function swap({
 	item.current = emptyPosition
 	emptySlot.current = itemPosition
 }
+
+export function isSolved(items: Array<PuzzleItemInfo>) {
+	return items.every(
+		({ current, original }) =>
+			current.row === original.row && current.column === original.column
+	)
+}
