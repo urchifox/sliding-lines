@@ -9,8 +9,8 @@ import { PageStyled } from "./Page"
 import { Puzzle } from "./Puzzle"
 import { TextStyled } from "./Text"
 import { theme } from "./assets/styles/theme"
-import { getLevelNumber, upgradeLevel } from "./game"
 import { type ImageInfo, getImageInfo } from "./images"
+import { getLevelNumber, upgradeLevel } from "./user"
 
 const LoadingText = styled(TextStyled)`
 	animation: appear 1s 0.3s ease both;

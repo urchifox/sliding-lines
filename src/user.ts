@@ -4,7 +4,7 @@ type UserInfo = {
 
 const LOCAL_STORAGE_USER_INFO_KEY = "user"
 
-export const userInfo: UserInfo = {
+const userInfo: UserInfo = {
 	levelNumber: 0,
 }
 
@@ -32,4 +32,13 @@ function applyUserInfo(info: UserInfo) {
 
 export function saveUserInfo() {
 	localStorage.setItem(LOCAL_STORAGE_USER_INFO_KEY, JSON.stringify(userInfo))
+}
+
+export function getLevelNumber() {
+	return userInfo.levelNumber
+}
+
+export function upgradeLevel() {
+	userInfo.levelNumber++
+	saveUserInfo()
 }
