@@ -1,6 +1,6 @@
 import { deleteFromArray, getRandomNumber, randomPick } from "../../shared/utils";
 import { getNeighborsOf, swap } from "./game";
-import type { Level, LevelConfig, PuzzleTileInfo } from "./types";
+import type { Level, LevelConfig, PuzzleTileInfo, TileKey } from "./types";
 
 const levelExtreme = {
 	rows: {
@@ -40,7 +40,7 @@ function createTiles(rows: number, columns: number): Array<PuzzleTileInfo> {
 	for (let row = 1; row <= rows; row++) {
 		for (let column = 1; column <= columns; column++) {
 			tiles.push({
-				key: `${row}-${column}`,
+				key: createTileKey(row, column),
 				originalPosition: { row, column },
 				currentPosition: { row, column },
 				isEmpty: false,
@@ -48,6 +48,10 @@ function createTiles(rows: number, columns: number): Array<PuzzleTileInfo> {
 		}
 	}
 	return tiles
+}
+
+function createTileKey(row: number, column: number): TileKey {
+	return `${row}-${column}`
 }
 
 function generateConfig(levelNumber: number): LevelConfig {

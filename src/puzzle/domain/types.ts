@@ -4,11 +4,13 @@ export type Position = {
 }
 
 export type PuzzleTileInfo = {
-	key: string
+	key: TileKey
 	originalPosition: Position
 	currentPosition: Position
 	isEmpty: boolean
 }
+
+export type TileKey = `${number}-${number}`
 
 export type Level = LevelConfig & {
 	tiles: Array<PuzzleTileInfo>
