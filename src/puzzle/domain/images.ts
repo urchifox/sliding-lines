@@ -13,7 +13,11 @@ const imagesNames = (function () {
 		"../../assets/images/puzzle-img-*.{jpg,jpeg,png,webp}",
 		{ eager: true }
 	)
-	return Object.keys(puzzleImages).map((path) => path.replace(pathStart, ""))
+	return Object.keys(puzzleImages)
+		.sort((left, right) =>
+			left.localeCompare(right, undefined, { numeric: true })
+		)
+		.map((path) => path.replace(pathStart, ""))
 })()
 
 export async function getImageInfo(levelNumber: number): Promise<ImageInfo> {
