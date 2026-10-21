@@ -1,4 +1,3 @@
-import { getLevelNumber } from "../../progress/user"
 import { getImageSize } from "../../shared/utils"
 
 export type ImageInfo = {
@@ -17,9 +16,7 @@ const imagesNames = (function () {
 	return Object.keys(puzzleImages).map((path) => path.replace(pathStart, ""))
 })()
 
-export async function getImageInfo(
-	levelNumber: number = getLevelNumber()
-): Promise<ImageInfo> {
+export async function getImageInfo(levelNumber: number): Promise<ImageInfo> {
 	const imageNameIndex = levelNumber % imagesNames.length
 	const imageName = imagesNames[imageNameIndex]
 	const imageUrl = new URL(

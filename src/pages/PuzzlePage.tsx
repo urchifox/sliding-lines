@@ -119,7 +119,7 @@ export function PuzzlePage() {
 		}
 
 		let cancelled = false
-		getImageInfo()
+		getImageInfo(puzzle.levelNumber)
 			.then((value) => {
 				if (!cancelled) {
 					setImageInfo(value)
@@ -134,7 +134,7 @@ export function PuzzlePage() {
 		return () => {
 			cancelled = true
 		}
-	}, [imageInfo])
+	}, [imageInfo, puzzle.levelNumber])
 
 	if (imageInfo === null) {
 		return (
