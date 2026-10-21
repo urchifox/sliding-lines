@@ -20,7 +20,10 @@ export function getRandomNumber({
 	}
 
 	const stepsCount = Math.floor((max - min) / step)
-	return min + Math.floor(Math.random() * (stepsCount + 1)) * step
+	const steps = Math.floor(Math.random() * (stepsCount + 1))
+	const decimals = (step.toString().split(".")[1] ?? "").length
+	const factor = 10 ** decimals
+	return (Math.round(min * factor) + steps * Math.round(step * factor)) / factor
 }
 
 export function randomPick<Element>(
