@@ -5,12 +5,18 @@ export function tryMove(tile: PuzzleTileInfo, tiles: Array<PuzzleTileInfo>) {
 	const emptySlot = neighbors.find((element) => element.isEmpty)
 
 	if (emptySlot === undefined) {
-		return false
+		return {
+			isFinished: false,
+			updatedTiles: null,
+		}
 	}
 
 	swap({ emptySlot, tile })
 
-	return true
+	return {
+		isFinished: isPuzzleSolved(tiles),
+		updatedTiles: [emptySlot, tile],
+	}
 }
 
 export function getNeighborsOf(
@@ -55,9 +61,10 @@ export function swap({
 	emptySlot.currentPosition = tilePosition
 }
 
-export function isSolved(tiles: Array<PuzzleTileInfo>) {
+function isPuzzleSolved(tiles: Array<PuzzleTileInfo>) {
 	return tiles.every(
 		({ currentPosition, originalPosition }) =>
-			currentPosition.row === originalPosition.row && currentPosition.column === originalPosition.column
+			currentPosition.row === originalPosition.row &&
+			currentPosition.column === originalPosition.column
 	)
 }

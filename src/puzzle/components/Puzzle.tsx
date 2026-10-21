@@ -3,9 +3,9 @@ import { useRef } from "react"
 
 import { clearList } from "../../assets/styles/mixins"
 import { theme } from "../../assets/styles/theme"
-import { isSolved, tryMove } from "../domain/game"
-import { type Level } from "../domain/types"
+import { tryMove } from "../domain/game"
 import { type ImageInfo } from "../domain/images"
+import { type Level } from "../domain/types"
 import { PuzzleTile } from "./PuzzleTile"
 
 const PuzzleStyled = styled.ul<{
@@ -100,26 +100,21 @@ export function Puzzle({
 		levelRef.current = level
 	}
 
-	const { tiles, columns, rows, emptySlotIndex } = levelRef.current
-	const emptyTileInfo = tiles[emptySlotIndex]
+	const { tiles, columns, rows } = levelRef.current
 	const puzzleRef = useRef<Record<string, HTMLElement | null>>({})
 
 	const elements = tiles.map((tile) => {
 		const handleClick = () => {
-			const isMoved = tryMove(tile, tiles)
+			const { isFinished, updatedTiles } = tryMove(tile, tiles)
+			updatedTiles?.forEach(({ currentPosition, key }) => {
+				const changedElement = puzzleRef.current[key]
+				const { row, column } = currentPosition
+				changedElement?.style.setProperty("--row", row.toString())
+				changedElement?.style.setProperty("--col", column.toString())
+			})
 
-			if (isMoved) {
-				;[tile, emptyTileInfo].forEach(({ currentPosition, key }) => {
-					const { row, column } = currentPosition
-					const changedElement = puzzleRef.current[key]
-					changedElement?.style.setProperty("--row", row.toString())
-					changedElement?.style.setProperty("--col", column.toString())
-				})
-
-				const isFinished = isSolved(tiles)
-				if (isFinished) {
-					onCompleteLevel()
-				}
+			if (isFinished) {
+				onCompleteLevel()
 			}
 		}
 
