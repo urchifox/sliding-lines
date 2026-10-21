@@ -1,8 +1,8 @@
 import styled from "@emotion/styled"
 
-import type { PuzzleItemInfo } from "./game"
+import type { PuzzleTileInfo } from "./game"
 
-const PuzzleItemStyled = styled.li<{
+const PuzzleTileStyled = styled.li<{
 	isEmpty?: boolean
 	row: number
 	col: number
@@ -60,23 +60,23 @@ const PuzzleItemStyled = styled.li<{
 `
 )
 
-export function PuzzleItem({
-	item,
+export function PuzzleTile({
+	tile,
 	handleClick,
 	puzzleRef,
 	isDisabled,
 	isFinished,
 }: {
-	item: PuzzleItemInfo
+	tile: PuzzleTileInfo
 	handleClick: () => void
 	puzzleRef: React.RefObject<Record<string, HTMLElement | null>>
 	isDisabled: boolean
 	isFinished: boolean
 }) {
-	const { key, current, original, isEmpty } = item
+	const { key, current, original, isEmpty } = tile
 
 	return (
-		<PuzzleItemStyled
+		<PuzzleTileStyled
 			isEmpty={isEmpty}
 			ref={(el) => {
 				puzzleRef.current[key] = el

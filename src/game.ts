@@ -5,7 +5,7 @@ export type Position = {
 	column: number
 }
 
-export type PuzzleItemInfo = {
+export type PuzzleTileInfo = {
 	key: string
 	original: Position
 	current: Position
@@ -13,7 +13,7 @@ export type PuzzleItemInfo = {
 }
 
 export type Level = LevelConfig & {
-	items: Array<PuzzleItemInfo>
+	tiles: Array<PuzzleTileInfo>
 	emptySlotIndex: number
 }
 
@@ -49,10 +49,23 @@ export function createLevel(levelNumber: number): Level {
 	const levelConfig = generateConfig(levelNumber)
 
 	const { rows, columns, shuffleSteps } = levelConfig
-	const items = []
+	const tiles = createTiles(rows, columns)
+
+	const emptySlotIndex = getRandomNumber({ min: 0, max: tiles.length - 1 })
+	tiles[emptySlotIndex].isEmpty = true
+
+	const level = { tiles, columns, rows, emptySlotIndex, shuffleSteps }
+
+	shuffleLevel(level)
+
+	return level
+}
+
+function createTiles(rows: number, columns: number): Array<PuzzleTileInfo> {
+	const tiles = []
 	for (let row = 1; row <= rows; row++) {
 		for (let column = 1; column <= columns; column++) {
-			items.push({
+			tiles.push({
 				key: `${row}-${column}`,
 				original: { row, column },
 				current: { row, column },
@@ -60,15 +73,7 @@ export function createLevel(levelNumber: number): Level {
 			})
 		}
 	}
-
-	const emptySlotIndex = getRandomNumber({ min: 0, max: items.length - 1 })
-	items[emptySlotIndex].isEmpty = true
-
-	const level = { items, columns, rows, emptySlotIndex, shuffleSteps }
-
-	shuffleLevel(level)
-
-	return level
+	return tiles
 }
 
 function generateConfig(levelNumber: number): LevelConfig {
@@ -85,32 +90,32 @@ function generateConfig(levelNumber: number): LevelConfig {
 }
 
 function shuffleLevel(level: Level) {
-	const { items, emptySlotIndex, shuffleSteps } = level
-	const emptySlot = items[emptySlotIndex]
+	const { tiles, emptySlotIndex, shuffleSteps } = level
+	const emptySlot = tiles[emptySlotIndex]
 
 	let steps =
 		typeof shuffleSteps === "number"
 			? shuffleSteps
 			: getRandomNumber(shuffleSteps)
-	let lastItem: PuzzleItemInfo | undefined = undefined
+	let lastTile: PuzzleTileInfo | undefined = undefined
 
 	while (steps > 0) {
-		const neighbors = getNeighborsOf(emptySlot, items)
+		const neighbors = getNeighborsOf(emptySlot, tiles)
 
-		if (lastItem !== undefined) {
-			deleteFromArray(neighbors, lastItem)
+		if (lastTile !== undefined) {
+			deleteFromArray(neighbors, lastTile)
 		}
 
-		const item = randomPick(neighbors)
-		swap({ emptySlot, item })
-		lastItem = item
+		const tile = randomPick(neighbors)
+		swap({ emptySlot, tile })
+		lastTile = tile
 
 		steps--
 	}
 }
 
-function getNeighborsOf(item: PuzzleItemInfo, items: Array<PuzzleItemInfo>) {
-	const { row, column } = item.current
+function getNeighborsOf(tile: PuzzleTileInfo, tiles: Array<PuzzleTileInfo>) {
+	const { row, column } = tile.current
 	const neighbors = [
 		{ row: row - 1, column },
 		{ row: row + 1, column },
@@ -120,7 +125,7 @@ function getNeighborsOf(item: PuzzleItemInfo, items: Array<PuzzleItemInfo>) {
 
 	const elements = []
 	for (const neighbor of neighbors) {
-		const neighborElement = items.find(
+		const neighborElement = tiles.find(
 			(element) =>
 				element.current.row === neighbor.row &&
 				element.current.column === neighbor.column
@@ -134,35 +139,35 @@ function getNeighborsOf(item: PuzzleItemInfo, items: Array<PuzzleItemInfo>) {
 	return elements
 }
 
-export function tryMove(item: PuzzleItemInfo, items: Array<PuzzleItemInfo>) {
-	const neighbors = getNeighborsOf(item, items)
+export function tryMove(tile: PuzzleTileInfo, tiles: Array<PuzzleTileInfo>) {
+	const neighbors = getNeighborsOf(tile, tiles)
 	const emptySlot = neighbors.find((element) => element.isEmpty)
 
 	if (emptySlot === undefined) {
 		return false
 	}
 
-	swap({ emptySlot, item })
+	swap({ emptySlot, tile })
 
 	return true
 }
 
 function swap({
 	emptySlot,
-	item,
+	tile,
 }: {
-	emptySlot: PuzzleItemInfo
-	item: PuzzleItemInfo
+	emptySlot: PuzzleTileInfo
+	tile: PuzzleTileInfo
 }) {
-	const itemPosition = item.current
+	const tilePosition = tile.current
 	const emptyPosition = emptySlot.current
 
-	item.current = emptyPosition
-	emptySlot.current = itemPosition
+	tile.current = emptyPosition
+	emptySlot.current = tilePosition
 }
 
-export function isSolved(items: Array<PuzzleItemInfo>) {
-	return items.every(
+export function isSolved(tiles: Array<PuzzleTileInfo>) {
+	return tiles.every(
 		({ current, original }) =>
 			current.row === original.row && current.column === original.column
 	)
