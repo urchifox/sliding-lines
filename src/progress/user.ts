@@ -15,7 +15,11 @@ export function initUserInfo() {
 		if (savedInfo === null) {
 			return
 		}
-		applyUserInfo(JSON.parse(savedInfo) as UserInfo)
+
+		const parsed = JSON.parse(savedInfo)
+		if (isUserInfoValid(parsed)) {
+			applyUserInfo(parsed)
+		}
 	} catch {
 		// ignore corrupt storage
 	}
@@ -36,14 +40,18 @@ export function resetUserInfo() {
 }
 
 export function saveUserInfo() {
-	const isValid = isUserInfoValid()
+	const isValid = isUserInfoValid(userInfo)
 	if (!isValid) {
 		throw new Error("User info is not valid")
 	}
 	localStorage.setItem(LOCAL_STORAGE_USER_INFO_KEY, JSON.stringify(userInfo))
 }
 
-export function isUserInfoValid() {
+function isUserInfoValid(info: unknown): info is UserInfo {
+	if (typeof info !== "object" || info === null || !("levelNumber" in info)) {
+		return false
+	}
+
 	const { levelNumber } = userInfo
 	const isLevelNumberValid = Number.isInteger(levelNumber) && levelNumber >= 0
 	return isLevelNumberValid
