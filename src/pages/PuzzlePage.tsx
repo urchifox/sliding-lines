@@ -5,13 +5,13 @@ import { useEffect, useState } from "react"
 
 import { theme } from "../assets/styles/theme"
 import { Puzzle } from "../puzzle/components/Puzzle"
-import { createPuzzle } from "../puzzle/domain/game"
 import { type ImageInfo, getImageInfo } from "../puzzle/domain/images"
-import { resetLevel, shuffleLevel } from "../puzzle/domain/level"
+import { createLevel, resetLevel, shuffleLevel } from "../puzzle/domain/level"
 import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { PageStyled } from "../ui/Page"
 import { TextStyled } from "../ui/Text"
+import { getLevelNumber } from "../progress/user"
 
 const LoadingText = styled(TextStyled)`
 	animation: appear 1s 0.3s ease both;
@@ -103,6 +103,12 @@ const PuzzleWrapper = styled.div`
 	grid-column: 1 / -1;
 	grid-row: 2 / 3;
 `
+
+function createPuzzle() {
+	const levelNumber = getLevelNumber()
+	const level = createLevel(levelNumber)
+	return { levelNumber, level }
+}
 
 export function PuzzlePage() {
 	const [puzzle, setPuzzle] = useState(createPuzzle)

@@ -1,12 +1,5 @@
-import { getLevelNumber, upgradeLevel } from "../../progress/user"
-import { createLevel } from "./level"
+import { upgradeLevel } from "../../progress/user"
 import type { PuzzleTileInfo } from "./types"
-
-export function createPuzzle() {
-	const levelNumber = getLevelNumber()
-	const level = createLevel(levelNumber)
-	return { levelNumber, level }
-}
 
 export function tryMove(tile: PuzzleTileInfo, tiles: Array<PuzzleTileInfo>): {
 	isSolved: boolean
