@@ -1,6 +1,10 @@
-import { deleteFromArray, getRandomNumber, randomPick } from "../../shared/utils";
-import { getNeighborsOf, swap } from "./game";
-import type { Level, LevelConfig, PuzzleTileInfo, TileKey } from "./types";
+import {
+	deleteFromArray,
+	getRandomNumber,
+	randomPick,
+} from "../../shared/utils"
+import { getNeighborsOf, swap } from "./game"
+import type { Level, LevelConfig, PuzzleTileInfo, TileKey } from "./types"
 
 const levelExtreme = {
 	rows: {
@@ -15,7 +19,7 @@ const levelExtreme = {
 		min: 5,
 		max: 10,
 	},
-} as const;
+} as const
 
 const maxDifficultyLevel = 10
 

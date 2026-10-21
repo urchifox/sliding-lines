@@ -20,10 +20,10 @@ export type Level = LevelConfig & {
 export type LevelConfig = {
 	rows: number
 	columns: number
-	shuffleSteps: number |
-	{
-		min: number
-		max: number
-	}
+	shuffleSteps:
+		| number
+		| {
+				min: number
+				max: number
+		  }
 }
-
