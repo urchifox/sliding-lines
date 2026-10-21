@@ -19,11 +19,19 @@ export function getRandomNumber({
 		return getRandomNumber({ min: max, max: min, step })
 	}
 
-	const stepsCount = Math.floor((max - min) / step)
-	const steps = Math.floor(Math.random() * (stepsCount + 1))
-	const decimals = (step.toString().split(".")[1] ?? "").length
+	const decimals = Math.max(...[min, max, step].map(countDecimals))
 	const factor = 10 ** decimals
-	return (Math.round(min * factor) + steps * Math.round(step * factor)) / factor
+	const scaledMin = Math.round(min * factor)
+	const scaledMax = Math.round(max * factor)
+	const scaledStep = Math.round(step * factor)
+
+	const stepsCount = Math.floor((scaledMax - scaledMin) / scaledStep)
+	const steps = Math.floor(Math.random() * (stepsCount + 1))
+	return (scaledMin + steps * scaledStep) / factor
+}
+
+function countDecimals(value: number) {
+	return (value.toString().split(".")[1] ?? "").length
 }
 
 export function randomPick<Element>(
