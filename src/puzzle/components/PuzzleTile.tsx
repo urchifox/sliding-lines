@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 
-import type { PuzzleTileInfo } from "../domain/game"
+import type { PuzzleTileInfo } from "../domain/types"
 
 const PuzzleTileStyled = styled.li<{
 	isEmpty?: boolean
