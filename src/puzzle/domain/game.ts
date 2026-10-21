@@ -1,4 +1,8 @@
-import { deleteFromArray, getRandomNumber, randomPick } from "./utils"
+import {
+	deleteFromArray,
+	getRandomNumber,
+	randomPick,
+} from "../../shared/utils"
 
 export type Position = {
 	row: number

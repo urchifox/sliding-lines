@@ -1,13 +1,13 @@
 import styled from "@emotion/styled"
 import { useState } from "react"
 
-import { AppRoute } from "./AppRoute"
-import { ButtonWithTextStyled } from "./Button"
-import { HeaderStyled } from "./Header"
-import { Lines } from "./Lines"
-import { LinkStyled } from "./Link"
-import { PageStyled } from "./Page"
-import { TextStyled } from "./Text"
+import { AppRoute } from "../AppRoute"
+import { ButtonWithTextStyled } from "../ui/Button"
+import { HeaderStyled } from "../ui/Header"
+import { Lines } from "../ui/Lines"
+import { LinkStyled } from "../ui/Link"
+import { PageStyled } from "../ui/Page"
+import { TextStyled } from "../ui/Text"
 
 const StartPageStyled = styled(PageStyled)`
 	grid-template-rows: repeat(3, auto);

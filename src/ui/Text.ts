@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 
-import { theme } from "./assets/styles/theme"
+import { theme } from "../assets/styles/theme"
 
 export const TextStyled = styled.p<{
 	marginTop?: string

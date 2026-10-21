@@ -1,11 +1,11 @@
 import styled from "@emotion/styled"
 import { useRef } from "react"
 
+import { clearList } from "../../assets/styles/mixins"
+import { theme } from "../../assets/styles/theme"
+import { type Level, isSolved, tryMove } from "../domain/game"
+import { type ImageInfo } from "../domain/images"
 import { PuzzleTile } from "./PuzzleTile"
-import { clearList } from "./assets/styles/mixins"
-import { theme } from "./assets/styles/theme"
-import { type Level, isSolved, tryMove } from "./game"
-import { type ImageInfo } from "./images"
 
 const PuzzleStyled = styled.ul<{
 	width: number

@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client"
 
 import { App } from "./App.tsx"
 import "./assets/styles/main.scss"
-import { initUserInfo } from "./user.ts"
+import { initUserInfo } from "./progress/user.ts"
 
 initUserInfo()
 

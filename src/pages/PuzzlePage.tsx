@@ -1,17 +1,17 @@
-import replayIcon from "./assets/images/replay.svg"
+import replayIcon from "../assets/images/replay.svg"
 
 import styled from "@emotion/styled"
 import { useEffect, useState } from "react"
 
-import { ButtonIconStyled, ButtonWithTextStyled } from "./Button"
-import { HeaderStyled } from "./Header"
-import { PageStyled } from "./Page"
-import { Puzzle } from "./Puzzle"
-import { TextStyled } from "./Text"
-import { theme } from "./assets/styles/theme"
-import { createLevel } from "./game"
-import { type ImageInfo, getImageInfo } from "./images"
-import { getLevelNumber, upgradeLevel } from "./user"
+import { theme } from "../assets/styles/theme"
+import { getLevelNumber, upgradeLevel } from "../progress/user"
+import { Puzzle } from "../puzzle/components/Puzzle"
+import { createLevel } from "../puzzle/domain/game"
+import { type ImageInfo, getImageInfo } from "../puzzle/domain/images"
+import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
+import { HeaderStyled } from "../ui/Header"
+import { PageStyled } from "../ui/Page"
+import { TextStyled } from "../ui/Text"
 
 const LoadingText = styled(TextStyled)`
 	animation: appear 1s 0.3s ease both;

@@ -1,8 +1,8 @@
 import styled from "@emotion/styled"
 import { useEffect, useState } from "react"
 
-import { theme } from "./assets/styles/theme"
-import { getRandomNumber } from "./utils"
+import { theme } from "../assets/styles/theme"
+import { getRandomNumber } from "../shared/utils"
 
 export type LinePropertyManager<T> = {
 	get: () => T
@@ -53,7 +53,8 @@ export function Line({
 	const animName = `slide${seconds.toString().replace(".", "")}`
 	const width = getRandomNumber({ min: 30, max: 100 })
 	const height = getRandomNumber({ min: 1, max: 5 })
-	const direction = getRandomNumber({ min: 0, max: 1 }) === 1 ? "normal" : "reverse"
+	const direction =
+		getRandomNumber({ min: 0, max: 1 }) === 1 ? "normal" : "reverse"
 
 	useEffect(() => {
 		const id = setTimeout(() => {

@@ -1,8 +1,8 @@
 import styled from "@emotion/styled"
 import { useMemo, useRef } from "react"
 
+import { getRandomNumber, getUniqueValue } from "../shared/utils"
 import { Line, type LinePropertyManager } from "./Line"
-import { getRandomNumber, getUniqueValue } from "./utils"
 
 const LinesContainerStyled = styled.div`
 	position: relative;
@@ -28,7 +28,9 @@ export function Lines() {
 
 	const secondsManager = useMemo(
 		() =>
-			createLineManager(occupiedSeconds.current, () => getRandomNumber({ min: 0, max: 3, step: 0.1 })),
+			createLineManager(occupiedSeconds.current, () =>
+				getRandomNumber({ min: 0, max: 3, step: 0.1 })
+			),
 		[]
 	)
 	const topManager = useMemo(
