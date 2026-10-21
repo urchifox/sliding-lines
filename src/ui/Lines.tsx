@@ -29,7 +29,7 @@ export function Lines() {
 	const secondsManager = useMemo(
 		() =>
 			createLineManager(occupiedSeconds.current, () =>
-				getRandomNumber({ min: 0, max: 3, step: 0.1 })
+				getRandomNumber({ min: 0.3, max: 3, step: 0.1 })
 			),
 		[]
 	)
