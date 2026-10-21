@@ -29,6 +29,7 @@ const PlayButton = styled(ButtonWithTextStyled)<{
 	isUpdating: boolean
 }>(({ isUpdating }) => {
 	return `
+	pointer-events: ${isUpdating ? "none" : "auto"};
 	animation: ${isUpdating ? "slide-out-to-left" : "slide-in-from-right"} 1s 0.3s ease both;
 `
 })
