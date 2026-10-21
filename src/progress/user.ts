@@ -4,10 +4,10 @@ type UserInfo = {
 
 const LOCAL_STORAGE_USER_INFO_KEY = "user"
 
-const initialUserInfo: UserInfo = {
+const initialUserInfo: Readonly<UserInfo> = {
 	levelNumber: 0,
 }
-const userInfo: UserInfo = initialUserInfo
+const userInfo: UserInfo = { ...initialUserInfo }
 
 export function initUserInfo() {
 	try {
