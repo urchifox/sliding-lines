@@ -100,6 +100,10 @@ export function Puzzle({
 
 	const elements = tiles.map((tile) => {
 		const handleClick = () => {
+			if (isDisabled || isUpdating) {
+				return
+			}
+			
 			const { isSolved, updatedTiles } = tryMove(tile, tiles)
 			updatedTiles?.forEach(({ currentPosition, key }) => {
 				const changedElement = puzzleRef.current[key]

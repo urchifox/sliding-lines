@@ -65,7 +65,6 @@ const RestartButton = styled(ButtonIconStyled)<{
 	mask-image: url(${replayIcon});
 
 	opacity: ${isFinished || isUpdating ? 0 : 1};
-	pointer-events: ${isFinished || isUpdating ? "none" : "auto"};
 	transition: opacity 0.3s ease;
 `
 )
@@ -95,8 +94,6 @@ const PlayButton = styled(ButtonWithTextStyled)<{
 	align-self: end;
 	z-index: 1;
 	display: ${isFinished || isUpdating ? "block" : "none"};
-
-	pointer-events: ${isUpdating ? "none" : "auto"};
 
 	animation: ${isFinished ? "slide-in-from-right" : isUpdating ? "slide-out-to-left" : "none"} 1s 0.3s ease both;
 `
@@ -158,6 +155,9 @@ export function PuzzlePage() {
 	}
 
 	const handleRestartClick = () => {
+		if (isFinished || isUpdating) {
+			return
+		}
 		resetLevel(puzzle.level)
 		shuffleLevel(puzzle.level)
 		setBoardVersion((version) => version + 1)
@@ -166,6 +166,9 @@ export function PuzzlePage() {
 	}
 
 	const handleStartClick = () => {
+		if (isUpdating) {
+			return
+		}
 		setFinishedState(false)
 		setUpdateState(true)
 		setTimeout(() => {
@@ -186,6 +189,7 @@ export function PuzzlePage() {
 				onClick={handleRestartClick}
 				isFinished={isFinished}
 				isUpdating={isUpdating}
+				disabled={isFinished || isUpdating}
 			/>
 			<WinHeader isFinished={isFinished} isUpdating={isUpdating}>
 				You have won!
@@ -204,6 +208,7 @@ export function PuzzlePage() {
 			<PlayButton
 				isFinished={isFinished}
 				isUpdating={isUpdating}
+				disabled={isUpdating}
 				onClick={handleStartClick}
 			>
 				Solve next puzzle

@@ -29,7 +29,6 @@ const PlayButton = styled(ButtonWithTextStyled)<{
 	isUpdating: boolean
 }>(({ isUpdating }) => {
 	return `
-	pointer-events: ${isUpdating ? "none" : "auto"};
 	animation: ${isUpdating ? "slide-out-to-left" : "slide-in-from-right"} 1s 0.3s ease both;
 `
 })
@@ -50,6 +49,10 @@ export function StartPage({
 	const [isUpdating, setUpdateState] = useState<boolean>(false)
 
 	const handleStartClick = () => {
+		if (isUpdating) {
+			return
+		}
+
 		setUpdateState(true)
 		setTimeout(() => {
 			setPage(AppRoute.Game)
@@ -72,7 +75,11 @@ export function StartPage({
 					playful.lines
 				</LinkStyled>
 			</StartText>
-			<PlayButton isUpdating={isUpdating} onClick={handleStartClick}>
+			<PlayButton
+				isUpdating={isUpdating}
+				onClick={handleStartClick}
+				disabled={isUpdating}
+			>
 				Play
 			</PlayButton>
 		</StartPageStyled>
