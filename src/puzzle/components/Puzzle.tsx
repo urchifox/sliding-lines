@@ -95,12 +95,7 @@ export function Puzzle({
 	isUpdating: boolean
 	level: Level
 }) {
-	const levelRef = useRef<Level | null>(null)
-	if (levelRef.current === null) {
-		levelRef.current = level
-	}
-
-	const { tiles, columns, rows } = levelRef.current
+	const { tiles, columns, rows } = level
 	const puzzleRef = useRef<Record<string, HTMLElement | null>>({})
 
 	const elements = tiles.map((tile) => {

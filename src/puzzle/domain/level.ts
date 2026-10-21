@@ -63,7 +63,14 @@ function generateConfig(levelNumber: number): LevelConfig {
 	return config
 }
 
-function shuffleLevel(level: Level) {
+export function resetLevel(level: Level) {
+	const { tiles } = level
+	tiles.forEach((tile) => {
+		tile.currentPosition = { ...tile.originalPosition }
+	})
+}
+
+export function shuffleLevel(level: Level) {
 	const { tiles, emptySlotIndex, shuffleSteps } = level
 	const emptySlot = tiles[emptySlotIndex]
 

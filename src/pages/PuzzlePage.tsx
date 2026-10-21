@@ -4,10 +4,10 @@ import styled from "@emotion/styled"
 import { useEffect, useState } from "react"
 
 import { theme } from "../assets/styles/theme"
-import { getLevelNumber } from "../progress/user"
 import { Puzzle } from "../puzzle/components/Puzzle"
+import { createPuzzle } from "../puzzle/domain/game"
 import { type ImageInfo, getImageInfo } from "../puzzle/domain/images"
-import { createLevel } from "../puzzle/domain/level"
+import { resetLevel, shuffleLevel } from "../puzzle/domain/level"
 import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { PageStyled } from "../ui/Page"
@@ -53,15 +53,19 @@ const LevelName = styled(TextStyled)<{ isUpdating: boolean }>(
 `
 )
 
-const RestartButton = styled(ButtonIconStyled)<{ isUpdating: boolean }>(
-	({ isUpdating }) => `
+const RestartButton = styled(ButtonIconStyled)<{
+	isFinished: boolean
+	isUpdating: boolean
+}>(
+	({ isFinished, isUpdating }) => `
 	grid-column: 2 / 3;
 	grid-row: 1 / 2;
 	justify-self: end;
 
 	mask-image: url(${replayIcon});
 
-	opacity: ${isUpdating ? 0 : 1};
+	opacity: ${isFinished || isUpdating ? 0 : 1};
+	pointer-events: ${isFinished || isUpdating ? "none" : "auto"};
 	transition: opacity 0.3s ease;
 `
 )
@@ -92,6 +96,8 @@ const PlayButton = styled(ButtonWithTextStyled)<{
 	z-index: 1;
 	display: ${isFinished || isUpdating ? "block" : "none"};
 
+	pointer-events: ${isUpdating ? "none" : "auto"};
+
 	animation: ${isFinished ? "slide-in-from-right" : isUpdating ? "slide-out-to-left" : "none"} 1s 0.3s ease both;
 `
 })
@@ -102,6 +108,8 @@ const PuzzleWrapper = styled.div`
 `
 
 export function PuzzlePage() {
+	const [puzzle, setPuzzle] = useState(createPuzzle)
+	const [boardVersion, setBoardVersion] = useState(0)
 	const [imageInfo, setImageInfo] = useState<ImageInfo | null>(null)
 	const [isDisabled, setDisabledState] = useState<boolean>(false)
 	const [isFinished, setFinishedState] = useState<boolean>(false)
@@ -150,43 +158,47 @@ export function PuzzlePage() {
 	}
 
 	const handleRestartClick = () => {
+		resetLevel(puzzle.level)
+		shuffleLevel(puzzle.level)
+		setBoardVersion((version) => version + 1)
 		setFinishedState(false)
 		setDisabledState(false)
-		setError(false)
-		setImageInfo(null)
 	}
 
 	const handleStartClick = () => {
 		setFinishedState(false)
 		setUpdateState(true)
 		setTimeout(() => {
+			setPuzzle(createPuzzle())
 			setImageInfo(null)
 			setUpdateState(false)
 			setDisabledState(false)
 		}, 1 * 1000)
 	}
 
-	const levelNumber = getLevelNumber()
-	// The saved level increments on the solving click; isFinished waits for the
-	// tile animation. isDisabled covers that gap so the label does not jump.
-	const visualLevelNumber =
-		isFinished || isUpdating || isDisabled ? levelNumber : levelNumber + 1
+	// Progress stores how many levels are finished, starting at 0.
+	const visualLevelNumber = puzzle.levelNumber + 1
 
 	return (
 		<PuzzlePageStyled>
 			<LevelName isUpdating={isUpdating}>Level {visualLevelNumber}</LevelName>
-			<RestartButton onClick={handleRestartClick} isUpdating={isUpdating} />
+			<RestartButton
+				onClick={handleRestartClick}
+				isFinished={isFinished}
+				isUpdating={isUpdating}
+			/>
 			<WinHeader isFinished={isFinished} isUpdating={isUpdating}>
 				You have won!
 			</WinHeader>
 			<PuzzleWrapper>
 				<Puzzle
+					key={boardVersion}
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
 					isDisabled={isDisabled}
 					isFinished={isFinished}
 					isUpdating={isUpdating}
-					level={createLevel(levelNumber)}
+					level={puzzle.level}
 				/>
 			</PuzzleWrapper>
 			<PlayButton
