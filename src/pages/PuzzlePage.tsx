@@ -186,6 +186,7 @@ export function PuzzlePage() {
 		<PuzzlePageStyled>
 			<LevelName isUpdating={isUpdating}>Level {visualLevelNumber}</LevelName>
 			<RestartButton
+				aria-label="Restart"
 				onClick={handleRestartClick}
 				isFinished={isFinished}
 				isUpdating={isUpdating}

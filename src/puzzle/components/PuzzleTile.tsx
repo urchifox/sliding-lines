@@ -89,6 +89,7 @@ export function PuzzleTile({
 			spCol={originalPosition.column}
 			isDisabled={isDisabled}
 			isFinished={isFinished}
+			aria-label={`Tile ${key}`}
 		/>
 	)
 }
