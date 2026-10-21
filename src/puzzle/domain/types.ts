@@ -5,8 +5,8 @@ export type Position = {
 
 export type PuzzleTileInfo = {
 	key: string
-	original: Position
-	current: Position
+	originalPosition: Position
+	currentPosition: Position
 	isEmpty: boolean
 }
 

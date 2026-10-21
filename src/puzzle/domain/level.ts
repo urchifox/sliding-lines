@@ -41,8 +41,8 @@ function createTiles(rows: number, columns: number): Array<PuzzleTileInfo> {
 		for (let column = 1; column <= columns; column++) {
 			tiles.push({
 				key: `${row}-${column}`,
-				original: { row, column },
-				current: { row, column },
+				originalPosition: { row, column },
+				currentPosition: { row, column },
 				isEmpty: false,
 			})
 		}

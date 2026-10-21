@@ -17,7 +17,7 @@ export function getNeighborsOf(
 	tile: PuzzleTileInfo,
 	tiles: Array<PuzzleTileInfo>
 ) {
-	const { row, column } = tile.current
+	const { row, column } = tile.currentPosition
 	const neighbors = [
 		{ row: row - 1, column },
 		{ row: row + 1, column },
@@ -29,8 +29,8 @@ export function getNeighborsOf(
 	for (const neighbor of neighbors) {
 		const neighborElement = tiles.find(
 			(element) =>
-				element.current.row === neighbor.row &&
-				element.current.column === neighbor.column
+				element.currentPosition.row === neighbor.row &&
+				element.currentPosition.column === neighbor.column
 		)
 
 		if (neighborElement !== undefined) {
@@ -48,16 +48,16 @@ export function swap({
 	emptySlot: PuzzleTileInfo
 	tile: PuzzleTileInfo
 }) {
-	const tilePosition = tile.current
-	const emptyPosition = emptySlot.current
+	const tilePosition = tile.currentPosition
+	const emptyPosition = emptySlot.currentPosition
 
-	tile.current = emptyPosition
-	emptySlot.current = tilePosition
+	tile.currentPosition = emptyPosition
+	emptySlot.currentPosition = tilePosition
 }
 
 export function isSolved(tiles: Array<PuzzleTileInfo>) {
 	return tiles.every(
-		({ current, original }) =>
-			current.row === original.row && current.column === original.column
+		({ currentPosition, originalPosition }) =>
+			currentPosition.row === originalPosition.row && currentPosition.column === originalPosition.column
 	)
 }

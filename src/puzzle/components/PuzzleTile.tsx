@@ -73,7 +73,7 @@ export function PuzzleTile({
 	isDisabled: boolean
 	isFinished: boolean
 }) {
-	const { key, current, original, isEmpty } = tile
+	const { key, currentPosition, originalPosition, isEmpty } = tile
 
 	return (
 		<PuzzleTileStyled
@@ -83,10 +83,10 @@ export function PuzzleTile({
 			}}
 			key={key}
 			onClick={handleClick}
-			row={current.row}
-			col={current.column}
-			spRow={original.row}
-			spCol={original.column}
+			row={currentPosition.row}
+			col={currentPosition.column}
+			spRow={originalPosition.row}
+			spCol={originalPosition.column}
 			isDisabled={isDisabled}
 			isFinished={isFinished}
 		/>

@@ -109,8 +109,8 @@ export function Puzzle({
 			const isMoved = tryMove(tile, tiles)
 
 			if (isMoved) {
-				;[tile, emptyTileInfo].forEach(({ current, key }) => {
-					const { row, column } = current
+				;[tile, emptyTileInfo].forEach(({ currentPosition, key }) => {
+					const { row, column } = currentPosition
 					const changedElement = puzzleRef.current[key]
 					changedElement?.style.setProperty("--row", row.toString())
 					changedElement?.style.setProperty("--col", column.toString())
