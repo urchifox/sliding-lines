@@ -82,10 +82,7 @@ export function shuffleLevel(level: Level) {
 	const { tiles, emptySlotIndex, shuffleSteps } = level
 	const emptySlot = tiles[emptySlotIndex]
 
-	let steps =
-		typeof shuffleSteps === "number"
-			? shuffleSteps
-			: getRandomNumber(shuffleSteps)
+	let steps = shuffleSteps
 	let lastTile: PuzzleTileInfo | undefined = undefined
 
 	while (steps > 0) {
