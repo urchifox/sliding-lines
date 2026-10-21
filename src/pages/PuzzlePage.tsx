@@ -4,10 +4,10 @@ import styled from "@emotion/styled"
 import { useEffect, useState } from "react"
 
 import { theme } from "../assets/styles/theme"
-import { getLevelNumber, upgradeLevel } from "../progress/user"
+import { getLevelNumber } from "../progress/user"
 import { Puzzle } from "../puzzle/components/Puzzle"
-import { createLevel } from "../puzzle/domain/level"
 import { type ImageInfo, getImageInfo } from "../puzzle/domain/images"
+import { createLevel } from "../puzzle/domain/level"
 import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { PageStyled } from "../ui/Page"
@@ -146,7 +146,6 @@ export function PuzzlePage() {
 
 		setTimeout(() => {
 			setFinishedState(true)
-			upgradeLevel()
 		}, 500)
 	}
 
@@ -167,13 +166,15 @@ export function PuzzlePage() {
 		}, 1 * 1000)
 	}
 
-	const levelNumber = getLevelNumber() + 1
+	const levelNumber = getLevelNumber()
+	// The saved level increments on the solving click; isFinished waits for the
+	// tile animation. isDisabled covers that gap so the label does not jump.
+	const visualLevelNumber =
+		isFinished || isUpdating || isDisabled ? levelNumber : levelNumber + 1
 
 	return (
 		<PuzzlePageStyled>
-			<LevelName isUpdating={isUpdating}>
-				Level {isFinished || isUpdating ? levelNumber - 1 : levelNumber}
-			</LevelName>
+			<LevelName isUpdating={isUpdating}>Level {visualLevelNumber}</LevelName>
 			<RestartButton onClick={handleRestartClick} isUpdating={isUpdating} />
 			<WinHeader isFinished={isFinished} isUpdating={isUpdating}>
 				You have won!

@@ -1,3 +1,4 @@
+import { upgradeLevel } from "../../progress/user"
 import type { PuzzleTileInfo } from "./types"
 
 export function tryMove(tile: PuzzleTileInfo, tiles: Array<PuzzleTileInfo>) {
@@ -13,8 +14,13 @@ export function tryMove(tile: PuzzleTileInfo, tiles: Array<PuzzleTileInfo>) {
 
 	swap({ emptySlot, tile })
 
+	const isFinished = isPuzzleSolved(tiles)
+	if (isFinished) {
+		upgradeLevel()
+	}
+
 	return {
-		isFinished: isPuzzleSolved(tiles),
+		isFinished: isFinished,
 		updatedTiles: [emptySlot, tile],
 	}
 }
