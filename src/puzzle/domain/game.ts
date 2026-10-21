@@ -8,13 +8,16 @@ export function createPuzzle() {
 	return { levelNumber, level }
 }
 
-export function tryMove(tile: PuzzleTileInfo, tiles: Array<PuzzleTileInfo>) {
+export function tryMove(tile: PuzzleTileInfo, tiles: Array<PuzzleTileInfo>): {
+	isSolved: boolean
+	updatedTiles: Array<PuzzleTileInfo> | null
+} {
 	const neighbors = getNeighborsOf(tile, tiles)
 	const emptySlot = neighbors.find((element) => element.isEmpty)
 
 	if (emptySlot === undefined) {
 		return {
-			isFinished: false,
+			isSolved: false,
 			updatedTiles: null,
 		}
 	}
