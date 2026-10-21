@@ -100,7 +100,7 @@ export function Puzzle({
 
 	const elements = tiles.map((tile) => {
 		const handleClick = () => {
-			const { isFinished, updatedTiles } = tryMove(tile, tiles)
+			const { isSolved, updatedTiles } = tryMove(tile, tiles)
 			updatedTiles?.forEach(({ currentPosition, key }) => {
 				const changedElement = puzzleRef.current[key]
 				const { row, column } = currentPosition
@@ -108,7 +108,7 @@ export function Puzzle({
 				changedElement?.style.setProperty("--col", column.toString())
 			})
 
-			if (isFinished) {
+			if (isSolved) {
 				onCompleteLevel()
 			}
 		}

@@ -21,13 +21,13 @@ export function tryMove(tile: PuzzleTileInfo, tiles: Array<PuzzleTileInfo>) {
 
 	swap({ emptySlot, tile })
 
-	const isFinished = isPuzzleSolved(tiles)
-	if (isFinished) {
+	const isSolved = isPuzzleSolved(tiles)
+	if (isSolved) {
 		upgradeLevel()
 	}
 
 	return {
-		isFinished: isFinished,
+		isSolved,
 		updatedTiles: [emptySlot, tile],
 	}
 }
