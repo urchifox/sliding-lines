@@ -4,6 +4,7 @@ import styled from "@emotion/styled"
 import { useEffect, useState } from "react"
 
 import { theme } from "../assets/styles/theme"
+import { getLevelNumber } from "../progress/user"
 import { Puzzle } from "../puzzle/components/Puzzle"
 import { type ImageInfo, getImageInfo } from "../puzzle/domain/images"
 import { createLevel, resetLevel, shuffleLevel } from "../puzzle/domain/level"
@@ -11,7 +12,6 @@ import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { PageStyled } from "../ui/Page"
 import { TextStyled } from "../ui/Text"
-import { getLevelNumber } from "../progress/user"
 
 const LoadingText = styled(TextStyled)`
 	animation: appear 1s 0.3s ease both;

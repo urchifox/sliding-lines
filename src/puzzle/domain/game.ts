@@ -1,7 +1,10 @@
 import { upgradeLevel } from "../../progress/user"
 import type { PuzzleTileInfo } from "./types"
 
-export function tryMove(tile: PuzzleTileInfo, tiles: Array<PuzzleTileInfo>): {
+export function tryMove(
+	tile: PuzzleTileInfo,
+	tiles: Array<PuzzleTileInfo>
+): {
 	isSolved: boolean
 	updatedTiles: Array<PuzzleTileInfo> | null
 } {
