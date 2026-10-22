@@ -13,15 +13,18 @@ export function initUserInfo() {
 	try {
 		const savedInfo = localStorage.getItem(LOCAL_STORAGE_USER_INFO_KEY)
 		if (savedInfo === null) {
+			resetUserInfo()
 			return
 		}
 
 		const parsed = JSON.parse(savedInfo)
 		if (isUserInfoValid(parsed)) {
 			applyUserInfo(parsed)
+		} else {
+			resetUserInfo()
 		}
 	} catch {
-		// ignore corrupt storage
+		resetUserInfo()
 	}
 }
 
@@ -30,7 +33,9 @@ function applyUserInfo(info: UserInfo) {
 		[keyof UserInfo, UserInfo[keyof UserInfo]]
 	>
 	for (const [key, sourceValue] of entries) {
-		userInfo[key] = sourceValue
+		if (key in initialUserInfo) {
+			userInfo[key] = sourceValue
+		}
 	}
 	saveUserInfo()
 }
@@ -52,8 +57,11 @@ function isUserInfoValid(info: unknown): info is UserInfo {
 		return false
 	}
 
-	const { levelNumber } = userInfo
-	const isLevelNumberValid = Number.isInteger(levelNumber) && levelNumber >= 0
+	const { levelNumber } = info
+	const isLevelNumberValid =
+		typeof levelNumber === "number" &&
+		Number.isInteger(levelNumber) &&
+		levelNumber >= 0
 	return isLevelNumberValid
 }
 
