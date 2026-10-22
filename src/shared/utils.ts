@@ -34,7 +34,7 @@ function countDecimals(value: number) {
 	return (value.toString().split(".")[1] ?? "").length
 }
 
-export function randomPick<Element>(
+export function pickRandomItem<Element>(
 	array: Array<Element> | Readonly<Array<Element>>
 ): Element {
 	return array[getRandomNumber({ min: 0, max: array.length - 1 })]

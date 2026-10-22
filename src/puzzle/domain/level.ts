@@ -1,7 +1,7 @@
 import {
 	deleteFromArray,
 	getRandomNumber,
-	randomPick,
+	pickRandomItem,
 } from "../../shared/utils"
 import { getNeighborsOf, swap } from "./game"
 import type { Level, LevelConfig, PuzzleTileInfo, TileKey } from "./types"
@@ -92,7 +92,7 @@ export function shuffleLevel(level: Level) {
 			deleteFromArray(neighbors, lastTile)
 		}
 
-		const tile = randomPick(neighbors)
+		const tile = pickRandomItem(neighbors)
 		swap({ emptySlot, tile })
 		lastTile = tile
 
