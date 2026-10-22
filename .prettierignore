@@ -1,6 +1,7 @@
 __MACOSX
 node_modules
 dist
+coverage
 *.json
 *.md
 *.txt
