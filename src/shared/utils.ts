@@ -70,8 +70,14 @@ export function getImageSize(
 export function getUniqueValue<T>(occupiedSet: Set<T>, getter: () => T): T {
 	let newValue = getter()
 
-	while (occupiedSet.has(newValue)) {
+	let tries = 0
+	while (occupiedSet.has(newValue) && tries < 100) {
 		newValue = getter()
+		tries++
+	}
+
+	if (occupiedSet.has(newValue)) {
+		throw new Error("Failed to get a unique value")
 	}
 
 	occupiedSet.add(newValue)
