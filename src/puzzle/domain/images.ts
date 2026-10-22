@@ -1,5 +1,3 @@
-import { getImageSize } from "../../shared/utils"
-
 export type ImageInfo = {
 	imageUrl: string
 	width: number
@@ -38,4 +36,23 @@ export async function getImageInfo(levelNumber: number): Promise<ImageInfo> {
 	}
 
 	return { imageUrl, ...imageSizeInfo }
+}
+
+function getImageSize(
+	url: string
+): Promise<{ width: number; height: number; ratio: number } | null> {
+	return new Promise((resolve) => {
+		const img = new Image()
+		img.onload = () => {
+			resolve({
+				width: img.naturalWidth,
+				height: img.naturalHeight,
+				ratio: img.naturalWidth / img.naturalHeight,
+			})
+		}
+		img.onerror = () => {
+			resolve(null)
+		}
+		img.src = url
+	})
 }
