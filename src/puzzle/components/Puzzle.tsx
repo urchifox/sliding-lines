@@ -1,11 +1,12 @@
 import styled from "@emotion/styled"
 import { useRef } from "react"
 
-import { PuzzleItem } from "./PuzzleItem"
-import { clearList } from "./assets/styles/mixins"
-import { theme } from "./assets/styles/theme"
-import { type Level, createLevel, tryMove } from "./game"
-import { type ImageInfo } from "./images"
+import { clearList } from "../../assets/styles/mixins"
+import { theme } from "../../assets/styles/theme"
+import { tryMove } from "../domain/game"
+import { type ImageInfo } from "../domain/images"
+import { type Level } from "../domain/types"
+import { PuzzleTile } from "./PuzzleTile"
 
 const PuzzleStyled = styled.ul<{
 	width: number
@@ -85,48 +86,41 @@ export function Puzzle({
 	isDisabled,
 	isFinished,
 	isUpdating,
+	level,
 }: {
 	imageInfo: ImageInfo
 	onCompleteLevel: () => void
 	isDisabled: boolean
 	isFinished: boolean
 	isUpdating: boolean
+	level: Level
 }) {
-	const levelRef = useRef<Level | null>(null)
-	if (levelRef.current === null) {
-		levelRef.current = createLevel()
-	}
-
-	const { items, columns, rows, emptySlotIndex } = levelRef.current
-	const emptyItemInfo = items[emptySlotIndex]
+	const { tiles, columns, rows } = level
 	const puzzleRef = useRef<Record<string, HTMLElement | null>>({})
 
-	const elements = items.map((item) => {
+	const elements = tiles.map((tile) => {
 		const handleClick = () => {
-			const isMoved = tryMove(item, items)
+			if (isDisabled || isUpdating) {
+				return
+			}
 
-			if (isMoved) {
-				;[item, emptyItemInfo].forEach(({ current, key }) => {
-					const { row, column } = current
-					const changedElement = puzzleRef.current[key]
-					changedElement?.style.setProperty("--row", row.toString())
-					changedElement?.style.setProperty("--col", column.toString())
-				})
+			const { isSolved, updatedTiles } = tryMove(tile, tiles)
+			updatedTiles?.forEach(({ currentPosition, key }) => {
+				const changedElement = puzzleRef.current[key]
+				const { row, column } = currentPosition
+				changedElement?.style.setProperty("--row", row.toString())
+				changedElement?.style.setProperty("--col", column.toString())
+			})
 
-				const isFinished = items.every(
-					({ current, original }) =>
-						current.row === original.row && current.column === original.column
-				)
-				if (isFinished) {
-					onCompleteLevel()
-				}
+			if (isSolved) {
+				onCompleteLevel()
 			}
 		}
 
 		return (
-			<PuzzleItem
-				key={item.key}
-				item={item}
+			<PuzzleTile
+				key={tile.key}
+				tile={tile}
 				handleClick={handleClick}
 				puzzleRef={puzzleRef}
 				isDisabled={isDisabled}

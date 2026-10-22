@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 
-import { theme } from "./assets/styles/theme"
+import { theme } from "../assets/styles/theme"
 
 const slideSize = 2
 

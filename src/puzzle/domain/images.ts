@@ -1,5 +1,4 @@
-import { getLevelNumber } from "./game"
-import { getImageSize } from "./utils"
+import { getImageSize } from "../../shared/utils"
 
 export type ImageInfo = {
 	imageUrl: string
@@ -9,21 +8,23 @@ export type ImageInfo = {
 }
 
 const imagesNames = (function () {
-	const pathStart = "/src/assets/images/puzzle-img-"
+	const pathStart = "../../assets/images/puzzle-img-"
 	const puzzleImages = import.meta.glob(
-		`/src/assets/images/puzzle-img-*.{jpg,jpeg,png,webp}`,
+		"../../assets/images/puzzle-img-*.{jpg,jpeg,png,webp}",
 		{ eager: true }
 	)
-	return Object.keys(puzzleImages).map((path) => path.replace(pathStart, ""))
+	return Object.keys(puzzleImages)
+		.sort((left, right) =>
+			left.localeCompare(right, undefined, { numeric: true })
+		)
+		.map((path) => path.replace(pathStart, ""))
 })()
 
-export async function getImageInfo(
-	levelNumber: number = getLevelNumber()
-): Promise<ImageInfo> {
+export async function getImageInfo(levelNumber: number): Promise<ImageInfo> {
 	const imageNameIndex = levelNumber % imagesNames.length
 	const imageName = imagesNames[imageNameIndex]
 	const imageUrl = new URL(
-		`/src/assets/images/puzzle-img-${imageName}`,
+		`../../assets/images/puzzle-img-${imageName}`,
 		import.meta.url
 	).href
 

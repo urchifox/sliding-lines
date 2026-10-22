@@ -20,17 +20,15 @@
     "prettier": "prettier . --write",
     "format": "npm run lint && npm run prettier",
     "format-check": "prettier . --check && eslint --no-warn-ignored --cache .",
-    "ts": "tsc --noEmit",
-    "tsw": "tsc --noEmit --watch",
+    "ts": "tsc -b",
+    "tsw": "tsc -b --watch",
     "ready": "npm run format && npm run ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@reduxjs/toolkit": "^2.11.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "react-redux": "^9.2.0"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
     "@eslint/js": "9.30.1",
