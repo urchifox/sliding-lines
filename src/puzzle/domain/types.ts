@@ -14,7 +14,6 @@ export type TileKey = `${number}-${number}`
 
 export type Level = LevelConfig & {
 	tiles: Array<PuzzleTileInfo>
-	emptySlotIndex: number
 }
 
 export type LevelConfig = {

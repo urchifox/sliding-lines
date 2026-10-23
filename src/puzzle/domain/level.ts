@@ -32,7 +32,7 @@ export function createLevel(levelNumber: number): Level {
 	const emptySlotIndex = getRandomNumber({ min: 0, max: tiles.length - 1 })
 	tiles[emptySlotIndex].isEmpty = true
 
-	const level = { tiles, columns, rows, emptySlotIndex, shuffleSteps }
+	const level = { tiles, columns, rows, shuffleSteps }
 
 	shuffleLevel(level)
 
@@ -79,8 +79,11 @@ export function resetLevel(level: Level) {
 }
 
 export function shuffleLevel(level: Level) {
-	const { tiles, emptySlotIndex, shuffleSteps } = level
-	const emptySlot = tiles[emptySlotIndex]
+	const { tiles, shuffleSteps } = level
+	const emptySlot = tiles.find(tile => tile.isEmpty)
+	if (emptySlot === undefined) {
+		throw new Error("Empty slot not found")
+	}
 
 	let steps = shuffleSteps
 	let lastTile: PuzzleTileInfo | undefined = undefined
