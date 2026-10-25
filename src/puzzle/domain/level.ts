@@ -3,7 +3,7 @@ import {
 	getRandomNumber,
 	pickRandomItem,
 } from "../../shared/utils"
-import { getNeighborsOf, swap } from "./game"
+import { getCurrentNeighborsOf, swap } from "./game"
 import type { Level, LevelConfig, PuzzleTileInfo, TileKey } from "./types"
 
 const levelExtreme = {
@@ -89,14 +89,14 @@ export function shuffleLevel(level: Level) {
 	let lastTile: PuzzleTileInfo | undefined = undefined
 
 	while (steps > 0) {
-		const neighbors = getNeighborsOf(emptySlot, tiles)
+		const neighbors = getCurrentNeighborsOf(emptySlot.currentPosition, tiles)
 
 		if (lastTile !== undefined) {
 			deleteFromArray(neighbors, lastTile)
 		}
 
 		const tile = pickRandomItem(neighbors)
-		swap({ emptySlot, tile })
+		swap({ tile1: emptySlot, tile2: tile })
 		lastTile = tile
 
 		steps--
