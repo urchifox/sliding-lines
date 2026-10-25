@@ -14,36 +14,85 @@ describe("utils", () => {
 
 	describe("getRandomNumber", () => {
 		it.each([
-			{ min: 0, max: 3, expected: [0, 1, 2, 3] },
-			{ min: 2, max: 3, expected: [2, 3] },
-			{ min: 0, max: 3, step: 2, expected: [0, 2] },
-			{ min: 2, max: 3, step: 0.5, expected: [2, 2.5, 3] },
+			{ min: 0, max: 3, expectedOneOf: [0, 1, 2, 3] },
+			{ min: -1, max: 1, expectedOneOf: [-1, 0, 1] },
+			{ min: -3, max: -1, expectedOneOf: [-3, -2, -1] },
+			{ min: 0.5, max: 2, expectedOneOf: [0.5, 1.5] },
+			{ min: 0, max: 3, step: 2, expectedOneOf: [0, 2] },
+			{ min: 2, max: 3, step: 0.5, expectedOneOf: [2, 2.5, 3] },
+			{ min: 0.1, max: 0.3, step: 0.1, expectedOneOf: [0.1, 0.2, 0.3] },
 		])(
 			"generates a random number between $min and $max according to step $step",
-			({ min, max, step, expected }) => {
-				const randomNumber = getRandomNumber({ min, max, step })
+			({ min, max, step, expectedOneOf }) => {
+				const randomNumber = getRandomNumber({
+					min,
+					max,
+					step,
+				})
 
-				expect(randomNumber).toBeOneOf(expected)
+				random.mockReturnValueOnce(0)
+				const minRandomNumber = getRandomNumber({
+					min,
+					max,
+					step,
+				})
+
+				random.mockReturnValueOnce(1 - Number.EPSILON)
+				const maxRandomNumber = getRandomNumber({
+					min,
+					max,
+					step,
+				})
+
 				expect(randomNumber).toBeGreaterThanOrEqual(min)
 				expect(randomNumber).toBeLessThanOrEqual(max)
+				expect(minRandomNumber).toBeGreaterThanOrEqual(expectedOneOf[0])
+				expect(maxRandomNumber).toBeGreaterThanOrEqual(
+					expectedOneOf[expectedOneOf.length - 1]
+				)
 			}
 		)
 
-		it("reorder max and min if max is less than min", () => {
-			const randomNumber = getRandomNumber({ min: 10, max: 0 })
+		it.each([
+			{ falseMin: 10, falseMax: 0 },
+			{ falseMin: -10, falseMax: -20, step: 1 },
+			{ falseMin: 0.1, falseMax: 0.01, step: 0.01 },
+		])(
+			"reorder max and min if max is less than min",
+			({ falseMin, falseMax, step }) => {
+				const randomNumber1 = getRandomNumber({
+					min: falseMin,
+					max: falseMax,
+					step,
+				})
 
-			expect(randomNumber).toBeGreaterThanOrEqual(0)
-			expect(randomNumber).toBeLessThanOrEqual(10)
-		})
+				random.mockReturnValueOnce(0)
+				const randomNumber2 = getRandomNumber({
+					min: falseMin,
+					max: falseMax,
+					step,
+				})
+
+				random.mockReturnValueOnce(1 - Number.EPSILON)
+				const randomNumber3 = getRandomNumber({
+					min: falseMin,
+					max: falseMax,
+					step,
+				})
+
+				expect(randomNumber1).toBeGreaterThanOrEqual(falseMax)
+				expect(randomNumber1).toBeLessThanOrEqual(falseMin)
+				expect(randomNumber2).toBeGreaterThanOrEqual(falseMax)
+				expect(randomNumber3).toBeGreaterThanOrEqual(falseMin)
+			}
+		)
 
 		it.each([
-			{ min: 0, max: 3 },
-			{ min: 2, max: 3 },
-			{ min: 0, max: 3, step: 2 },
-			{ min: 2, max: 3, step: 0.5 },
+			{ min: 1, max: 1 },
+			{ min: -2, max: -2 },
+			{ min: 2, max: 2, step: 0.5 },
+			{ min: 2.5, max: 2.5, step: 2 },
 		])("returns min if max is equal min", ({ min, max, step }) => {
-			random.mockReturnValue(0)
-
 			const randomNumber = getRandomNumber({ min, max, step })
 
 			expect(randomNumber).toBe(min)
@@ -57,77 +106,40 @@ describe("utils", () => {
 		)
 
 		it.each([
-			{ min: 0, max: 3 },
-			{ min: 2, max: 3 },
-			{ min: 0, max: 3, step: 2 },
-			{ min: 2, max: 3, step: 0.5 },
-		])(
-			"return min for randomization function that returns 0",
-			({ min, max, step }) => {
-				random.mockReturnValue(0)
+			{ min: 0, max: 1, step: 5 },
+			{ min: -10, max: -5, step: 10 },
+			{ min: 0.1, max: 0.3, step: 0.5 },
+		])("returns min if step is bigger than range", ({ min, max, step }) => {
+			const randomNumber = getRandomNumber({ min, max, step })
 
-				const randomNumber = getRandomNumber({ min, max, step })
-
-				expect(randomNumber).toBe(min)
-			}
-		)
-
-		it.each([
-			{ min: 0, max: 3, expected: 3 },
-			{ min: 2, max: 3, expected: 3 },
-			{ min: 0, max: 3, step: 2, expected: 2 },
-			{ min: 2, max: 3, step: 0.5, expected: 3 },
-		])(
-			"returns $expected for randomization function that returns 1 - Number.EPSILON",
-			({ min, max, step, expected }) => {
-				random.mockReturnValue(1 - Number.EPSILON)
-
-				const randomNumber = getRandomNumber({ min, max, step })
-
-				expect(randomNumber).toBe(expected)
-			}
-		)
+			expect(randomNumber).toBe(min)
+		})
 	})
 
 	describe("pickRandomItem", () => {
-		it.each([{ array: [1, 3] }, { array: [10, 20, 30] }, { array: [3, 2, 1] }])(
-			"returns a random item from the array",
-			({ array }) => {
-				const item = pickRandomItem(array)
-
-				expect(item).toBeOneOf(array)
-			}
-		)
-
 		it.each([
-			{ array: [1, 3], expected: 1 },
-			{ array: [10, 20, 30], expected: 10 },
-			{ array: [3, 2, 1], expected: 3 },
-		])(
-			"returns first item from the array when randomization function returns 0",
-			({ array, expected }) => {
-				random.mockReturnValue(0)
+			{ array: [1] },
+			{ array: [1, 3] },
+			{ array: [10, 20, 30] },
+			{ array: [4, 3, 2, 1] },
+		])("returns a random item from the array", ({ array }) => {
+			const randomItem = pickRandomItem(array)
 
-				const item = pickRandomItem(array)
+			random.mockReturnValue(0)
+			const firstRandomItem = pickRandomItem(array)
 
-				expect(item).toBe(expected)
-			}
-		)
+			random.mockReturnValue(1 - Number.EPSILON)
+			const lastRandomItem = pickRandomItem(array)
 
-		it.each([
-			{ array: [1, 3], expected: 3 },
-			{ array: [10, 20, 30], expected: 30 },
-			{ array: [3, 2, 1], expected: 1 },
-		])(
-			"returns last item from the array when randomization function returns 1 - Number.EPSILON",
-			({ array, expected }) => {
-				random.mockReturnValue(1 - Number.EPSILON)
+			
+			expect(randomItem).toBeOneOf(array)
+			expect(firstRandomItem).toBe(array[0])
+			expect(lastRandomItem).toBe(array[array.length - 1])
+		})
 
-				const item = pickRandomItem(array)
-
-				expect(item).toBe(expected)
-			}
-		)
+		it("throws an error if the array is empty", () => {
+			expect(() => pickRandomItem([])).toThrow("Array is empty")
+		})
 	})
 
 	describe("deleteFromArray", () => {
@@ -139,6 +151,20 @@ describe("utils", () => {
 			deleteFromArray(array, element)
 
 			expect(array).toEqual(expected)
+		})
+
+		it("does nothing if the element is not in the array", () => {
+			const array = [1, 3]
+			deleteFromArray(array, 2)
+
+			expect(array).toEqual([1, 3])
+		})
+
+		it("does nothing for empty array", () => {
+			const array: number[] = []
+			deleteFromArray(array, 1)
+
+			expect(array).toEqual([])
 		})
 	})
 
