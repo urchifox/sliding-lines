@@ -44,10 +44,9 @@ describe("utils", () => {
 					step,
 				})
 
-				expect(randomNumber).toBeGreaterThanOrEqual(min)
-				expect(randomNumber).toBeLessThanOrEqual(max)
-				expect(minRandomNumber).toBeGreaterThanOrEqual(expectedOneOf[0])
-				expect(maxRandomNumber).toBeGreaterThanOrEqual(
+				expect(randomNumber).toBeOneOf(expectedOneOf)
+				expect(minRandomNumber).toBe(expectedOneOf[0])
+				expect(maxRandomNumber).toBe(
 					expectedOneOf[expectedOneOf.length - 1]
 				)
 			}
