@@ -54,15 +54,17 @@ describe("Level", () => {
 				const { tiles, columns, rows, shuffleSteps } = level
 				const emptyTiles = tiles.filter((tile) => tile.isEmpty)
 				const originalPositions = tiles.map((tile) => tile.originalPosition)
+				const originalPositionsStringified = originalPositions.map((position) => JSON.stringify(position))
 				const currentPositions = tiles.map((tile) => tile.currentPosition)
+				const currentPositionsStringified = currentPositions.map((position) => JSON.stringify(position))
 				const keys = tiles.map((tile) => tile.key)
 
 				expect(columns).toBe(expectedColumns)
-				expect(rows).toBe(expectedColumns)
+				expect(rows).toBe(expectedRows)
 				expect(shuffleSteps).toBe(expectedShuffleSteps)
 				expect(tiles.length).toBe(expectedTilesCount)
-				expect(new Set(originalPositions).size).toBe(expectedTilesCount)
-				expect(new Set(currentPositions).size).toBe(expectedTilesCount)
+				expect(new Set(originalPositionsStringified).size).toBe(expectedTilesCount)
+				expect(new Set(currentPositionsStringified).size).toBe(expectedTilesCount)
 				expect(new Set(keys).size).toBe(expectedTilesCount)
 				expect(emptyTiles.length).toBe(1)
 				expect(
@@ -94,7 +96,7 @@ describe("Level", () => {
 		)
 
 		it("creates a correct level with negative level number", () => {
-			const levelForNegativeValue = createLevel(-1)
+			const levelForNegativeValue = createLevel(-100)
 			const { tiles: _tiles1, ...levelForNegativeValueWithoutTiles } =
 				levelForNegativeValue
 			const levelForZero = createLevel(0)
@@ -114,7 +116,7 @@ describe("Level", () => {
 
 		resetLevel(level)
 
-		expect(tiles).not.toBe(tilesBeforeReset)
+		expect(tiles).not.toEqual(tilesBeforeReset)
 		expect(
 			tiles.every(
 				(tile) =>
@@ -136,7 +138,7 @@ describe("Level", () => {
 
 		shuffleLevel(level)
 
-		expect(tiles).not.toBe(tilesBeforeShuffle)
+		expect(tiles).not.toEqual(tilesBeforeShuffle)
 		expect(
 			level.tiles.some(
 				(tile) =>
