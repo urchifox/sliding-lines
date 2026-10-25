@@ -2,84 +2,119 @@ import { createLevel, resetLevel, shuffleLevel } from "./level"
 
 describe("Level", () => {
 	describe("createLevel", () => {
-		it("creates a correct level with 0 difficulty", () => {
-			const level = createLevel(0)
-			const { tiles, columns, rows, shuffleSteps } = level
+		it.each([
+			{
+				difficulty: 0,
+				expectedColumns: 3,
+				expectedRows: 3,
+				expectedShuffleSteps: 5,
+			},
+			{
+				difficulty: 1,
+				expectedColumns: 3,
+				expectedRows: 3,
+				expectedShuffleSteps: 6,
+			},
+			{
+				difficulty: 5,
+				expectedColumns: 4,
+				expectedRows: 4,
+				expectedShuffleSteps: 8,
+			},
+			{
+				difficulty: 9,
+				expectedColumns: 5,
+				expectedRows: 5,
+				expectedShuffleSteps: 10,
+			},
+			{
+				difficulty: 10,
+				expectedColumns: 5,
+				expectedRows: 5,
+				expectedShuffleSteps: 10,
+			},
+			{
+				difficulty: 20,
+				expectedColumns: 5,
+				expectedRows: 5,
+				expectedShuffleSteps: 10,
+			},
+			{
+				difficulty: 100,
+				expectedColumns: 5,
+				expectedRows: 5,
+				expectedShuffleSteps: 10,
+			},
+		])(
+			"creates a correct level with $difficulty difficulty",
+			({ difficulty, expectedColumns, expectedRows, expectedShuffleSteps }) => {
+				const expectedTilesCount = expectedColumns * expectedRows
 
-			expect(columns).toBe(3)
-			expect(rows).toBe(3)
-			expect(shuffleSteps).toBe(5)
-			expect(tiles.length).toBe(9)
-			const emptyTiles = tiles.filter((tile) => tile.isEmpty)
-			expect(emptyTiles.length).toBe(1)
-			expect(
-				level.tiles.some(
-					(tile) =>
-						tile.currentPosition.row !== tile.originalPosition.row ||
-						tile.currentPosition.column !== tile.originalPosition.column
-				)
-			).toBe(true)
+				const level = createLevel(difficulty)
+				const { tiles, columns, rows, shuffleSteps } = level
+				const emptyTiles = tiles.filter((tile) => tile.isEmpty)
+				const originalPositions = tiles.map((tile) => tile.originalPosition)
+				const currentPositions = tiles.map((tile) => tile.currentPosition)
+				const keys = tiles.map((tile) => tile.key)
+
+				expect(columns).toBe(expectedColumns)
+				expect(rows).toBe(expectedColumns)
+				expect(shuffleSteps).toBe(expectedShuffleSteps)
+				expect(tiles.length).toBe(expectedTilesCount)
+				expect(new Set(originalPositions).size).toBe(expectedTilesCount)
+				expect(new Set(currentPositions).size).toBe(expectedTilesCount)
+				expect(new Set(keys).size).toBe(expectedTilesCount)
+				expect(emptyTiles.length).toBe(1)
+				expect(
+					tiles.some(
+						(tile) =>
+							tile.currentPosition.row !== tile.originalPosition.row ||
+							tile.currentPosition.column !== tile.originalPosition.column
+					)
+				).toBe(true)
+				expect(
+					originalPositions.every(
+						(position) =>
+							position.row >= 1 &&
+							position.row <= expectedRows &&
+							position.column >= 1 &&
+							position.column <= expectedColumns
+					)
+				).toBe(true)
+				expect(
+					currentPositions.every(
+						(position) =>
+							position.row >= 1 &&
+							position.row <= expectedRows &&
+							position.column >= 1 &&
+							position.column <= expectedColumns
+					)
+				).toBe(true)
+			}
+		)
+
+		it("creates a correct level with negative level number", () => {
+			const levelForNegativeValue = createLevel(-1)
+			const { tiles: _tiles1, ...levelForNegativeValueWithoutTiles } =
+				levelForNegativeValue
+			const levelForZero = createLevel(0)
+			const { tiles: _tiles2, ...levelForZeroWithoutTiles } = levelForZero
+
+			expect(levelForNegativeValueWithoutTiles).toEqual(
+				levelForZeroWithoutTiles
+			)
 		})
-
-		it.each([1, 5, 9])(
-			"creates a correct level with %i difficulty",
-			(difficulty) => {
-				const level = createLevel(difficulty)
-				const { tiles, columns, rows, shuffleSteps } = level
-
-				expect(columns).toBeGreaterThanOrEqual(3)
-				expect(columns).toBeLessThanOrEqual(5)
-				expect(rows).toBeGreaterThanOrEqual(3)
-				expect(rows).toBeLessThanOrEqual(5)
-				expect(shuffleSteps).toBeGreaterThanOrEqual(5)
-				expect(shuffleSteps).toBeLessThanOrEqual(10)
-				expect(tiles.length).toBeGreaterThanOrEqual(9)
-				expect(tiles.length).toBeLessThanOrEqual(25)
-				const emptyTiles = tiles.filter((tile) => tile.isEmpty)
-				expect(emptyTiles.length).toBe(1)
-				expect(
-					level.tiles.some(
-						(tile) =>
-							tile.currentPosition.row !== tile.originalPosition.row ||
-							tile.currentPosition.column !== tile.originalPosition.column
-					)
-				).toBe(true)
-			}
-		)
-
-		it.each([10, 20, 100])(
-			"creates a correct level with %i difficulty",
-			(difficulty) => {
-				const level = createLevel(difficulty)
-				const { tiles, columns, rows, shuffleSteps } = level
-
-				expect(columns).toBe(5)
-				expect(rows).toBe(5)
-				expect(shuffleSteps).toBe(10)
-				expect(tiles.length).toBe(25)
-				const emptyTiles = tiles.filter((tile) => tile.isEmpty)
-				expect(emptyTiles.length).toBe(1)
-				expect(
-					level.tiles.some(
-						(tile) =>
-							tile.currentPosition.row !== tile.originalPosition.row ||
-							tile.currentPosition.column !== tile.originalPosition.column
-					)
-				).toBe(true)
-			}
-		)
 	})
 
 	it("resets the level to the original state", () => {
 		const level = createLevel(0)
 		const { columns, rows, shuffleSteps, tiles } = level
 		const initialTIlesCount = tiles.length
-		const stringifiedTilesBeforeReset = JSON.stringify(tiles)
+		const tilesBeforeReset = structuredClone(tiles)
 
 		resetLevel(level)
-		const stringifiedTilesAfterReset = JSON.stringify(tiles)
 
-		expect(stringifiedTilesBeforeReset).not.toBe(stringifiedTilesAfterReset)
+		expect(tiles).not.toBe(tilesBeforeReset)
 		expect(
 			tiles.every(
 				(tile) =>
@@ -97,12 +132,11 @@ describe("Level", () => {
 		const level = createLevel(0)
 		resetLevel(level)
 		const { tiles } = level
-		const stringifiedTilesBeforeShuffle = JSON.stringify(tiles)
+		const tilesBeforeShuffle = structuredClone(tiles)
 
 		shuffleLevel(level)
 
-		const stringifiedTilesAfterShuffle = JSON.stringify(tiles)
-		expect(stringifiedTilesBeforeShuffle).not.toBe(stringifiedTilesAfterShuffle)
+		expect(tiles).not.toBe(tilesBeforeShuffle)
 		expect(
 			level.tiles.some(
 				(tile) =>
