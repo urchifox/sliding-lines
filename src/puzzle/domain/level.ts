@@ -62,7 +62,10 @@ function generateConfig(levelNumber: number): LevelConfig {
 	const config = {} as LevelConfig
 
 	Object.entries(levelExtreme).forEach(([name, { min, max }]) => {
-		const difficulty = Math.max(0, Math.min(1, levelNumber / maxDifficultyLevel))
+		const difficulty = Math.max(
+			0,
+			Math.min(1, levelNumber / maxDifficultyLevel)
+		)
 		const value = min + (max - min) * difficulty
 
 		config[name as keyof typeof levelExtreme] = Math.round(value)
@@ -80,7 +83,7 @@ export function resetLevel(level: Level) {
 
 export function shuffleLevel(level: Level) {
 	const { tiles, shuffleSteps } = level
-	const emptySlot = tiles.find(tile => tile.isEmpty)
+	const emptySlot = tiles.find((tile) => tile.isEmpty)
 	if (emptySlot === undefined) {
 		throw new Error("Empty slot not found")
 	}

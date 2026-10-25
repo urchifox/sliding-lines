@@ -46,9 +46,7 @@ describe("utils", () => {
 
 				expect(randomNumber).toBeOneOf(expectedOneOf)
 				expect(minRandomNumber).toBe(expectedOneOf[0])
-				expect(maxRandomNumber).toBe(
-					expectedOneOf[expectedOneOf.length - 1]
-				)
+				expect(maxRandomNumber).toBe(expectedOneOf[expectedOneOf.length - 1])
 			}
 		)
 
@@ -130,7 +128,6 @@ describe("utils", () => {
 			random.mockReturnValue(1 - Number.EPSILON)
 			const lastRandomItem = pickRandomItem(array)
 
-			
 			expect(randomItem).toBeOneOf(array)
 			expect(firstRandomItem).toBe(array[0])
 			expect(lastRandomItem).toBe(array[array.length - 1])

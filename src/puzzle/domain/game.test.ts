@@ -248,7 +248,9 @@ describe("game", () => {
 			expect(result1.isSolved).toBe(false)
 			expect(result2.isSolved).toBe(true)
 			expect(getLevelNumber()).toBe(initialLevel + 1)
-			expect(JSON.parse(localStorage.getItem("user") as string).levelNumber).toBe(initialLevel + 1)
+			expect(
+				JSON.parse(localStorage.getItem("user") as string).levelNumber
+			).toBe(initialLevel + 1)
 			expect(new Set(result1.updatedTiles as Array<PuzzleTileInfo>)).toEqual(
 				new Set([emptySlot, tile1])
 			)

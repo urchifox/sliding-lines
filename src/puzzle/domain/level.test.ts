@@ -54,17 +54,25 @@ describe("Level", () => {
 				const { tiles, columns, rows, shuffleSteps } = level
 				const emptyTiles = tiles.filter((tile) => tile.isEmpty)
 				const originalPositions = tiles.map((tile) => tile.originalPosition)
-				const originalPositionsStringified = originalPositions.map((position) => JSON.stringify(position))
+				const originalPositionsStringified = originalPositions.map((position) =>
+					JSON.stringify(position)
+				)
 				const currentPositions = tiles.map((tile) => tile.currentPosition)
-				const currentPositionsStringified = currentPositions.map((position) => JSON.stringify(position))
+				const currentPositionsStringified = currentPositions.map((position) =>
+					JSON.stringify(position)
+				)
 				const keys = tiles.map((tile) => tile.key)
 
 				expect(columns).toBe(expectedColumns)
 				expect(rows).toBe(expectedRows)
 				expect(shuffleSteps).toBe(expectedShuffleSteps)
 				expect(tiles.length).toBe(expectedTilesCount)
-				expect(new Set(originalPositionsStringified).size).toBe(expectedTilesCount)
-				expect(new Set(currentPositionsStringified).size).toBe(expectedTilesCount)
+				expect(new Set(originalPositionsStringified).size).toBe(
+					expectedTilesCount
+				)
+				expect(new Set(currentPositionsStringified).size).toBe(
+					expectedTilesCount
+				)
 				expect(new Set(keys).size).toBe(expectedTilesCount)
 				expect(emptyTiles.length).toBe(1)
 				expect(
