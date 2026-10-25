@@ -37,6 +37,9 @@ function countDecimals(value: number) {
 export function pickRandomItem<Element>(
 	array: Array<Element> | Readonly<Array<Element>>
 ): Element {
+	if (array.length === 0) {
+		throw new Error("Array is empty")
+	}
 	return array[getRandomNumber({ min: 0, max: array.length - 1 })]
 }
 
