@@ -13,6 +13,9 @@ describe("user", () => {
 			initUserInfo()
 
 			expect(getLevelNumber()).toEqual(0)
+			expect(localStorage.getItem("user")).toBe(
+				JSON.stringify({ levelNumber: 0 })
+			)
 		})
 
 		it("initializes the user info with saved values if saved info is valid", () => {
@@ -21,6 +24,20 @@ describe("user", () => {
 			initUserInfo()
 
 			expect(getLevelNumber()).toEqual(10)
+		})
+
+		it("ignores extra keys in saved info", () => {
+			localStorage.setItem(
+				"user",
+				JSON.stringify({ levelNumber: 10, extraKeys: "extraValues" })
+			)
+
+			initUserInfo()
+
+			expect(getLevelNumber()).toEqual(10)
+			expect(localStorage.getItem("user")).toBe(
+				JSON.stringify({ levelNumber: 10 })
+			)
 		})
 
 		it.each([
@@ -32,10 +49,7 @@ describe("user", () => {
 			{ savedInfo: { levelNumber: "10" } },
 			{ savedInfo: { levelNumber: -1 } },
 			{ savedInfo: { levelNumber: 1.5 } },
-			{ savedInfo: { levelNumber: Infinity } },
-			{ savedInfo: { levelNumber: -Infinity } },
-			{ savedInfo: { levelNumber: NaN } },
-			{ savedInfo: { levelNumber: undefined } },
+			{ savedInfo: { levelNumber: null } },
 		])(
 			"initializes the user info with initial values if saved info is invalid",
 			({ savedInfo }) => {
@@ -44,8 +58,22 @@ describe("user", () => {
 				initUserInfo()
 
 				expect(getLevelNumber()).toEqual(0)
+				expect(localStorage.getItem("user")).toBe(
+					JSON.stringify({ levelNumber: 0 })
+				)
 			}
 		)
+
+		it("ignores and doesnt throw when saved info is invalid", () => {
+			localStorage.setItem("user", "{not json}")
+
+			initUserInfo()
+
+			expect(getLevelNumber()).toBe(0)
+			expect(localStorage.getItem("user")).toBe(
+				JSON.stringify({ levelNumber: 0 })
+			)
+		})
 	})
 
 	it("resets the user info to initial values", () => {
@@ -54,6 +82,9 @@ describe("user", () => {
 		resetUserInfo()
 
 		expect(getLevelNumber()).toEqual(0)
+		expect(localStorage.getItem("user")).toBe(
+			JSON.stringify({ levelNumber: 0 })
+		)
 	})
 
 	it("upgrades the level number", () => {
@@ -62,6 +93,9 @@ describe("user", () => {
 		upgradeLevel()
 
 		expect(getLevelNumber()).toEqual(1)
+		expect(localStorage.getItem("user")).toBe(
+			JSON.stringify({ levelNumber: 1 })
+		)
 	})
 
 	it("persists the current user info", () => {
