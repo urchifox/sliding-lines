@@ -199,7 +199,12 @@ describe("game", () => {
 			expect(tiles).toEqual(tilesClone)
 		})
 
-		it.each([{ tileIndex: 4 }, { tileIndex: 6 }, { tileIndex: 8 }])(
+		it.each([
+			{ tileIndex: 2 },
+			{ tileIndex: 4 },
+			{ tileIndex: 6 },
+			{ tileIndex: 8 },
+		])(
 			"attempt on move tile without empty tile as neighbour makes nothing",
 			({ tileIndex }) => {
 				const tiles = getTiles()
