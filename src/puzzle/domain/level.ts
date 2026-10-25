@@ -62,7 +62,7 @@ function generateConfig(levelNumber: number): LevelConfig {
 	const config = {} as LevelConfig
 
 	Object.entries(levelExtreme).forEach(([name, { min, max }]) => {
-		const difficulty = Math.min(1, levelNumber / maxDifficultyLevel)
+		const difficulty = Math.max(0, Math.min(1, levelNumber / maxDifficultyLevel))
 		const value = min + (max - min) * difficulty
 
 		config[name as keyof typeof levelExtreme] = Math.round(value)
