@@ -79,8 +79,8 @@ describe("utils", () => {
 
 				expect(randomNumber1).toBeGreaterThanOrEqual(falseMax)
 				expect(randomNumber1).toBeLessThanOrEqual(falseMin)
-				expect(randomNumber2).toBeGreaterThanOrEqual(falseMax)
-				expect(randomNumber3).toBeGreaterThanOrEqual(falseMin)
+				expect(randomNumber2).toBe(falseMax)
+				expect(randomNumber3).toBe(falseMin)
 			}
 		)
 
