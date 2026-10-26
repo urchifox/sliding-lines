@@ -34,9 +34,12 @@ function countDecimals(value: number) {
 	return (value.toString().split(".")[1] ?? "").length
 }
 
-export function randomPick<Element>(
+export function pickRandomItem<Element>(
 	array: Array<Element> | Readonly<Array<Element>>
 ): Element {
+	if (array.length === 0) {
+		throw new Error("Array is empty")
+	}
 	return array[getRandomNumber({ min: 0, max: array.length - 1 })]
 }
 
@@ -48,30 +51,17 @@ export function deleteFromArray<T>(array: T[], element: T) {
 	array.splice(index, 1)
 }
 
-export function getImageSize(
-	url: string
-): Promise<{ width: number; height: number; ratio: number } | null> {
-	return new Promise((resolve) => {
-		const img = new Image()
-		img.onload = () => {
-			resolve({
-				width: img.naturalWidth,
-				height: img.naturalHeight,
-				ratio: img.naturalWidth / img.naturalHeight,
-			})
-		}
-		img.onerror = () => {
-			resolve(null)
-		}
-		img.src = url
-	})
-}
-
 export function getUniqueValue<T>(occupiedSet: Set<T>, getter: () => T): T {
 	let newValue = getter()
 
-	while (occupiedSet.has(newValue)) {
+	let tries = 0
+	while (occupiedSet.has(newValue) && tries < 100) {
 		newValue = getter()
+		tries++
+	}
+
+	if (occupiedSet.has(newValue)) {
+		throw new Error("Failed to get a unique value")
 	}
 
 	occupiedSet.add(newValue)

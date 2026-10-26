@@ -1,9 +1,9 @@
 import {
 	deleteFromArray,
 	getRandomNumber,
-	randomPick,
+	pickRandomItem,
 } from "../../shared/utils"
-import { getNeighborsOf, swap } from "./game"
+import { getCurrentNeighborsOf, swap } from "./game"
 import type { Level, LevelConfig, PuzzleTileInfo, TileKey } from "./types"
 
 const levelExtreme = {
@@ -32,7 +32,7 @@ export function createLevel(levelNumber: number): Level {
 	const emptySlotIndex = getRandomNumber({ min: 0, max: tiles.length - 1 })
 	tiles[emptySlotIndex].isEmpty = true
 
-	const level = { tiles, columns, rows, emptySlotIndex, shuffleSteps }
+	const level = { tiles, columns, rows, shuffleSteps }
 
 	shuffleLevel(level)
 
@@ -62,7 +62,10 @@ function generateConfig(levelNumber: number): LevelConfig {
 	const config = {} as LevelConfig
 
 	Object.entries(levelExtreme).forEach(([name, { min, max }]) => {
-		const difficulty = Math.min(1, levelNumber / maxDifficultyLevel)
+		const difficulty = Math.max(
+			0,
+			Math.min(1, levelNumber / maxDifficultyLevel)
+		)
 		const value = min + (max - min) * difficulty
 
 		config[name as keyof typeof levelExtreme] = Math.round(value)
@@ -79,21 +82,24 @@ export function resetLevel(level: Level) {
 }
 
 export function shuffleLevel(level: Level) {
-	const { tiles, emptySlotIndex, shuffleSteps } = level
-	const emptySlot = tiles[emptySlotIndex]
+	const { tiles, shuffleSteps } = level
+	const emptySlot = tiles.find((tile) => tile.isEmpty)
+	if (emptySlot === undefined) {
+		throw new Error("Empty slot not found")
+	}
 
 	let steps = shuffleSteps
 	let lastTile: PuzzleTileInfo | undefined = undefined
 
 	while (steps > 0) {
-		const neighbors = getNeighborsOf(emptySlot, tiles)
+		const neighbors = getCurrentNeighborsOf(emptySlot.currentPosition, tiles)
 
 		if (lastTile !== undefined) {
 			deleteFromArray(neighbors, lastTile)
 		}
 
-		const tile = randomPick(neighbors)
-		swap({ emptySlot, tile })
+		const tile = pickRandomItem(neighbors)
+		swap({ tile1: emptySlot, tile2: tile })
 		lastTile = tile
 
 		steps--

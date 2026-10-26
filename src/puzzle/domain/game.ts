@@ -1,5 +1,5 @@
 import { upgradeLevel } from "../../progress/user"
-import type { PuzzleTileInfo } from "./types"
+import type { Position, PuzzleTileInfo } from "./types"
 
 export function tryMove(
 	tile: PuzzleTileInfo,
@@ -8,7 +8,7 @@ export function tryMove(
 	isSolved: boolean
 	updatedTiles: Array<PuzzleTileInfo> | null
 } {
-	const neighbors = getNeighborsOf(tile, tiles)
+	const neighbors = getCurrentNeighborsOf(tile.currentPosition, tiles)
 	const emptySlot = neighbors.find((element) => element.isEmpty)
 
 	if (emptySlot === undefined) {
@@ -18,7 +18,7 @@ export function tryMove(
 		}
 	}
 
-	swap({ emptySlot, tile })
+	swap({ tile1: emptySlot, tile2: tile })
 
 	const isSolved = isPuzzleSolved(tiles)
 	if (isSolved) {
@@ -31,11 +31,11 @@ export function tryMove(
 	}
 }
 
-export function getNeighborsOf(
-	tile: PuzzleTileInfo,
+export function getCurrentNeighborsOf(
+	position: Position,
 	tiles: Array<PuzzleTileInfo>
 ) {
-	const { row, column } = tile.currentPosition
+	const { row, column } = position
 	const neighbors = [
 		{ row: row - 1, column },
 		{ row: row + 1, column },
@@ -60,17 +60,17 @@ export function getNeighborsOf(
 }
 
 export function swap({
-	emptySlot,
-	tile,
+	tile1,
+	tile2,
 }: {
-	emptySlot: PuzzleTileInfo
-	tile: PuzzleTileInfo
+	tile1: PuzzleTileInfo
+	tile2: PuzzleTileInfo
 }) {
-	const tilePosition = tile.currentPosition
-	const emptyPosition = emptySlot.currentPosition
+	const tilePosition = tile2.currentPosition
+	const emptyPosition = tile1.currentPosition
 
-	tile.currentPosition = emptyPosition
-	emptySlot.currentPosition = tilePosition
+	tile2.currentPosition = emptyPosition
+	tile1.currentPosition = tilePosition
 }
 
 function isPuzzleSolved(tiles: Array<PuzzleTileInfo>) {
