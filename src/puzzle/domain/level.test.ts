@@ -156,6 +156,23 @@ describe("Level", () => {
 		).toBe(true)
 	})
 
+	it("does not shuffle a solved level back to solved in two steps", () => {
+		const level = createLevel(0)
+		level.shuffleSteps = 2
+
+		for (let attempt = 0; attempt < 100; attempt++) {
+			resetLevel(level)
+			shuffleLevel(level)
+
+			const isSolved = level.tiles.every(
+				(tile) =>
+					tile.currentPosition.row === tile.originalPosition.row &&
+					tile.currentPosition.column === tile.originalPosition.column
+			)
+			expect(isSolved).toBe(false)
+		}
+	})
+
 	it("throws an error if no empty slot while shuffling", () => {
 		const level = createLevel(0)
 		const emptySlot = level.tiles.find((tile) => tile.isEmpty)
