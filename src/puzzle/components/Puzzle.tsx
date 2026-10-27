@@ -100,7 +100,7 @@ export function Puzzle({
 
 	const elements = tiles.map((tile) => {
 		const handleClick = () => {
-			if (isDisabled || isUpdating) {
+			if (isDisabled || isUpdating || isFinished) {
 				return
 			}
 
