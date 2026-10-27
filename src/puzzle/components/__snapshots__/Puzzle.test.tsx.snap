@@ -1,0 +1,97 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Puzzle > renders correctly with states isDisabled: false, isFinished: false, isUpdating: false 1`] = `
+<div>
+  <ul
+    class="emotion-0"
+    height="100"
+    rows="3"
+    width="100"
+  >
+    <li
+      aria-label="Tile 1-3"
+      class="emotion-1"
+    />
+    <li
+      aria-label="Tile 1-1"
+      class="emotion-2"
+    />
+    <li
+      aria-label="Tile 1-2"
+      class="emotion-3"
+    />
+    <li
+      aria-label="Tile 2-1"
+      class="emotion-4"
+    />
+    <li
+      aria-label="Tile 2-2"
+      class="emotion-5"
+    />
+    <li
+      aria-label="Tile 2-3"
+      class="emotion-6"
+    />
+    <li
+      aria-label="Tile 3-1"
+      class="emotion-7"
+    />
+    <li
+      aria-label="Tile 3-2"
+      class="emotion-8"
+    />
+    <li
+      aria-label="Tile 3-3"
+      class="emotion-9"
+    />
+  </ul>
+</div>
+`;
+
+exports[`Puzzle > renders correctly with states isDisabled: true, isFinished: true, isUpdating: true 1`] = `
+<div>
+  <ul
+    class="emotion-0"
+    height="100"
+    rows="3"
+    width="100"
+  >
+    <li
+      aria-label="Tile 1-3"
+      class="emotion-1"
+    />
+    <li
+      aria-label="Tile 1-1"
+      class="emotion-2"
+    />
+    <li
+      aria-label="Tile 1-2"
+      class="emotion-3"
+    />
+    <li
+      aria-label="Tile 2-1"
+      class="emotion-4"
+    />
+    <li
+      aria-label="Tile 2-2"
+      class="emotion-5"
+    />
+    <li
+      aria-label="Tile 2-3"
+      class="emotion-6"
+    />
+    <li
+      aria-label="Tile 3-1"
+      class="emotion-7"
+    />
+    <li
+      aria-label="Tile 3-2"
+      class="emotion-8"
+    />
+    <li
+      aria-label="Tile 3-3"
+      class="emotion-9"
+    />
+  </ul>
+</div>
+`;
