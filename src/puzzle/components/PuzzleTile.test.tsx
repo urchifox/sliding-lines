@@ -44,7 +44,6 @@ describe("PuzzleTile", () => {
 				tile={tile}
 				handleClick={handleClick}
 				puzzleRef={puzzleRef}
-				isDisabled={false}
 				isFinished={false}
 			/>
 		)
@@ -60,7 +59,6 @@ describe("PuzzleTile", () => {
 				tile={tile}
 				handleClick={handleClick}
 				puzzleRef={puzzleRef}
-				isDisabled={false}
 				isFinished={false}
 			/>
 		)
@@ -79,12 +77,12 @@ describe("PuzzleTile", () => {
 				tile={tile}
 				handleClick={handleClick}
 				puzzleRef={puzzleRef}
-				isDisabled={false}
 				isFinished={false}
 			/>
 		)
 
-		fireEvent.click(renderResult.container.firstChild as HTMLElement)
+		const button = renderResult.getByRole('button')
+		fireEvent.click(button)
 
 		expect(handleClick).toHaveBeenCalledOnce()
 	})

@@ -5,6 +5,18 @@ exports[`PuzzleTile > renders correctly 1`] = `
   <li
     aria-label="Tile 1-1"
     class="emotion-0"
-  />
+  >
+    <button
+      class="emotion-1"
+      type="button"
+    >
+      Try move tile in $
+      1
+      row and $
+      1
+       
+      column
+    </button>
+  </li>
 </div>
 `;

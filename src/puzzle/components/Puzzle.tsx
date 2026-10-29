@@ -36,6 +36,9 @@ const PuzzleStyled = styled.ul<{
 		--rows: ${rows};
 		--image: url(${imageUrl});
 
+		--reveal-delay: ${isFinished ? "0.3s" : "0s"};
+		--reveal-duration: 0.3s;
+
 		position: relative;
 
 		border-radius: 5px;
@@ -53,9 +56,11 @@ const PuzzleStyled = styled.ul<{
 
 		overflow: hidden;
 
-		animation: ${isUpdating ? "disappear" : "appear"} 0.3s ease both;
+		animation: ${isUpdating ? "disappear" : "appear"} var(--reveal-duration) ease both;
 
-		transition: background-color 0.3s ease, border-color 0.3s ease;
+		transition:
+			background-color var(--reveal-duration) var(--reveal-delay) ease,
+			border-color var(--reveal-duration) var(--reveal-delay) ease;
 
 		&::before {
 			content: "";
@@ -72,9 +77,9 @@ const PuzzleStyled = styled.ul<{
 			background-size: cover;
 			background-position: center;
 			background-image: var(--image);
-			
+
 			opacity: ${isFinished ? 1 : 0};
-			transition: opacity 0.3s ease;
+			transition: opacity var(--reveal-duration) var(--reveal-delay) ease;
 		}
 	`
 )
@@ -82,14 +87,12 @@ const PuzzleStyled = styled.ul<{
 export function Puzzle({
 	imageInfo,
 	onCompleteLevel,
-	isDisabled,
 	isFinished,
 	isUpdating,
 	level,
 }: {
 	imageInfo: ImageInfo
 	onCompleteLevel: () => void
-	isDisabled: boolean
 	isFinished: boolean
 	isUpdating: boolean
 	level: Level
@@ -99,7 +102,7 @@ export function Puzzle({
 
 	const elements = tiles.map((tile) => {
 		const handleClick = () => {
-			if (isDisabled || isUpdating || isFinished) {
+			if (isUpdating || isFinished) {
 				return
 			}
 
@@ -122,7 +125,6 @@ export function Puzzle({
 				tile={tile}
 				handleClick={handleClick}
 				puzzleRef={puzzleRef}
-				isDisabled={isDisabled}
 				isFinished={isFinished}
 			/>
 		)

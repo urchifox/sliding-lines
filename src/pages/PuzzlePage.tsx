@@ -107,7 +107,6 @@ const PuzzleWrapper = styled.div`
 export function PuzzlePage() {
 	const [puzzleData, setPuzzleData] = useState<PuzzleData | null>(null)
 	const [boardVersion, setBoardVersion] = useState(0)
-	const [isDisabled, setDisabledState] = useState<boolean>(false)
 	const [isFinished, setFinishedState] = useState<boolean>(false)
 	const [isUpdating, setUpdateState] = useState<boolean>(false)
 	const [isError, setError] = useState<boolean>(false)
@@ -146,11 +145,7 @@ export function PuzzlePage() {
 	}
 
 	const onCompleteLevel = () => {
-		setDisabledState(true)
-
-		setTimeout(() => {
-			setFinishedState(true)
-		}, 500)
+		setFinishedState(true)
 	}
 
 	const handleRestartClick = () => {
@@ -160,7 +155,6 @@ export function PuzzlePage() {
 		restartLevel(puzzleData.level)
 		setBoardVersion((version) => version + 1)
 		setFinishedState(false)
-		setDisabledState(false)
 	}
 
 	const handleStartClick = () => {
@@ -172,7 +166,6 @@ export function PuzzlePage() {
 		setTimeout(() => {
 			setPuzzleData(null)
 			setUpdateState(false)
-			setDisabledState(false)
 		}, 1 * 1000)
 	}
 
@@ -197,7 +190,6 @@ export function PuzzlePage() {
 					key={boardVersion}
 					imageInfo={puzzleData.imageInfo}
 					onCompleteLevel={onCompleteLevel}
-					isDisabled={isDisabled}
 					isFinished={isFinished}
 					isUpdating={isUpdating}
 					level={puzzleData.level}

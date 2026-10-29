@@ -148,24 +148,27 @@ function getTileElement(renderResult: RenderResult, tile: PuzzleTileInfo) {
 	return renderResult.getByRole("listitem", { name: getTileLabel(tile.key) })
 }
 
+function getTileButton(tileElement: HTMLElement) {
+	return tileElement.querySelector('button') as HTMLButtonElement
+}
+
 function getAllTilesElements(renderResult: RenderResult) {
 	return renderResult.getAllByRole("listitem", { name: tileLabelMatcher })
 }
 
 describe("Puzzle", () => {
 	it.each([
-		{ isDisabled: false, isFinished: false, isUpdating: false },
-		{ isDisabled: true, isFinished: true, isUpdating: true },
+		{ isFinished: false, isUpdating: false },
+		{ isFinished: true, isUpdating: true },
 	])(
-		"renders correctly with states isDisabled: $isDisabled, isFinished: $isFinished, isUpdating: $isUpdating",
-		({ isDisabled, isFinished, isUpdating }) => {
+		"renders correctly with states isFinished: $isFinished, isUpdating: $isUpdating",
+		({ isFinished, isUpdating }) => {
 			const { level, imageInfo, onCompleteLevel } = getPuzzleData()
 
 			const renderResult = render(
 				<Puzzle
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
-					isDisabled={isDisabled}
 					isFinished={isFinished}
 					isUpdating={isUpdating}
 					level={level}
@@ -189,7 +192,6 @@ describe("Puzzle", () => {
 				<Puzzle
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
-					isDisabled={false}
 					isFinished={false}
 					isUpdating={false}
 					level={level}
@@ -197,8 +199,9 @@ describe("Puzzle", () => {
 			)
 
 			const tileElement = getTileElement(renderResult, tile)
+			const tileButton = getTileButton(tileElement)
 			const emptySlotElement = getTileElement(renderResult, emptySlot)
-			fireEvent.click(tileElement)
+			fireEvent.click(tileButton)
 
 			expect(tileElement.style.getPropertyValue("--row")).toBe(
 				emptySlotInitialPosition.row.toString()
@@ -221,7 +224,6 @@ describe("Puzzle", () => {
 			<Puzzle
 				imageInfo={imageInfo}
 				onCompleteLevel={onCompleteLevel}
-				isDisabled={false}
 				isFinished={false}
 				isUpdating={false}
 				level={level}
@@ -255,7 +257,6 @@ describe("Puzzle", () => {
 				<Puzzle
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
-					isDisabled={false}
 					isFinished={false}
 					isUpdating={false}
 					level={level}
@@ -263,38 +264,9 @@ describe("Puzzle", () => {
 			)
 			const tileElement = getTileElement(renderResult, tile)
 			const tilesElements = getAllTilesElements(renderResult)
+			const tileButton = getTileButton(tileElement)
 
-			fireEvent.click(tileElement)
-
-			expect(tilesElements.length).toBe(level.tiles.length)
-			for (const tilesElement of tilesElements) {
-				expect(tilesElement).toBeInTheDocument()
-				expect(tilesElement.style.getPropertyValue("--row") === "").toBe(true)
-				expect(tilesElement.style.getPropertyValue("--col") === "").toBe(true)
-			}
-			expect(onCompleteLevel).not.toHaveBeenCalled()
-		}
-	)
-
-	it.each([{ tileIndex: 1 }, { tileIndex: 3 }])(
-		"ignores clicks on tiles when isDisabled is true",
-		({ tileIndex }) => {
-			const { level, imageInfo, onCompleteLevel } = getPuzzleData()
-			const tile = level.tiles[tileIndex]
-			const renderResult = render(
-				<Puzzle
-					imageInfo={imageInfo}
-					onCompleteLevel={onCompleteLevel}
-					isDisabled={true}
-					isFinished={false}
-					isUpdating={false}
-					level={level}
-				/>
-			)
-			const tileElement = getTileElement(renderResult, tile)
-			const tilesElements = getAllTilesElements(renderResult)
-
-			fireEvent.click(tileElement)
+			fireEvent.click(tileButton)
 
 			expect(tilesElements.length).toBe(level.tiles.length)
 			for (const tilesElement of tilesElements) {
@@ -315,7 +287,6 @@ describe("Puzzle", () => {
 				<Puzzle
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
-					isDisabled={false}
 					isFinished={true}
 					isUpdating={false}
 					level={level}
@@ -323,8 +294,9 @@ describe("Puzzle", () => {
 			)
 			const tileElement = getTileElement(renderResult, tile)
 			const tilesElements = getAllTilesElements(renderResult)
-
-			fireEvent.click(tileElement)
+			const tileButton = getTileButton(tileElement)
+			
+			fireEvent.click(tileButton)
 
 			expect(tilesElements.length).toBe(level.tiles.length)
 			for (const tilesElement of tilesElements) {
@@ -345,7 +317,6 @@ describe("Puzzle", () => {
 				<Puzzle
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
-					isDisabled={false}
 					isFinished={false}
 					isUpdating={true}
 					level={level}
@@ -353,8 +324,9 @@ describe("Puzzle", () => {
 			)
 			const tileElement = getTileElement(renderResult, tile)
 			const tilesElements = getAllTilesElements(renderResult)
+			const tileButton = getTileButton(tileElement)
 
-			fireEvent.click(tileElement)
+			fireEvent.click(tileButton)
 
 			expect(tilesElements.length).toBe(level.tiles.length)
 			for (const tilesElement of tilesElements) {
@@ -374,21 +346,22 @@ describe("Puzzle", () => {
 			<Puzzle
 				imageInfo={imageInfo}
 				onCompleteLevel={onCompleteLevel}
-				isDisabled={false}
 				isFinished={false}
 				isUpdating={false}
 				level={level}
 			/>
 		)
 		const tile1Element = getTileElement(renderResult, tile1)
+		const tile1Button = getTileButton(tile1Element)
 		const tile2Element = getTileElement(renderResult, tile2)
+		const tile2Button = getTileButton(tile2Element)
 		const emptySlotElement = getTileElement(renderResult, emptySlot)
 		const tilesElements = getAllTilesElements(renderResult)
 
-		fireEvent.click(tile1Element)
+		fireEvent.click(tile1Button)
 		expect(onCompleteLevel).not.toHaveBeenCalled()
 
-		fireEvent.click(tile2Element)
+		fireEvent.click(tile2Button)
 		expect(onCompleteLevel).toHaveBeenCalledOnce()
 
 		expect(emptySlotElement.style.getPropertyValue("--row")).toBe(

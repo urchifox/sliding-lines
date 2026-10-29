@@ -3,6 +3,7 @@
 exports[`Puzzle > renders correctly with states isDisabled: false, isFinished: false, isUpdating: false 1`] = `
 <div>
   <ul
+    aria-label="Puzzle board"
     class="emotion-0"
     height="100"
     rows="3"
@@ -11,39 +12,148 @@ exports[`Puzzle > renders correctly with states isDisabled: false, isFinished: f
     <li
       aria-label="Tile 1-3"
       class="emotion-1"
-    />
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 1-1"
-      class="emotion-2"
-    />
+      class="emotion-3"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 1-2"
-      class="emotion-3"
-    />
+      class="emotion-5"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 2-1"
-      class="emotion-4"
-    />
+      class="emotion-7"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 2-2"
-      class="emotion-5"
-    />
+      class="emotion-9"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 2-3"
-      class="emotion-6"
-    />
+      class="emotion-11"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 3-1"
-      class="emotion-7"
-    />
+      class="emotion-13"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 3-2"
-      class="emotion-8"
-    />
+      class="emotion-15"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 3-3"
-      class="emotion-9"
-    />
+      class="emotion-17"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
   </ul>
 </div>
 `;
@@ -51,6 +161,7 @@ exports[`Puzzle > renders correctly with states isDisabled: false, isFinished: f
 exports[`Puzzle > renders correctly with states isDisabled: true, isFinished: true, isUpdating: true 1`] = `
 <div>
   <ul
+    aria-label="Puzzle board"
     class="emotion-0"
     height="100"
     rows="3"
@@ -59,39 +170,804 @@ exports[`Puzzle > renders correctly with states isDisabled: true, isFinished: tr
     <li
       aria-label="Tile 1-3"
       class="emotion-1"
-    />
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 1-1"
-      class="emotion-2"
-    />
+      class="emotion-3"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 1-2"
-      class="emotion-3"
-    />
+      class="emotion-5"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 2-1"
-      class="emotion-4"
-    />
+      class="emotion-7"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 2-2"
-      class="emotion-5"
-    />
+      class="emotion-9"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 2-3"
-      class="emotion-6"
-    />
+      class="emotion-11"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 3-1"
-      class="emotion-7"
-    />
+      class="emotion-13"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 3-2"
-      class="emotion-8"
-    />
+      class="emotion-15"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
     <li
       aria-label="Tile 3-3"
+      class="emotion-17"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`Puzzle > renders correctly with states isDisabled: undefined, isFinished: false, isUpdating: false 1`] = `
+<div>
+  <ul
+    aria-label="Puzzle board"
+    class="emotion-0"
+    height="100"
+    rows="3"
+    width="100"
+  >
+    <li
+      aria-label="Tile 1-3"
+      class="emotion-1"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 1-1"
+      class="emotion-3"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 1-2"
+      class="emotion-5"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 2-1"
+      class="emotion-7"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 2-2"
       class="emotion-9"
-    />
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 2-3"
+      class="emotion-11"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 3-1"
+      class="emotion-13"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 3-2"
+      class="emotion-15"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 3-3"
+      class="emotion-17"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`Puzzle > renders correctly with states isDisabled: undefined, isFinished: true, isUpdating: true 1`] = `
+<div>
+  <ul
+    aria-label="Puzzle board"
+    class="emotion-0"
+    height="100"
+    rows="3"
+    width="100"
+  >
+    <li
+      aria-label="Tile 1-3"
+      class="emotion-1"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 1-1"
+      class="emotion-3"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 1-2"
+      class="emotion-5"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 2-1"
+      class="emotion-7"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 2-2"
+      class="emotion-9"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 2-3"
+      class="emotion-11"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 3-1"
+      class="emotion-13"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 3-2"
+      class="emotion-15"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 3-3"
+      class="emotion-17"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`Puzzle > renders correctly with states isFinished: false, isUpdating: false 1`] = `
+<div>
+  <ul
+    aria-label="Puzzle board"
+    class="emotion-0"
+    height="100"
+    rows="3"
+    width="100"
+  >
+    <li
+      aria-label="Tile 1-3"
+      class="emotion-1"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 1-1"
+      class="emotion-3"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 1-2"
+      class="emotion-5"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 2-1"
+      class="emotion-7"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 2-2"
+      class="emotion-9"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 2-3"
+      class="emotion-11"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 3-1"
+      class="emotion-13"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 3-2"
+      class="emotion-15"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 3-3"
+      class="emotion-17"
+    >
+      <button
+        class="emotion-2"
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`Puzzle > renders correctly with states isFinished: true, isUpdating: true 1`] = `
+<div>
+  <ul
+    aria-label="Puzzle board"
+    class="emotion-0"
+    height="100"
+    rows="3"
+    width="100"
+  >
+    <li
+      aria-label="Tile 1-3"
+      class="emotion-1"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 1-1"
+      class="emotion-3"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 1-2"
+      class="emotion-5"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        1
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 2-1"
+      class="emotion-7"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 2-2"
+      class="emotion-9"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 2-3"
+      class="emotion-11"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        2
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 3-1"
+      class="emotion-13"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        1
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 3-2"
+      class="emotion-15"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        2
+         
+        column
+      </button>
+    </li>
+    <li
+      aria-label="Tile 3-3"
+      class="emotion-17"
+    >
+      <button
+        class="emotion-2"
+        disabled=""
+        type="button"
+      >
+        Try move tile in $
+        3
+        row and $
+        3
+         
+        column
+      </button>
+    </li>
   </ul>
 </div>
 `;
