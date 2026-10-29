@@ -2,9 +2,9 @@
 import { createSerializer } from "@emotion/jest"
 import { fireEvent, render } from "@testing-library/react"
 
+import { getTileLabel, tileLabelMatcher } from "../../test/testHelpers"
 import type { PuzzleTileInfo } from "../domain/types"
 import { PuzzleTile } from "./PuzzleTile"
-import { tileLabelMatcher, getTileLabel } from "../../test/testHelpers"
 
 function getPuzzleTileData() {
 	const tile = {
@@ -81,7 +81,7 @@ describe("PuzzleTile", () => {
 			/>
 		)
 
-		const button = renderResult.getByRole('button')
+		const button = renderResult.getByRole("button")
 		fireEvent.click(button)
 
 		expect(handleClick).toHaveBeenCalledOnce()

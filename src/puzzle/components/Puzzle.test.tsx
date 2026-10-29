@@ -2,9 +2,9 @@
 import { createSerializer } from "@emotion/jest"
 import { type RenderResult, fireEvent, render } from "@testing-library/react"
 
+import { getTileLabel, tileLabelMatcher } from "../../test/testHelpers"
 import type { Level, PuzzleTileInfo } from "../domain/types"
 import { Puzzle } from "./Puzzle"
-import { tileLabelMatcher, getTileLabel } from "../../test/testHelpers"
 
 expect.addSnapshotSerializer(createSerializer({ includeStyles: false }))
 
@@ -149,7 +149,7 @@ function getTileElement(renderResult: RenderResult, tile: PuzzleTileInfo) {
 }
 
 function getTileButton(tileElement: HTMLElement) {
-	return tileElement.querySelector('button') as HTMLButtonElement
+	return tileElement.querySelector("button") as HTMLButtonElement
 }
 
 function getAllTilesElements(renderResult: RenderResult) {
@@ -295,7 +295,7 @@ describe("Puzzle", () => {
 			const tileElement = getTileElement(renderResult, tile)
 			const tilesElements = getAllTilesElements(renderResult)
 			const tileButton = getTileButton(tileElement)
-			
+
 			fireEvent.click(tileButton)
 
 			expect(tilesElements.length).toBe(level.tiles.length)
