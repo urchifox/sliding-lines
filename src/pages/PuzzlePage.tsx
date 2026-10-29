@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 
 import { theme } from "../assets/styles/theme"
 import { Puzzle } from "../puzzle/components/Puzzle"
-import { resetLevel, shuffleLevel } from "../puzzle/domain/level"
+import { restartLevel } from "../puzzle/domain/level"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
 import type { PuzzleData } from "../puzzle/domain/types"
 import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
@@ -157,8 +157,7 @@ export function PuzzlePage() {
 		if (isFinished || isUpdating) {
 			return
 		}
-		resetLevel(puzzleData.level)
-		shuffleLevel(puzzleData.level)
+		restartLevel(puzzleData.level)
 		setBoardVersion((version) => version + 1)
 		setFinishedState(false)
 		setDisabledState(false)

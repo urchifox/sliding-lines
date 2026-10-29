@@ -1,4 +1,4 @@
-import { createLevel, resetLevel, shuffleLevel } from "./level"
+import { createLevel, resetLevel, restartLevel, shuffleLevel } from "./level"
 
 describe("Level", () => {
 	describe("createLevel", () => {
@@ -147,6 +147,23 @@ describe("Level", () => {
 		shuffleLevel(level)
 
 		expect(tiles).not.toEqual(tilesBeforeShuffle)
+		expect(
+			level.tiles.some(
+				(tile) =>
+					tile.currentPosition.row !== tile.originalPosition.row ||
+					tile.currentPosition.column !== tile.originalPosition.column
+			)
+		).toBe(true)
+	})
+
+	it("restarts the level", () => {
+		const level = createLevel(0)
+		const { tiles } = level
+		const tilesBeforeRestart = structuredClone(tiles)
+
+		restartLevel(level)
+
+		expect(tiles).not.toEqual(tilesBeforeRestart)
 		expect(
 			level.tiles.some(
 				(tile) =>
