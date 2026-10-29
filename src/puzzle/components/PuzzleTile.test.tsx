@@ -4,7 +4,7 @@ import { fireEvent, render } from "@testing-library/react"
 
 import type { PuzzleTileInfo } from "../domain/types"
 import { PuzzleTile } from "./PuzzleTile"
-import { getTileLabel, tileLabelMatcher } from "./testsHelpers"
+import { tileLabelMatcher, getTileLabel } from "../../test/testHelpers"
 
 function getPuzzleTileData() {
 	const tile = {

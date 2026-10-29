@@ -4,7 +4,7 @@ import { type RenderResult, fireEvent, render } from "@testing-library/react"
 
 import type { Level, PuzzleTileInfo } from "../domain/types"
 import { Puzzle } from "./Puzzle"
-import { getTileLabel, tileLabelMatcher } from "./testsHelpers"
+import { tileLabelMatcher, getTileLabel } from "../../test/testHelpers"
 
 expect.addSnapshotSerializer(createSerializer({ includeStyles: false }))
 
