@@ -1,5 +1,7 @@
 import { createLevel, resetLevel, restartLevel, shuffleLevel } from "./level"
 
+const random = vi.spyOn(Math, "random")
+
 describe("Level", () => {
 	describe("createLevel", () => {
 		it.each([
@@ -139,10 +141,12 @@ describe("Level", () => {
 	})
 
 	it("shuffles the level", () => {
+		random.mockReturnValue(0)
 		const level = createLevel(0)
 		resetLevel(level)
 		const { tiles } = level
 		const tilesBeforeShuffle = structuredClone(tiles)
+		random.mockReturnValue(0.5)
 
 		shuffleLevel(level)
 
@@ -157,9 +161,11 @@ describe("Level", () => {
 	})
 
 	it("restarts the level", () => {
+		random.mockReturnValue(0)
 		const level = createLevel(0)
 		const { tiles } = level
 		const tilesBeforeRestart = structuredClone(tiles)
+		random.mockReturnValue(0.5)
 
 		restartLevel(level)
 
