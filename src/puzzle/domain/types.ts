@@ -34,3 +34,7 @@ export type ImageInfo = {
 	height: number
 	ratio: number
 }
+
+export type BoardState =
+	| { isFinished: false; isUpdating: false }
+	| { isFinished: true; isUpdating: boolean }

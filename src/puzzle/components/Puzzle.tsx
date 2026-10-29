@@ -4,19 +4,19 @@ import { useRef } from "react"
 import { clearList } from "../../assets/styles/mixins"
 import { theme } from "../../assets/styles/theme"
 import { tryMove } from "../domain/game"
-import { type ImageInfo, type Level } from "../domain/types"
+import { type BoardState, type ImageInfo, type Level } from "../domain/types"
 import { PuzzleTile } from "./PuzzleTile"
 
-const PuzzleStyled = styled.ul<{
-	width: number
-	height: number
-	ratio: number
-	columns: number
-	rows: number
-	imageUrl: string
-	isFinished: boolean
-	isUpdating: boolean
-}>(
+const PuzzleStyled = styled.ul<
+	{
+		width: number
+		height: number
+		ratio: number
+		columns: number
+		rows: number
+		imageUrl: string
+	} & BoardState
+>(
 	({
 		width,
 		height,
@@ -42,13 +42,13 @@ const PuzzleStyled = styled.ul<{
 		position: relative;
 
 		border-radius: 5px;
-		border: 2px solid ${isFinished || isUpdating ? "transparent" : theme.color.secondary};
+		border: 2px solid ${isFinished ? "transparent" : theme.color.secondary};
 		width: min(var(--max-puzzle-width), calc(var(--max-puzzle-height) * var(--ratio)));
 		height: min(var(--max-puzzle-height), calc(var(--max-puzzle-width) / var(--ratio)));
 
 		aspect-ratio: var(--ratio);
 
-		background-color: ${isFinished || isUpdating ? "transparent" : theme.color.secondary};
+		background-color: ${isFinished ? "transparent" : theme.color.secondary};
 
 		display: grid;
 		grid-template-rows: 1fr;
@@ -87,22 +87,20 @@ const PuzzleStyled = styled.ul<{
 export function Puzzle({
 	imageInfo,
 	onCompleteLevel,
-	isFinished,
-	isUpdating,
+	boardState,
 	level,
 }: {
 	imageInfo: ImageInfo
 	onCompleteLevel: () => void
-	isFinished: boolean
-	isUpdating: boolean
 	level: Level
+	boardState: BoardState
 }) {
 	const { tiles, columns, rows } = level
 	const puzzleRef = useRef<Record<string, HTMLElement | null>>({})
 
 	const elements = tiles.map((tile) => {
 		const handleClick = () => {
-			if (isUpdating || isFinished) {
+			if (boardState.isFinished) {
 				return
 			}
 
@@ -125,7 +123,7 @@ export function Puzzle({
 				tile={tile}
 				handleClick={handleClick}
 				puzzleRef={puzzleRef}
-				isFinished={isFinished}
+				isFinished={boardState.isFinished}
 			/>
 		)
 	})
@@ -133,10 +131,9 @@ export function Puzzle({
 	return (
 		<PuzzleStyled
 			{...imageInfo}
+			{...boardState}
 			columns={columns}
 			rows={rows}
-			isFinished={isFinished}
-			isUpdating={isUpdating}
 			aria-label="Puzzle board"
 		>
 			{elements}

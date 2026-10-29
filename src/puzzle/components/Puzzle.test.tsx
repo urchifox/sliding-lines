@@ -158,20 +158,19 @@ function getAllTilesElements(renderResult: RenderResult) {
 
 describe("Puzzle", () => {
 	it.each([
-		{ isFinished: false, isUpdating: false },
-		{ isFinished: true, isUpdating: true },
+		{ isFinished: false, isUpdating: false } as const,
+		{ isFinished: true, isUpdating: true } as const,
 	])(
 		"renders correctly with states isFinished: $isFinished, isUpdating: $isUpdating",
-		({ isFinished, isUpdating }) => {
+		(boardState) => {
 			const { level, imageInfo, onCompleteLevel } = getPuzzleData()
 
 			const renderResult = render(
 				<Puzzle
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
-					isFinished={isFinished}
-					isUpdating={isUpdating}
 					level={level}
+					boardState={boardState}
 				/>
 			)
 
@@ -192,8 +191,7 @@ describe("Puzzle", () => {
 				<Puzzle
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
-					isFinished={false}
-					isUpdating={false}
+					boardState={{ isFinished: false, isUpdating: false }}
 					level={level}
 				/>
 			)
@@ -224,8 +222,7 @@ describe("Puzzle", () => {
 			<Puzzle
 				imageInfo={imageInfo}
 				onCompleteLevel={onCompleteLevel}
-				isFinished={false}
-				isUpdating={false}
+				boardState={{ isFinished: false, isUpdating: false }}
 				level={level}
 			/>
 		)
@@ -257,8 +254,7 @@ describe("Puzzle", () => {
 				<Puzzle
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
-					isFinished={false}
-					isUpdating={false}
+					boardState={{ isFinished: false, isUpdating: false }}
 					level={level}
 				/>
 			)
@@ -287,8 +283,7 @@ describe("Puzzle", () => {
 				<Puzzle
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
-					isFinished={true}
-					isUpdating={false}
+					boardState={{ isFinished: true, isUpdating: false }}
 					level={level}
 				/>
 			)
@@ -317,8 +312,7 @@ describe("Puzzle", () => {
 				<Puzzle
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
-					isFinished={false}
-					isUpdating={true}
+					boardState={{ isFinished: true, isUpdating: true }}
 					level={level}
 				/>
 			)
@@ -346,8 +340,7 @@ describe("Puzzle", () => {
 			<Puzzle
 				imageInfo={imageInfo}
 				onCompleteLevel={onCompleteLevel}
-				isFinished={false}
-				isUpdating={false}
+				boardState={{ isFinished: false, isUpdating: false }}
 				level={level}
 			/>
 		)

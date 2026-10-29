@@ -7,7 +7,7 @@ import { theme } from "../assets/styles/theme"
 import { Puzzle } from "../puzzle/components/Puzzle"
 import { restartLevel } from "../puzzle/domain/level"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
-import type { PuzzleData } from "../puzzle/domain/types"
+import type { BoardState, PuzzleData } from "../puzzle/domain/types"
 import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { PageStyled } from "../ui/Page"
@@ -38,7 +38,7 @@ const PuzzlePageStyled = styled(PageStyled)`
 	gap: var(--gap);
 `
 
-const LevelName = styled(TextStyled)<{ isUpdating: boolean }>(
+const LevelName = styled(TextStyled)<BoardState>(
 	({ isUpdating }) => `
 	margin: 0;
 	grid-column: 1 / 2;
@@ -53,49 +53,46 @@ const LevelName = styled(TextStyled)<{ isUpdating: boolean }>(
 `
 )
 
-const RestartButton = styled(ButtonIconStyled)<{
-	isFinished: boolean
-	isUpdating: boolean
-}>(
-	({ isFinished, isUpdating }) => `
+const RestartButton = styled(ButtonIconStyled)<BoardState>(
+	({ isFinished }) => `
 	grid-column: 2 / 3;
 	grid-row: 1 / 2;
 	justify-self: end;
 
 	mask-image: url(${replayIcon});
 
-	opacity: ${isFinished || isUpdating ? 0 : 1};
+	opacity: ${isFinished ? 0 : 1};
 	transition: opacity 0.3s ease;
 `
 )
 
-const WinHeader = styled(HeaderStyled)<{
-	isFinished: boolean
-	isUpdating: boolean
-}>(({ isFinished, isUpdating }) => {
+const WinHeader = styled(HeaderStyled)<BoardState>(({
+	isFinished,
+	isUpdating,
+}) => {
 	return `
 	grid-column: 1 / -1;
 	grid-row: 2 / 3;
 	z-index: 1;
 	align-self: start;
-	display: ${isFinished || isUpdating ? "block" : "none"};
+	display: ${isFinished ? "block" : "none"};
 
-	animation: ${isFinished ? "slide-in-from-left" : isUpdating ? "slide-out-to-right" : "none"} 1s 0.3s ease both;
+	animation: ${isUpdating ? "slide-out-to-right" : isFinished ? "slide-in-from-left" : "none"} 1s 0.3s ease both;
 `
 })
 
-const PlayButton = styled(ButtonWithTextStyled)<{
-	isFinished: boolean
-	isUpdating: boolean
-}>(({ isFinished, isUpdating }) => {
+const PlayButton = styled(ButtonWithTextStyled)<BoardState>(({
+	isFinished,
+	isUpdating,
+}) => {
 	return `
 	grid-column: 1 / -1;
 	grid-row: 2 / 3;
 	align-self: end;
 	z-index: 1;
-	display: ${isFinished || isUpdating ? "block" : "none"};
+	display: ${isFinished ? "block" : "none"};
 
-	animation: ${isFinished ? "slide-in-from-right" : isUpdating ? "slide-out-to-left" : "none"} 1s 0.3s ease both;
+	animation: ${isUpdating ? "slide-out-to-left" : isFinished ? "slide-in-from-right" : "none"} 1s 0.3s ease both;
 `
 })
 
@@ -110,6 +107,10 @@ export function PuzzlePage() {
 	const [isFinished, setFinishedState] = useState<boolean>(false)
 	const [isUpdating, setUpdateState] = useState<boolean>(false)
 	const [isError, setError] = useState<boolean>(false)
+
+	const boardState: BoardState = isFinished
+		? { isFinished: true as const, isUpdating }
+		: { isFinished: false as const, isUpdating: false as const }
 
 	useEffect(() => {
 		if (puzzleData !== null) {
@@ -149,7 +150,7 @@ export function PuzzlePage() {
 	}
 
 	const handleRestartClick = () => {
-		if (isFinished || isUpdating) {
+		if (boardState.isFinished) {
 			return
 		}
 		restartLevel(puzzleData.level)
@@ -158,14 +159,14 @@ export function PuzzlePage() {
 	}
 
 	const handleStartClick = () => {
-		if (!isFinished || isUpdating) {
+		if (!boardState.isFinished) {
 			return
 		}
-		setFinishedState(false)
 		setUpdateState(true)
 		setTimeout(() => {
 			setPuzzleData(null)
 			setUpdateState(false)
+			setFinishedState(false)
 		}, 1 * 1000)
 	}
 
@@ -174,31 +175,26 @@ export function PuzzlePage() {
 
 	return (
 		<PuzzlePageStyled>
-			<LevelName isUpdating={isUpdating}>Level {visualLevelNumber}</LevelName>
+			<LevelName {...boardState}>Level {visualLevelNumber}</LevelName>
 			<RestartButton
 				aria-label="Restart"
 				onClick={handleRestartClick}
-				isFinished={isFinished}
-				isUpdating={isUpdating}
-				disabled={isFinished || isUpdating}
+				disabled={boardState.isFinished}
+				{...boardState}
 			/>
-			<WinHeader isFinished={isFinished} isUpdating={isUpdating}>
-				You have won!
-			</WinHeader>
+			<WinHeader {...boardState}>You have won!</WinHeader>
 			<PuzzleWrapper>
 				<Puzzle
 					key={boardVersion}
 					imageInfo={puzzleData.imageInfo}
 					onCompleteLevel={onCompleteLevel}
-					isFinished={isFinished}
-					isUpdating={isUpdating}
 					level={puzzleData.level}
+					boardState={boardState}
 				/>
 			</PuzzleWrapper>
 			<PlayButton
-				isFinished={isFinished}
-				isUpdating={isUpdating}
-				disabled={isUpdating}
+				{...boardState}
+				disabled={boardState.isUpdating}
 				onClick={handleStartClick}
 			>
 				Solve next puzzle
