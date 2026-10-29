@@ -4,10 +4,10 @@ import styled from "@emotion/styled"
 import { useEffect, useState } from "react"
 
 import { theme } from "../assets/styles/theme"
-import { getLevelNumber } from "../progress/user"
 import { Puzzle } from "../puzzle/components/Puzzle"
-import { type ImageInfo, getImageInfo } from "../puzzle/domain/images"
-import { createLevel, resetLevel, shuffleLevel } from "../puzzle/domain/level"
+import { resetLevel, shuffleLevel } from "../puzzle/domain/level"
+import { createPuzzleData } from "../puzzle/domain/puzzleData"
+import type { PuzzleData } from "../puzzle/domain/types"
 import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { PageStyled } from "../ui/Page"
@@ -104,31 +104,24 @@ const PuzzleWrapper = styled.div`
 	grid-row: 2 / 3;
 `
 
-function createPuzzle() {
-	const levelNumber = getLevelNumber()
-	const level = createLevel(levelNumber)
-	return { levelNumber, level }
-}
-
 export function PuzzlePage() {
-	const [puzzle, setPuzzle] = useState(createPuzzle)
+	const [puzzleData, setPuzzleData] = useState<PuzzleData | null>(null)
 	const [boardVersion, setBoardVersion] = useState(0)
-	const [imageInfo, setImageInfo] = useState<ImageInfo | null>(null)
 	const [isDisabled, setDisabledState] = useState<boolean>(false)
 	const [isFinished, setFinishedState] = useState<boolean>(false)
 	const [isUpdating, setUpdateState] = useState<boolean>(false)
 	const [isError, setError] = useState<boolean>(false)
 
 	useEffect(() => {
-		if (imageInfo !== null) {
+		if (puzzleData !== null) {
 			return
 		}
 
 		let cancelled = false
-		getImageInfo(puzzle.levelNumber)
+		createPuzzleData()
 			.then((value) => {
 				if (!cancelled) {
-					setImageInfo(value)
+					setPuzzleData(value)
 				}
 			})
 			.catch(() => {
@@ -140,9 +133,9 @@ export function PuzzlePage() {
 		return () => {
 			cancelled = true
 		}
-	}, [imageInfo, puzzle.levelNumber])
+	}, [puzzleData])
 
-	if (imageInfo === null) {
+	if (puzzleData === null) {
 		return (
 			<PageStyled>
 				<LoadingText color={theme.color.secondary}>
@@ -164,8 +157,8 @@ export function PuzzlePage() {
 		if (isFinished || isUpdating) {
 			return
 		}
-		resetLevel(puzzle.level)
-		shuffleLevel(puzzle.level)
+		resetLevel(puzzleData.level)
+		shuffleLevel(puzzleData.level)
 		setBoardVersion((version) => version + 1)
 		setFinishedState(false)
 		setDisabledState(false)
@@ -178,15 +171,14 @@ export function PuzzlePage() {
 		setFinishedState(false)
 		setUpdateState(true)
 		setTimeout(() => {
-			setPuzzle(createPuzzle())
-			setImageInfo(null)
+			setPuzzleData(null)
 			setUpdateState(false)
 			setDisabledState(false)
 		}, 1 * 1000)
 	}
 
 	// Progress stores how many levels are finished, starting at 0.
-	const visualLevelNumber = puzzle.levelNumber + 1
+	const visualLevelNumber = puzzleData.levelNumber + 1
 
 	return (
 		<PuzzlePageStyled>
@@ -204,12 +196,12 @@ export function PuzzlePage() {
 			<PuzzleWrapper>
 				<Puzzle
 					key={boardVersion}
-					imageInfo={imageInfo}
+					imageInfo={puzzleData.imageInfo}
 					onCompleteLevel={onCompleteLevel}
 					isDisabled={isDisabled}
 					isFinished={isFinished}
 					isUpdating={isUpdating}
-					level={puzzle.level}
+					level={puzzleData.level}
 				/>
 			</PuzzleWrapper>
 			<PlayButton

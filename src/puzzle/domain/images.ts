@@ -1,9 +1,4 @@
-export type ImageInfo = {
-	imageUrl: string
-	width: number
-	height: number
-	ratio: number
-}
+import type { ImageInfo } from "./types"
 
 const imagesNames = (function () {
 	const pathStart = "../../assets/images/puzzle-img-"

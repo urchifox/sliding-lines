@@ -12,6 +12,12 @@ export type PuzzleTileInfo = {
 
 export type TileKey = `${number}-${number}`
 
+export type PuzzleData = {
+	levelNumber: number
+	level: Level
+	imageInfo: ImageInfo
+}
+
 export type Level = LevelConfig & {
 	tiles: Array<PuzzleTileInfo>
 }
@@ -20,4 +26,11 @@ export type LevelConfig = {
 	rows: number
 	columns: number
 	shuffleSteps: number
+}
+
+export type ImageInfo = {
+	imageUrl: string
+	width: number
+	height: number
+	ratio: number
 }

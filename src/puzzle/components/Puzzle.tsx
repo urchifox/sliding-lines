@@ -4,8 +4,7 @@ import { useRef } from "react"
 import { clearList } from "../../assets/styles/mixins"
 import { theme } from "../../assets/styles/theme"
 import { tryMove } from "../domain/game"
-import { type ImageInfo } from "../domain/images"
-import { type Level } from "../domain/types"
+import { type ImageInfo, type Level } from "../domain/types"
 import { PuzzleTile } from "./PuzzleTile"
 
 const PuzzleStyled = styled.ul<{
