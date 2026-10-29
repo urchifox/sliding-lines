@@ -135,6 +135,7 @@ export function Puzzle({
 			rows={rows}
 			isFinished={isFinished}
 			isUpdating={isUpdating}
+			aria-label="Puzzle board"
 		>
 			{elements}
 		</PuzzleStyled>
