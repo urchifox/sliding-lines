@@ -164,7 +164,7 @@ export function PuzzlePage() {
 	}
 
 	const handleStartClick = () => {
-		if (isUpdating) {
+		if (!isFinished ||isUpdating) {
 			return
 		}
 		setFinishedState(false)
