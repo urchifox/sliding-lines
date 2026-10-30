@@ -1,118 +1,36 @@
 // @vitest-environment happy-dom
 import { getLevelNumber } from "../../progress/user"
+import { createTile } from "../../test/testHelpers"
 import { getCurrentNeighborsOf, swap, tryMove } from "./game"
 import type { PuzzleTileInfo } from "./types"
 
 function getTiles() {
 	return [
-		{
-			key: "1-3",
-			originalPosition: {
-				row: 1,
-				column: 3,
-			},
-			currentPosition: {
-				row: 1,
-				column: 1,
-			},
+		createTile({
+			originalRow: 1,
+			originalColumn: 3,
+			currentRow: 1,
+			currentColumn: 1,
 			isEmpty: true,
-		},
-		{
-			key: "1-1",
-			originalPosition: {
-				row: 1,
-				column: 1,
-			},
-			currentPosition: {
-				row: 1,
-				column: 2,
-			},
-			isEmpty: false,
-		},
-		{
-			key: "1-2",
-			originalPosition: {
-				row: 1,
-				column: 2,
-			},
-			currentPosition: {
-				row: 1,
-				column: 3,
-			},
-			isEmpty: false,
-		},
-		{
-			key: "2-1",
-			originalPosition: {
-				row: 2,
-				column: 1,
-			},
-			currentPosition: {
-				row: 2,
-				column: 1,
-			},
-			isEmpty: false,
-		},
-		{
-			key: "2-2",
-			originalPosition: {
-				row: 2,
-				column: 2,
-			},
-			currentPosition: {
-				row: 2,
-				column: 2,
-			},
-			isEmpty: false,
-		},
-		{
-			key: "2-3",
-			originalPosition: {
-				row: 2,
-				column: 3,
-			},
-			currentPosition: {
-				row: 2,
-				column: 3,
-			},
-			isEmpty: false,
-		},
-		{
-			key: "3-1",
-			originalPosition: {
-				row: 3,
-				column: 1,
-			},
-			currentPosition: {
-				row: 3,
-				column: 1,
-			},
-			isEmpty: false,
-		},
-		{
-			key: "3-2",
-			originalPosition: {
-				row: 3,
-				column: 2,
-			},
-			currentPosition: {
-				row: 3,
-				column: 2,
-			},
-			isEmpty: false,
-		},
-		{
-			key: "3-3",
-			originalPosition: {
-				row: 3,
-				column: 3,
-			},
-			currentPosition: {
-				row: 3,
-				column: 3,
-			},
-			isEmpty: false,
-		},
+		}),
+		createTile({
+			originalRow: 1,
+			originalColumn: 1,
+			currentRow: 1,
+			currentColumn: 2,
+		}),
+		createTile({
+			originalRow: 1,
+			originalColumn: 2,
+			currentRow: 1,
+			currentColumn: 3,
+		}),
+		createTile({ originalRow: 2, originalColumn: 1 }),
+		createTile({ originalRow: 2, originalColumn: 2 }),
+		createTile({ originalRow: 2, originalColumn: 3 }),
+		createTile({ originalRow: 3, originalColumn: 1 }),
+		createTile({ originalRow: 3, originalColumn: 2 }),
+		createTile({ originalRow: 3, originalColumn: 3 }),
 	] satisfies Array<PuzzleTileInfo>
 }
 

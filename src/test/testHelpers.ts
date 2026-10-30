@@ -1,4 +1,4 @@
-import type { TileKey } from "../puzzle/domain/types"
+import type { PuzzleTileInfo, TileKey } from "../puzzle/domain/types"
 
 export type Deferred<T> = {
 	promise: Promise<T>
@@ -25,3 +25,25 @@ export function getTileLabel(key: TileKey): string {
 }
 
 export const tileLabelMatcher = new RegExp(`${tileLabelPrefix}\\d-\\d`)
+
+export function createTile(props: {
+	originalRow: number
+	originalColumn: number
+	currentRow?: number
+	currentColumn?: number
+	isEmpty?: boolean
+}): PuzzleTileInfo {
+	const {
+		originalRow,
+		originalColumn,
+		currentRow = originalRow,
+		currentColumn = originalColumn,
+		isEmpty = false,
+	} = props
+	return {
+		key: `${originalRow}-${originalColumn}` as TileKey,
+		originalPosition: { row: originalRow, column: originalColumn },
+		currentPosition: { row: currentRow, column: currentColumn },
+		isEmpty,
+	}
+}

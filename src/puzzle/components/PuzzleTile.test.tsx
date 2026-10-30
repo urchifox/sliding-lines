@@ -2,23 +2,15 @@
 import { createSerializer } from "@emotion/jest"
 import { fireEvent, render } from "@testing-library/react"
 
-import { getTileLabel, tileLabelMatcher } from "../../test/testHelpers"
-import type { PuzzleTileInfo } from "../domain/types"
+import {
+	createTile,
+	getTileLabel,
+	tileLabelMatcher,
+} from "../../test/testHelpers"
 import { PuzzleTile } from "./PuzzleTile"
 
 function getPuzzleTileData() {
-	const tile = {
-		key: "1-1",
-		originalPosition: {
-			row: 1,
-			column: 1,
-		},
-		currentPosition: {
-			row: 1,
-			column: 1,
-		},
-		isEmpty: false,
-	} satisfies PuzzleTileInfo
+	const tile = createTile({ originalRow: 1, originalColumn: 1 })
 	const handleClick = vi.fn()
 	const puzzleRef = {
 		current: {
