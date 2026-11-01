@@ -77,7 +77,8 @@ const WinHeader = styled(HeaderStyled)<BoardState>(({
 	align-self: start;
 	display: ${isFinished ? "block" : "none"};
 
-	animation: ${isUpdating ? "slide-out-to-right" : isFinished ? "slide-in-from-left" : "none"} 1s 0.3s ease both;
+	--animation-name: ${isUpdating ? "slide-out-to-right" : isFinished ? "slide-in-from-left" : "none"};
+	animation: var(--animation-name) 1s 0.3s ease both;
 `
 })
 
@@ -92,7 +93,8 @@ const PlayButton = styled(ButtonWithTextStyled)<BoardState>(({
 	z-index: 1;
 	display: ${isFinished ? "block" : "none"};
 
-	animation: ${isUpdating ? "slide-out-to-left" : isFinished ? "slide-in-from-right" : "none"} 1s 0.3s ease both;
+	--animation-name: ${isUpdating ? "slide-out-to-left" : isFinished ? "slide-in-from-right" : "none"};
+	animation: var(--animation-name) 1s 0.3s ease both;
 `
 })
 
