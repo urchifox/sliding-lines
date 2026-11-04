@@ -14,6 +14,7 @@ import type {
 import {
 	createDeferred,
 	createTile,
+	expectTileBeingMovedAt,
 	getPuzzleBoard,
 	getTileButton,
 	getTileElement,
@@ -286,8 +287,7 @@ describe("PuzzlePage", () => {
 
 			const { tileElement } = clickTile("1-1")
 
-			expect(tileElement.style.getPropertyValue("--row")).toBe("1")
-			expect(tileElement.style.getPropertyValue("--col")).toBe("1")
+			expectTileBeingMovedAt({ element: tileElement, row: 1, column: 1 })
 			expectPageChrome({ isFinished: false, isUpdating: false })
 		})
 	})
@@ -326,17 +326,13 @@ describe("PuzzlePage", () => {
 			await renderPuzzlePage()
 			const { tileElement1, tileButton1, tileElement2, tileButton2 } =
 				finishLevel()
-			expect(tileElement1.style.getPropertyValue("--row")).toBe("1")
-			expect(tileElement1.style.getPropertyValue("--col")).toBe("1")
-			expect(tileElement2.style.getPropertyValue("--row")).toBe("1")
-			expect(tileElement2.style.getPropertyValue("--col")).toBe("2")
+			expectTileBeingMovedAt({ element: tileElement1, row: 1, column: 1 })
+			expectTileBeingMovedAt({ element: tileElement2, row: 1, column: 2 })
 
 			fireEvent.click(tileButton2)
 			fireEvent.click(tileButton1)
-			expect(tileElement1.style.getPropertyValue("--row")).toBe("1")
-			expect(tileElement1.style.getPropertyValue("--col")).toBe("1")
-			expect(tileElement2.style.getPropertyValue("--row")).toBe("1")
-			expect(tileElement2.style.getPropertyValue("--col")).toBe("2")
+			expectTileBeingMovedAt({ element: tileElement1, row: 1, column: 1 })
+			expectTileBeingMovedAt({ element: tileElement2, row: 1, column: 2 })
 		})
 	})
 

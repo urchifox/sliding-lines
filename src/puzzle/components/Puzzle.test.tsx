@@ -4,6 +4,8 @@ import { fireEvent, render } from "@testing-library/react"
 
 import {
 	createTile,
+	expectTileBeingMovedAt,
+	expectTileNotBeingMoved,
 	getAllTilesElements,
 	getTileButton,
 	getTileElement,
@@ -111,18 +113,14 @@ describe("Puzzle", () => {
 			const emptySlotElement = getTileElement(emptySlot.key)
 			fireEvent.click(tileButton)
 
-			expect(tileElement.style.getPropertyValue("--row")).toBe(
-				emptySlotInitialPosition.row.toString()
-			)
-			expect(tileElement.style.getPropertyValue("--col")).toBe(
-				emptySlotInitialPosition.column.toString()
-			)
-			expect(emptySlotElement.style.getPropertyValue("--row")).toBe(
-				tileInitialPosition.row.toString()
-			)
-			expect(emptySlotElement.style.getPropertyValue("--col")).toBe(
-				tileInitialPosition.column.toString()
-			)
+			expectTileBeingMovedAt({
+				element: tileElement,
+				...emptySlotInitialPosition,
+			})
+			expectTileBeingMovedAt({
+				element: emptySlotElement,
+				...tileInitialPosition,
+			})
 		}
 	)
 
@@ -264,35 +262,28 @@ describe("Puzzle", () => {
 		fireEvent.click(tile2Button)
 		expect(onCompleteLevel).toHaveBeenCalledOnce()
 
-		expect(emptySlotElement.style.getPropertyValue("--row")).toBe(
-			emptySlot.originalPosition.row.toString()
-		)
-		expect(emptySlotElement.style.getPropertyValue("--col")).toBe(
-			emptySlot.originalPosition.column.toString()
-		)
-		expect(tile1Element.style.getPropertyValue("--row")).toBe(
-			tile1.originalPosition.row.toString()
-		)
-		expect(tile1Element.style.getPropertyValue("--col")).toBe(
-			tile1.originalPosition.column.toString()
-		)
-		expect(tile2Element.style.getPropertyValue("--row")).toBe(
-			tile2.originalPosition.row.toString()
-		)
-		expect(tile2Element.style.getPropertyValue("--col")).toBe(
-			tile2.originalPosition.column.toString()
-		)
+		expectTileBeingMovedAt({
+			element: emptySlotElement,
+			...emptySlot.originalPosition,
+		})
+		expectTileBeingMovedAt({
+			element: tile1Element,
+			...tile1.originalPosition,
+		})
+		expectTileBeingMovedAt({
+			element: tile2Element,
+			...tile2.originalPosition,
+		})
 
-		for (const tilesElement of tilesElements) {
+		for (const tileElement of tilesElements) {
 			if (
-				tilesElement === tile1Element ||
-				tilesElement === tile2Element ||
-				tilesElement === emptySlotElement
+				tileElement === tile1Element ||
+				tileElement === tile2Element ||
+				tileElement === emptySlotElement
 			) {
 				continue
 			}
-			expect(tilesElement.style.getPropertyValue("--row")).toBe("")
-			expect(tilesElement.style.getPropertyValue("--col")).toBe("")
+			expectTileNotBeingMoved(tileElement)
 		}
 	})
 })

@@ -70,3 +70,21 @@ export function createTile(props: {
 		isEmpty,
 	}
 }
+
+export function expectTileBeingMovedAt({
+	element,
+	row,
+	column,
+}: {
+	element: HTMLElement
+	row: number
+	column: number
+}) {
+	expect(element.style.getPropertyValue("--row")).toBe(row.toString())
+	expect(element.style.getPropertyValue("--col")).toBe(column.toString())
+}
+
+export function expectTileNotBeingMoved(element: HTMLElement) {
+	expect(element.style.getPropertyValue("--row")).toBe("")
+	expect(element.style.getPropertyValue("--col")).toBe("")
+}
