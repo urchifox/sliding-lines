@@ -1,11 +1,12 @@
 // @vitest-environment happy-dom
 import { createSerializer } from "@emotion/jest"
-import { type RenderResult, fireEvent, render } from "@testing-library/react"
+import { fireEvent, render } from "@testing-library/react"
 
 import {
 	createTile,
-	getTileLabel,
-	tileLabelMatcher,
+	getAllTilesElements,
+	getTileButton,
+	getTileElement,
 } from "../../test/testHelpers"
 import type { Level, PuzzleTileInfo } from "../domain/types"
 import { Puzzle } from "./Puzzle"
@@ -65,18 +66,6 @@ function getPuzzleData() {
 	}
 }
 
-function getTileElement(renderResult: RenderResult, tile: PuzzleTileInfo) {
-	return renderResult.getByRole("listitem", { name: getTileLabel(tile.key) })
-}
-
-function getTileButton(tileElement: HTMLElement) {
-	return tileElement.querySelector("button") as HTMLButtonElement
-}
-
-function getAllTilesElements(renderResult: RenderResult) {
-	return renderResult.getAllByRole("listitem", { name: tileLabelMatcher })
-}
-
 describe("Puzzle", () => {
 	it.each([
 		{ isFinished: false, isUpdating: false } as const,
@@ -108,7 +97,7 @@ describe("Puzzle", () => {
 			const emptySlotInitialPosition = structuredClone(
 				emptySlot.currentPosition
 			)
-			const renderResult = render(
+			render(
 				<Puzzle
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
@@ -117,9 +106,9 @@ describe("Puzzle", () => {
 				/>
 			)
 
-			const tileElement = getTileElement(renderResult, tile)
-			const tileButton = getTileButton(tileElement)
-			const emptySlotElement = getTileElement(renderResult, emptySlot)
+			const tileElement = getTileElement(tile.key)
+			const tileButton = getTileButton(tile)
+			const emptySlotElement = getTileElement(emptySlot.key)
 			fireEvent.click(tileButton)
 
 			expect(tileElement.style.getPropertyValue("--row")).toBe(
@@ -139,7 +128,7 @@ describe("Puzzle", () => {
 
 	it("ignores clicks on empty slot", () => {
 		const { level, imageInfo, onCompleteLevel, emptySlot } = getPuzzleData()
-		const renderResult = render(
+		render(
 			<Puzzle
 				imageInfo={imageInfo}
 				onCompleteLevel={onCompleteLevel}
@@ -147,9 +136,8 @@ describe("Puzzle", () => {
 				level={level}
 			/>
 		)
-		const emptySlotElement = getTileElement(renderResult, emptySlot)
-		const emptySlotButton = getTileButton(emptySlotElement)
-		const tilesElements = getAllTilesElements(renderResult)
+		const emptySlotButton = getTileButton(emptySlot)
+		const tilesElements = getAllTilesElements()
 
 		fireEvent.click(emptySlotButton)
 
@@ -172,7 +160,7 @@ describe("Puzzle", () => {
 		({ tileIndex }) => {
 			const { level, imageInfo, onCompleteLevel } = getPuzzleData()
 			const tile = level.tiles[tileIndex]
-			const renderResult = render(
+			render(
 				<Puzzle
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
@@ -180,9 +168,8 @@ describe("Puzzle", () => {
 					level={level}
 				/>
 			)
-			const tileElement = getTileElement(renderResult, tile)
-			const tilesElements = getAllTilesElements(renderResult)
-			const tileButton = getTileButton(tileElement)
+			const tilesElements = getAllTilesElements()
+			const tileButton = getTileButton(tile)
 
 			fireEvent.click(tileButton)
 
@@ -201,7 +188,7 @@ describe("Puzzle", () => {
 		({ tileIndex }) => {
 			const { level, imageInfo, onCompleteLevel } = getPuzzleData()
 			const tile = level.tiles[tileIndex]
-			const renderResult = render(
+			render(
 				<Puzzle
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
@@ -209,9 +196,8 @@ describe("Puzzle", () => {
 					level={level}
 				/>
 			)
-			const tileElement = getTileElement(renderResult, tile)
-			const tilesElements = getAllTilesElements(renderResult)
-			const tileButton = getTileButton(tileElement)
+			const tilesElements = getAllTilesElements()
+			const tileButton = getTileButton(tile)
 
 			fireEvent.click(tileButton)
 
@@ -230,7 +216,7 @@ describe("Puzzle", () => {
 		({ tileIndex }) => {
 			const { level, imageInfo, onCompleteLevel } = getPuzzleData()
 			const tile = level.tiles[tileIndex]
-			const renderResult = render(
+			render(
 				<Puzzle
 					imageInfo={imageInfo}
 					onCompleteLevel={onCompleteLevel}
@@ -238,9 +224,8 @@ describe("Puzzle", () => {
 					level={level}
 				/>
 			)
-			const tileElement = getTileElement(renderResult, tile)
-			const tilesElements = getAllTilesElements(renderResult)
-			const tileButton = getTileButton(tileElement)
+			const tilesElements = getAllTilesElements()
+			const tileButton = getTileButton(tile)
 
 			fireEvent.click(tileButton)
 
@@ -258,7 +243,7 @@ describe("Puzzle", () => {
 		const { level, imageInfo, onCompleteLevel, emptySlot } = getPuzzleData()
 		const tile1 = level.tiles[1]
 		const tile2 = level.tiles[2]
-		const renderResult = render(
+		render(
 			<Puzzle
 				imageInfo={imageInfo}
 				onCompleteLevel={onCompleteLevel}
@@ -266,12 +251,12 @@ describe("Puzzle", () => {
 				level={level}
 			/>
 		)
-		const tile1Element = getTileElement(renderResult, tile1)
-		const tile1Button = getTileButton(tile1Element)
-		const tile2Element = getTileElement(renderResult, tile2)
-		const tile2Button = getTileButton(tile2Element)
-		const emptySlotElement = getTileElement(renderResult, emptySlot)
-		const tilesElements = getAllTilesElements(renderResult)
+		const tile1Element = getTileElement(tile1.key)
+		const tile1Button = getTileButton(tile1)
+		const tile2Element = getTileElement(tile2.key)
+		const tile2Button = getTileButton(tile2)
+		const emptySlotElement = getTileElement(emptySlot.key)
+		const tilesElements = getAllTilesElements()
 
 		fireEvent.click(tile1Button)
 		expect(onCompleteLevel).not.toHaveBeenCalled()

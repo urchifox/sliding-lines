@@ -1,4 +1,6 @@
-import type { PuzzleTileInfo, TileKey } from "../puzzle/domain/types"
+import { screen } from "@testing-library/react"
+
+import type { Position, PuzzleTileInfo, TileKey } from "../puzzle/domain/types"
 
 export type Deferred<T> = {
 	promise: Promise<T>
@@ -18,13 +20,31 @@ export function createDeferred<T>(): Deferred<T> {
 	})
 	return { promise, resolve, reject }
 }
+
 export const tileLabelPrefix = "Tile "
+export const tileLabelMatcher = new RegExp(`${tileLabelPrefix}\\d-\\d`)
 
 export function getTileLabel(key: TileKey): string {
 	return `${tileLabelPrefix}${key}`
 }
 
-export const tileLabelMatcher = new RegExp(`${tileLabelPrefix}\\d-\\d`)
+export function getTileElement(key: TileKey) {
+	const label = getTileLabel(key)
+	return screen.getByRole("listitem", { name: label })
+}
+
+export function getTileButtonText(currentPosition: Position): string {
+	return `Try move tile in ${currentPosition.row} row and ${currentPosition.column} column`
+}
+
+export function getTileButton(tile: PuzzleTileInfo) {
+	const text = getTileButtonText(tile.currentPosition)
+	return screen.getByRole("button", { name: text })
+}
+
+export function getAllTilesElements() {
+	return screen.getAllByRole("listitem", { name: tileLabelMatcher })
+}
 
 export function createTile(props: {
 	originalRow: number

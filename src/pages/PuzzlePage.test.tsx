@@ -11,7 +11,12 @@ import type {
 	PuzzleTileInfo,
 	TileKey,
 } from "../puzzle/domain/types"
-import { createDeferred, createTile, getTileLabel } from "../test/testHelpers"
+import {
+	createDeferred,
+	createTile,
+	getTileElement,
+	getTileLabel,
+} from "../test/testHelpers"
 import { PuzzlePage } from "./PuzzlePage"
 
 vi.mock("../puzzle/domain/puzzleData", () => ({
@@ -212,7 +217,7 @@ describe("PuzzlePage", () => {
 			const restartButton = await screen.findByRole("button", {
 				name: "Restart",
 			})
-			const tileElement = screen.getByLabelText(getTileLabel("1-1"))
+			const tileElement = getTileElement("1-1")
 
 			fireEvent.click(restartButton)
 
@@ -222,7 +227,7 @@ describe("PuzzlePage", () => {
 			)
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 			expectPageChrome({ isFinished: false, isUpdating: false })
-			expect(screen.getByLabelText(getTileLabel("1-1"))).not.toBe(tileElement)
+			expect(getTileElement("1-1")).not.toBe(tileElement)
 		})
 	})
 

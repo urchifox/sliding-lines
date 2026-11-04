@@ -4,6 +4,7 @@ import { fireEvent, render } from "@testing-library/react"
 
 import {
 	createTile,
+	getTileButtonText,
 	getTileLabel,
 	tileLabelMatcher,
 } from "../../test/testHelpers"
@@ -43,7 +44,7 @@ describe("PuzzleTile", () => {
 		expect(renderResult.container).toMatchSnapshot()
 	})
 
-	it("has correct label", () => {
+	it("has correct label on li and button text", () => {
 		const { tile, handleClick, puzzleRef } = getPuzzleTileData()
 
 		const renderResult = render(
@@ -59,6 +60,9 @@ describe("PuzzleTile", () => {
 		const ariaLabel = element.getAttribute("aria-label")
 		expect(ariaLabel).toBe(getTileLabel(tile.key))
 		expect(ariaLabel).toMatch(tileLabelMatcher)
+		const button = renderResult.getByRole("button")
+		const buttonText = button.textContent
+		expect(buttonText).toBe(getTileButtonText(tile.currentPosition))
 	})
 
 	it("sets click listener", () => {
