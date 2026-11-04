@@ -21,6 +21,7 @@ import {
 	queryPuzzleBoard,
 } from "../test/testHelpers"
 import { PuzzlePage } from "./PuzzlePage"
+import { getLevelNumber } from "../progress/user"
 
 vi.mock("../puzzle/domain/puzzleData", () => ({
 	createPuzzleData: vi.fn(),
@@ -267,8 +268,7 @@ describe("PuzzlePage", () => {
 			await renderPuzzlePage()
 			finishLevel()
 
-			const user = JSON.parse(localStorage.getItem("user") || "{}")
-			expect(user.levelNumber).toBe(1)
+			expect(getLevelNumber()).toBe(1)
 		})
 
 		it("renders correctly when finished", async () => {
