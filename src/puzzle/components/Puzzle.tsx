@@ -6,6 +6,7 @@ import { theme } from "../../assets/styles/theme"
 import { tryMove } from "../domain/game"
 import { type BoardState, type ImageInfo, type Level } from "../domain/types"
 import { PuzzleTile } from "./PuzzleTile"
+import { getTileButtonText, puzzleBoardName } from "./helpers"
 
 const PuzzleStyled = styled.ul<
 	{
@@ -110,6 +111,10 @@ export function Puzzle({
 				const { row, column } = currentPosition
 				changedElement?.style.setProperty("--row", row.toString())
 				changedElement?.style.setProperty("--col", column.toString())
+				const button = changedElement?.querySelector("button")
+				if (button !== null && button !== undefined) {
+					button.textContent = getTileButtonText(currentPosition)
+				}
 			})
 
 			if (isSolved) {
@@ -134,7 +139,7 @@ export function Puzzle({
 			{...boardState}
 			columns={columns}
 			rows={rows}
-			aria-label="Puzzle board"
+			aria-label={puzzleBoardName}
 		>
 			{elements}
 		</PuzzleStyled>

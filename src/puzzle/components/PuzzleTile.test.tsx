@@ -2,13 +2,9 @@
 import { createSerializer } from "@emotion/jest"
 import { fireEvent, render } from "@testing-library/react"
 
-import {
-	createTile,
-	getTileButtonText,
-	getTileLabel,
-	tileLabelMatcher,
-} from "../../test/testHelpers"
+import { createTile } from "../../test/testHelpers"
 import { PuzzleTile } from "./PuzzleTile"
+import { getTileButtonText, getTileLabel, tileLabelMatcher } from "./helpers"
 
 function getPuzzleTileData() {
 	const tile = createTile({ originalRow: 1, originalColumn: 1 })

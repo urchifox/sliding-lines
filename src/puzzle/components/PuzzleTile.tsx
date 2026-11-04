@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 
 import { theme } from "../../assets/styles/theme"
 import type { PuzzleTileInfo } from "../domain/types"
+import { getTileButtonText, getTileLabel } from "./helpers"
 
 const PuzzleTileStyled = styled.li<{
 	isEmpty?: boolean
@@ -98,14 +99,14 @@ export function PuzzleTile({
 			spCol={originalPosition.column}
 			isEmpty={isEmpty}
 			isFinished={isFinished}
-			aria-label={`Tile ${key}`}
+			aria-label={getTileLabel(key)}
 		>
 			<PuzzleTileButtonStyled
 				type="button"
 				onClick={handleClick}
 				disabled={isFinished || isEmpty}
 			>
-				{`Try move tile in ${currentPosition.row} row and ${currentPosition.column} column`}
+				{getTileButtonText(currentPosition)}
 			</PuzzleTileButtonStyled>
 		</PuzzleTileStyled>
 	)
