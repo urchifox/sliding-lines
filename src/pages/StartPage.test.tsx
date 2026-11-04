@@ -1,12 +1,9 @@
 // @vitest-environment happy-dom
-import { createSerializer } from "@emotion/jest"
 import { fireEvent, render } from "@testing-library/react"
 import { act } from "react"
 
 import { AppRoute } from "../AppRoute"
 import { StartPage } from "./StartPage"
-
-expect.addSnapshotSerializer(createSerializer({ includeStyles: false }))
 
 describe("StartPage", () => {
 	afterEach(() => {

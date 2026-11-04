@@ -1,5 +1,4 @@
 // @vitest-environment happy-dom
-import { createSerializer } from "@emotion/jest"
 import { fireEvent, render } from "@testing-library/react"
 
 import {
@@ -12,8 +11,6 @@ import {
 } from "../../test/testHelpers"
 import type { Level, PuzzleTileInfo } from "../domain/types"
 import { Puzzle } from "./Puzzle"
-
-expect.addSnapshotSerializer(createSerializer({ includeStyles: false }))
 
 function getPuzzleData() {
 	const level = {

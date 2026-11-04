@@ -1,5 +1,4 @@
 // @vitest-environment happy-dom
-import { createSerializer } from "@emotion/jest"
 import { fireEvent, render } from "@testing-library/react"
 
 import { createTile } from "../../test/testHelpers"
@@ -21,8 +20,6 @@ function getPuzzleTileData() {
 		puzzleRef,
 	}
 }
-
-expect.addSnapshotSerializer(createSerializer({ includeStyles: false }))
 
 describe("PuzzleTile", () => {
 	it("renders correctly", () => {

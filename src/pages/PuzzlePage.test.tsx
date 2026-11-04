@@ -1,5 +1,4 @@
 // @vitest-environment happy-dom
-import { createSerializer } from "@emotion/jest"
 import { act, fireEvent, render, screen } from "@testing-library/react"
 import { StrictMode } from "react"
 
@@ -31,7 +30,6 @@ vi.mock("../puzzle/domain/level", () => ({
 	restartLevel: vi.fn(),
 }))
 
-expect.addSnapshotSerializer(createSerializer({ includeStyles: false }))
 vi.useFakeTimers({ shouldAdvanceTime: true })
 
 const mockedCreatePuzzleData = vi.mocked(createPuzzleData)
