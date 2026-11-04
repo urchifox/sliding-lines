@@ -14,8 +14,8 @@ import type {
 import {
 	createDeferred,
 	createTile,
+	getTileButton,
 	getTileElement,
-	getTileLabel,
 } from "../test/testHelpers"
 import { PuzzlePage } from "./PuzzlePage"
 
@@ -113,18 +113,25 @@ function expectPageChrome(state: BoardState, levelText = "Level 1") {
 	})
 }
 
-async function clickTile(key: TileKey) {
-	const tileElement = await screen.findByLabelText(getTileLabel(key))
-	const tileButton = tileElement.querySelector("button") as HTMLButtonElement
+async function renderPuzzlePage() {
+	const renderResult = render(<PuzzlePage />)
+	await screen.findByText("Level 1")
+	return renderResult
+}
+
+function clickTile(key: TileKey) {
+	const tileElement = getTileElement(key)
+	const tile = getTiles().find((item) => item.key === key) as PuzzleTileInfo
+	const tileButton = getTileButton(tile)
 	fireEvent.click(tileButton)
 	return { tileElement, tileButton }
 }
 
-async function finishLevel() {
+function finishLevel() {
 	const { tileElement: tileElement1, tileButton: tileButton1 } =
-		await clickTile("1-1")
+		clickTile("1-1")
 	const { tileElement: tileElement2, tileButton: tileButton2 } =
-		await clickTile("1-2")
+		clickTile("1-2")
 	return { tileElement1, tileButton1, tileElement2, tileButton2 }
 }
 
@@ -165,9 +172,8 @@ describe("PuzzlePage", () => {
 		})
 
 		it("renders correctly with loaded image", async () => {
-			const renderResult = render(<PuzzlePage />)
+			const renderResult = await renderPuzzlePage()
 
-			await screen.findByText("Level 1")
 			expect(renderResult.container).toMatchSnapshot()
 			expectPageChrome({ isFinished: false, isUpdating: false })
 		})
@@ -249,9 +255,9 @@ describe("PuzzlePage", () => {
 		})
 
 		it("continues level when level is not finished", async () => {
-			render(<PuzzlePage />)
+			await renderPuzzlePage()
 
-			const { tileElement } = await clickTile("1-1")
+			const { tileElement } = clickTile("1-1")
 
 			expect(tileElement.style.getPropertyValue("--row")).toBe("1")
 			expect(tileElement.style.getPropertyValue("--col")).toBe("1")
@@ -261,16 +267,16 @@ describe("PuzzlePage", () => {
 
 	describe("finishing level", () => {
 		it("updates level number when finished", async () => {
-			render(<PuzzlePage />)
-			await finishLevel()
+			await renderPuzzlePage()
+			finishLevel()
 
 			const user = JSON.parse(localStorage.getItem("user") || "{}")
 			expect(user.levelNumber).toBe(1)
 		})
 
 		it("renders correctly when finished", async () => {
-			const renderResult = render(<PuzzlePage />)
-			await finishLevel()
+			const renderResult = await renderPuzzlePage()
+			finishLevel()
 
 			expect(mockedRestartLevel).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
@@ -279,8 +285,8 @@ describe("PuzzlePage", () => {
 		})
 
 		it("ignores restart button click when level is finished", async () => {
-			render(<PuzzlePage />)
-			await finishLevel()
+			await renderPuzzlePage()
+			finishLevel()
 
 			const restartButton = await screen.findByRole("button", {
 				name: "Restart",
@@ -291,9 +297,9 @@ describe("PuzzlePage", () => {
 		})
 
 		it("ignores tile clicks when level is finished", async () => {
-			render(<PuzzlePage />)
+			await renderPuzzlePage()
 			const { tileElement1, tileButton1, tileElement2, tileButton2 } =
-				await finishLevel()
+				finishLevel()
 			expect(tileElement1.style.getPropertyValue("--row")).toBe("1")
 			expect(tileElement1.style.getPropertyValue("--col")).toBe("1")
 			expect(tileElement2.style.getPropertyValue("--row")).toBe("1")
@@ -310,8 +316,8 @@ describe("PuzzlePage", () => {
 
 	describe("new level loading", () => {
 		it("updates after new level button click", async () => {
-			const renderResult = render(<PuzzlePage />)
-			await finishLevel()
+			const renderResult = await renderPuzzlePage()
+			finishLevel()
 			requestNextLevel()
 
 			expect(renderResult.container).toMatchSnapshot()
@@ -319,20 +325,22 @@ describe("PuzzlePage", () => {
 		})
 
 		it("does nothing before transition ends", async () => {
-			const renderResult = render(<PuzzlePage />)
+			const renderResult = await renderPuzzlePage()
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
-			await finishLevel()
+			finishLevel()
 			requestNextLevel()
-			await act(() => vi.advanceTimersByTimeAsync(999))
+			act(() => {
+				vi.advanceTimersByTime(999)
+			})
 
 			expect(renderResult.container).toMatchSnapshot()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 		})
 
 		it("loads new level after new level button click", async () => {
-			const renderResult = render(<PuzzlePage />)
+			const renderResult = await renderPuzzlePage()
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
-			await finishLevel()
+			finishLevel()
 			requestNextLevel()
 			await advanceLevelTransition()
 
@@ -341,10 +349,10 @@ describe("PuzzlePage", () => {
 		})
 
 		it("renders new level after new level button click", async () => {
-			const renderResult = render(<PuzzlePage />)
+			const renderResult = await renderPuzzlePage()
 			const { promise, resolve } = createDeferred<PuzzleData>()
 			mockedCreatePuzzleData.mockReturnValue(promise)
-			await finishLevel()
+			finishLevel()
 			requestNextLevel()
 			await advanceLevelTransition()
 			resolve({
@@ -360,10 +368,10 @@ describe("PuzzlePage", () => {
 		})
 
 		it("renders error message if new level loading fails", async () => {
-			const renderResult = render(<PuzzlePage />)
+			const renderResult = await renderPuzzlePage()
 			const { promise, reject } = createDeferred<PuzzleData>()
 			mockedCreatePuzzleData.mockReturnValue(promise)
-			await finishLevel()
+			finishLevel()
 			requestNextLevel()
 			await advanceLevelTransition()
 			reject()
@@ -373,9 +381,9 @@ describe("PuzzlePage", () => {
 		})
 
 		it("ignores clicks on any button when new level is loading", async () => {
-			render(<PuzzlePage />)
+			await renderPuzzlePage()
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
-			await finishLevel()
+			finishLevel()
 			requestNextLevel()
 
 			const restartButton = screen.getByRole("button", { name: "Restart" })
