@@ -46,6 +46,16 @@ export function getAllTilesElements() {
 	return screen.getAllByRole("listitem", { name: tileLabelMatcher })
 }
 
+const puzzleBoardName = "Puzzle board"
+
+export function getPuzzleBoard() {
+	return screen.getByRole("list", { name: puzzleBoardName })
+}
+
+export function queryPuzzleBoard() {
+	return screen.queryByRole("list", { name: puzzleBoardName })
+}
+
 export function createTile(props: {
 	originalRow: number
 	originalColumn: number

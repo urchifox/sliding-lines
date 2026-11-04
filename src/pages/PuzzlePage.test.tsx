@@ -14,8 +14,10 @@ import type {
 import {
 	createDeferred,
 	createTile,
+	getPuzzleBoard,
 	getTileButton,
 	getTileElement,
+	queryPuzzleBoard,
 } from "../test/testHelpers"
 import { PuzzlePage } from "./PuzzlePage"
 
@@ -32,6 +34,21 @@ vi.useFakeTimers({ shouldAdvanceTime: true })
 
 const mockedCreatePuzzleData = vi.mocked(createPuzzleData)
 const mockedRestartLevel = vi.mocked(restartLevel)
+
+const loadingText = "Loading…"
+const errorText = "An error occurred, try to reload the page"
+
+function getLoadingMessage() {
+	return screen.getByText(loadingText)
+}
+
+function queryLoadingMessage() {
+	return screen.queryByText(loadingText)
+}
+
+function findErrorMessage() {
+	return screen.findByText(errorText)
+}
 
 function getTiles() {
 	return [
@@ -77,7 +94,7 @@ function getMockedPuzzleData(): PuzzleData {
 }
 
 function expectPageChrome(state: BoardState, levelText = "Level 1") {
-	const puzzleBoard = screen.getByLabelText("Puzzle board")
+	const puzzleBoard = getPuzzleBoard()
 	const levelName = screen.getByText(levelText)
 	const restartButton = screen.getByRole("button", { name: "Restart" })
 	const winHeader = screen.getByText("You have won!")
@@ -111,6 +128,16 @@ function expectPageChrome(state: BoardState, levelText = "Level 1") {
 				? "slide-in-from-right"
 				: "none",
 	})
+	if (state.isFinished) {
+		expect(restartButton).toBeDisabled()
+	} else {
+		expect(restartButton).toBeEnabled()
+	}
+	if (state.isUpdating) {
+		expect(playButton).toBeDisabled()
+	} else {
+		expect(playButton).toBeEnabled()
+	}
 }
 
 async function renderPuzzlePage() {
@@ -159,7 +186,7 @@ describe("PuzzlePage", () => {
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
 			const renderResult = render(<PuzzlePage />)
 
-			expect(screen.getByText("Loading…")).toBeInTheDocument()
+			expect(getLoadingMessage()).toBeInTheDocument()
 			expect(renderResult.container).toMatchSnapshot()
 		})
 
@@ -167,7 +194,7 @@ describe("PuzzlePage", () => {
 			mockedCreatePuzzleData.mockRejectedValue(new Error(""))
 			const renderResult = render(<PuzzlePage />)
 
-			await screen.findByText("An error occurred, try to reload the page")
+			await findErrorMessage()
 			expect(renderResult.container).toMatchSnapshot()
 		})
 
@@ -192,7 +219,7 @@ describe("PuzzlePage", () => {
 
 			deferred1.resolve({ ...getMockedPuzzleData(), levelNumber: 0 })
 			await act(() => Promise.resolve())
-			expect(screen.getByText("Loading…")).toBeInTheDocument()
+			expect(getLoadingMessage()).toBeInTheDocument()
 			deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
 			expect(await screen.findByText("Level 6")).toBeInTheDocument()
 		})
@@ -211,7 +238,7 @@ describe("PuzzlePage", () => {
 
 			deferred1.reject()
 			await act(() => Promise.resolve())
-			expect(screen.getByText("Loading…")).toBeInTheDocument()
+			expect(getLoadingMessage()).toBeInTheDocument()
 			deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
 			expect(await screen.findByText("Level 6")).toBeInTheDocument()
 		})
@@ -275,12 +302,11 @@ describe("PuzzlePage", () => {
 		})
 
 		it("renders correctly when finished", async () => {
-			const renderResult = await renderPuzzlePage()
+			await renderPuzzlePage()
 			finishLevel()
 
 			expect(mockedRestartLevel).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
-			expect(renderResult.container).toMatchSnapshot()
 			expectPageChrome({ isFinished: true, isUpdating: false })
 		})
 
@@ -316,16 +342,16 @@ describe("PuzzlePage", () => {
 
 	describe("new level loading", () => {
 		it("updates after new level button click", async () => {
-			const renderResult = await renderPuzzlePage()
+			await renderPuzzlePage()
 			finishLevel()
 			requestNextLevel()
 
-			expect(renderResult.container).toMatchSnapshot()
 			expectPageChrome({ isFinished: true, isUpdating: true })
+			expect(queryLoadingMessage()).not.toBeInTheDocument()
 		})
 
 		it("does nothing before transition ends", async () => {
-			const renderResult = await renderPuzzlePage()
+			await renderPuzzlePage()
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
 			finishLevel()
 			requestNextLevel()
@@ -333,23 +359,25 @@ describe("PuzzlePage", () => {
 				vi.advanceTimersByTime(999)
 			})
 
-			expect(renderResult.container).toMatchSnapshot()
+			expectPageChrome({ isFinished: true, isUpdating: true })
+			expect(queryLoadingMessage()).not.toBeInTheDocument()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 		})
 
 		it("loads new level after new level button click", async () => {
-			const renderResult = await renderPuzzlePage()
+			await renderPuzzlePage()
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
 			finishLevel()
 			requestNextLevel()
 			await advanceLevelTransition()
 
-			expect(renderResult.container).toMatchSnapshot()
+			expect(getLoadingMessage()).toBeInTheDocument()
+			expect(queryPuzzleBoard()).not.toBeInTheDocument()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)
 		})
 
 		it("renders new level after new level button click", async () => {
-			const renderResult = await renderPuzzlePage()
+			await renderPuzzlePage()
 			const { promise, resolve } = createDeferred<PuzzleData>()
 			mockedCreatePuzzleData.mockReturnValue(promise)
 			finishLevel()
@@ -361,14 +389,13 @@ describe("PuzzlePage", () => {
 			})
 
 			await screen.findByText("Level 2")
-			expect(renderResult.container).toMatchSnapshot()
 			expectPageChrome({ isFinished: false, isUpdating: false }, "Level 2")
 			expect(mockedRestartLevel).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)
 		})
 
 		it("renders error message if new level loading fails", async () => {
-			const renderResult = await renderPuzzlePage()
+			await renderPuzzlePage()
 			const { promise, reject } = createDeferred<PuzzleData>()
 			mockedCreatePuzzleData.mockReturnValue(promise)
 			finishLevel()
@@ -376,8 +403,9 @@ describe("PuzzlePage", () => {
 			await advanceLevelTransition()
 			reject()
 
-			await screen.findByText("An error occurred, try to reload the page")
-			expect(renderResult.container).toMatchSnapshot()
+			expect(await findErrorMessage()).toBeInTheDocument()
+			expect(queryLoadingMessage()).not.toBeInTheDocument()
+			expect(queryPuzzleBoard()).not.toBeInTheDocument()
 		})
 
 		it("ignores clicks on any button when new level is loading", async () => {
