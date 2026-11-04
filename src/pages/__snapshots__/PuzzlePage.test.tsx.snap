@@ -41,12 +41,7 @@ exports[`PuzzlePage > finishing level > renders correctly when finished 1`] = `
             disabled=""
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            3
-             
-            column
+            Try move tile in 1 row and 3 column
           </button>
         </li>
         <li
@@ -59,12 +54,7 @@ exports[`PuzzlePage > finishing level > renders correctly when finished 1`] = `
             disabled=""
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            1
-             
-            column
+            Try move tile in 1 row and 1 column
           </button>
         </li>
         <li
@@ -77,12 +67,7 @@ exports[`PuzzlePage > finishing level > renders correctly when finished 1`] = `
             disabled=""
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            2
-             
-            column
+            Try move tile in 1 row and 2 column
           </button>
         </li>
         <li
@@ -94,12 +79,7 @@ exports[`PuzzlePage > finishing level > renders correctly when finished 1`] = `
             disabled=""
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            1
-             
-            column
+            Try move tile in 2 row and 1 column
           </button>
         </li>
         <li
@@ -111,12 +91,7 @@ exports[`PuzzlePage > finishing level > renders correctly when finished 1`] = `
             disabled=""
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            2
-             
-            column
+            Try move tile in 2 row and 2 column
           </button>
         </li>
         <li
@@ -128,12 +103,7 @@ exports[`PuzzlePage > finishing level > renders correctly when finished 1`] = `
             disabled=""
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            3
-             
-            column
+            Try move tile in 2 row and 3 column
           </button>
         </li>
         <li
@@ -145,12 +115,7 @@ exports[`PuzzlePage > finishing level > renders correctly when finished 1`] = `
             disabled=""
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            1
-             
-            column
+            Try move tile in 3 row and 1 column
           </button>
         </li>
         <li
@@ -162,12 +127,7 @@ exports[`PuzzlePage > finishing level > renders correctly when finished 1`] = `
             disabled=""
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            2
-             
-            column
+            Try move tile in 3 row and 2 column
           </button>
         </li>
         <li
@@ -179,12 +139,7 @@ exports[`PuzzlePage > finishing level > renders correctly when finished 1`] = `
             disabled=""
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            3
-             
-            column
+            Try move tile in 3 row and 3 column
           </button>
         </li>
       </ul>
@@ -252,12 +207,7 @@ exports[`PuzzlePage > loading > renders correctly with loaded image 1`] = `
             disabled=""
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            1
-             
-            column
+            Try move tile in 1 row and 1 column
           </button>
         </li>
         <li
@@ -268,12 +218,7 @@ exports[`PuzzlePage > loading > renders correctly with loaded image 1`] = `
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            2
-             
-            column
+            Try move tile in 1 row and 2 column
           </button>
         </li>
         <li
@@ -284,12 +229,7 @@ exports[`PuzzlePage > loading > renders correctly with loaded image 1`] = `
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            3
-             
-            column
+            Try move tile in 1 row and 3 column
           </button>
         </li>
         <li
@@ -300,12 +240,7 @@ exports[`PuzzlePage > loading > renders correctly with loaded image 1`] = `
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            1
-             
-            column
+            Try move tile in 2 row and 1 column
           </button>
         </li>
         <li
@@ -316,12 +251,7 @@ exports[`PuzzlePage > loading > renders correctly with loaded image 1`] = `
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            2
-             
-            column
+            Try move tile in 2 row and 2 column
           </button>
         </li>
         <li
@@ -332,12 +262,7 @@ exports[`PuzzlePage > loading > renders correctly with loaded image 1`] = `
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            3
-             
-            column
+            Try move tile in 2 row and 3 column
           </button>
         </li>
         <li
@@ -348,12 +273,7 @@ exports[`PuzzlePage > loading > renders correctly with loaded image 1`] = `
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            1
-             
-            column
+            Try move tile in 3 row and 1 column
           </button>
         </li>
         <li
@@ -364,12 +284,7 @@ exports[`PuzzlePage > loading > renders correctly with loaded image 1`] = `
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            2
-             
-            column
+            Try move tile in 3 row and 2 column
           </button>
         </li>
         <li
@@ -380,12 +295,7 @@ exports[`PuzzlePage > loading > renders correctly with loaded image 1`] = `
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            3
-             
-            column
+            Try move tile in 3 row and 3 column
           </button>
         </li>
       </ul>
@@ -455,12 +365,7 @@ exports[`PuzzlePage > new level loading > does nothing before transition ends 1`
             disabled=""
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            3
-             
-            column
+            Try move tile in 1 row and 3 column
           </button>
         </li>
         <li
@@ -473,12 +378,7 @@ exports[`PuzzlePage > new level loading > does nothing before transition ends 1`
             disabled=""
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            1
-             
-            column
+            Try move tile in 1 row and 1 column
           </button>
         </li>
         <li
@@ -491,12 +391,7 @@ exports[`PuzzlePage > new level loading > does nothing before transition ends 1`
             disabled=""
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            2
-             
-            column
+            Try move tile in 1 row and 2 column
           </button>
         </li>
         <li
@@ -508,12 +403,7 @@ exports[`PuzzlePage > new level loading > does nothing before transition ends 1`
             disabled=""
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            1
-             
-            column
+            Try move tile in 2 row and 1 column
           </button>
         </li>
         <li
@@ -525,12 +415,7 @@ exports[`PuzzlePage > new level loading > does nothing before transition ends 1`
             disabled=""
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            2
-             
-            column
+            Try move tile in 2 row and 2 column
           </button>
         </li>
         <li
@@ -542,12 +427,7 @@ exports[`PuzzlePage > new level loading > does nothing before transition ends 1`
             disabled=""
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            3
-             
-            column
+            Try move tile in 2 row and 3 column
           </button>
         </li>
         <li
@@ -559,12 +439,7 @@ exports[`PuzzlePage > new level loading > does nothing before transition ends 1`
             disabled=""
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            1
-             
-            column
+            Try move tile in 3 row and 1 column
           </button>
         </li>
         <li
@@ -576,12 +451,7 @@ exports[`PuzzlePage > new level loading > does nothing before transition ends 1`
             disabled=""
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            2
-             
-            column
+            Try move tile in 3 row and 2 column
           </button>
         </li>
         <li
@@ -593,12 +463,7 @@ exports[`PuzzlePage > new level loading > does nothing before transition ends 1`
             disabled=""
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            3
-             
-            column
+            Try move tile in 3 row and 3 column
           </button>
         </li>
       </ul>
@@ -624,205 +489,6 @@ exports[`PuzzlePage > new level loading > loads new level after new level button
     >
       Loading…
     </p>
-  </section>
-</div>
-`;
-
-exports[`PuzzlePage > new level loading > nothing happens before end of transition 1`] = `
-<div>
-  <section
-    class="emotion-0"
-  >
-    <p
-      class="emotion-1"
-    >
-      Level 
-      1
-    </p>
-    <button
-      aria-label="Restart"
-      class="emotion-2"
-      disabled=""
-    />
-    <h1
-      class="emotion-3"
-    >
-      You have won!
-    </h1>
-    <div
-      class="emotion-4"
-    >
-      <ul
-        aria-label="Puzzle board"
-        class="emotion-5"
-        height="200"
-        rows="3"
-        width="300"
-      >
-        <li
-          aria-label="Tile 1-3"
-          class="emotion-6"
-          style="--row: 1; --col: 3;"
-        >
-          <button
-            class="emotion-7"
-            disabled=""
-            type="button"
-          >
-            Try move tile in $
-            1
-            row and $
-            3
-             
-            column
-          </button>
-        </li>
-        <li
-          aria-label="Tile 1-1"
-          class="emotion-8"
-          style="--row: 1; --col: 1;"
-        >
-          <button
-            class="emotion-7"
-            disabled=""
-            type="button"
-          >
-            Try move tile in $
-            1
-            row and $
-            1
-             
-            column
-          </button>
-        </li>
-        <li
-          aria-label="Tile 1-2"
-          class="emotion-10"
-          style="--row: 1; --col: 2;"
-        >
-          <button
-            class="emotion-7"
-            disabled=""
-            type="button"
-          >
-            Try move tile in $
-            1
-            row and $
-            2
-             
-            column
-          </button>
-        </li>
-        <li
-          aria-label="Tile 2-1"
-          class="emotion-12"
-        >
-          <button
-            class="emotion-7"
-            disabled=""
-            type="button"
-          >
-            Try move tile in $
-            2
-            row and $
-            1
-             
-            column
-          </button>
-        </li>
-        <li
-          aria-label="Tile 2-2"
-          class="emotion-14"
-        >
-          <button
-            class="emotion-7"
-            disabled=""
-            type="button"
-          >
-            Try move tile in $
-            2
-            row and $
-            2
-             
-            column
-          </button>
-        </li>
-        <li
-          aria-label="Tile 2-3"
-          class="emotion-16"
-        >
-          <button
-            class="emotion-7"
-            disabled=""
-            type="button"
-          >
-            Try move tile in $
-            2
-            row and $
-            3
-             
-            column
-          </button>
-        </li>
-        <li
-          aria-label="Tile 3-1"
-          class="emotion-18"
-        >
-          <button
-            class="emotion-7"
-            disabled=""
-            type="button"
-          >
-            Try move tile in $
-            3
-            row and $
-            1
-             
-            column
-          </button>
-        </li>
-        <li
-          aria-label="Tile 3-2"
-          class="emotion-20"
-        >
-          <button
-            class="emotion-7"
-            disabled=""
-            type="button"
-          >
-            Try move tile in $
-            3
-            row and $
-            2
-             
-            column
-          </button>
-        </li>
-        <li
-          aria-label="Tile 3-3"
-          class="emotion-22"
-        >
-          <button
-            class="emotion-7"
-            disabled=""
-            type="button"
-          >
-            Try move tile in $
-            3
-            row and $
-            3
-             
-            column
-          </button>
-        </li>
-      </ul>
-    </div>
-    <button
-      class="emotion-24"
-      disabled=""
-    >
-      Solve next puzzle
-    </button>
   </section>
 </div>
 `;
@@ -881,12 +547,7 @@ exports[`PuzzlePage > new level loading > renders new level after new level butt
             disabled=""
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            1
-             
-            column
+            Try move tile in 1 row and 1 column
           </button>
         </li>
         <li
@@ -897,12 +558,7 @@ exports[`PuzzlePage > new level loading > renders new level after new level butt
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            2
-             
-            column
+            Try move tile in 1 row and 2 column
           </button>
         </li>
         <li
@@ -913,12 +569,7 @@ exports[`PuzzlePage > new level loading > renders new level after new level butt
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            3
-             
-            column
+            Try move tile in 1 row and 3 column
           </button>
         </li>
         <li
@@ -929,12 +580,7 @@ exports[`PuzzlePage > new level loading > renders new level after new level butt
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            1
-             
-            column
+            Try move tile in 2 row and 1 column
           </button>
         </li>
         <li
@@ -945,12 +591,7 @@ exports[`PuzzlePage > new level loading > renders new level after new level butt
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            2
-             
-            column
+            Try move tile in 2 row and 2 column
           </button>
         </li>
         <li
@@ -961,12 +602,7 @@ exports[`PuzzlePage > new level loading > renders new level after new level butt
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            3
-             
-            column
+            Try move tile in 2 row and 3 column
           </button>
         </li>
         <li
@@ -977,12 +613,7 @@ exports[`PuzzlePage > new level loading > renders new level after new level butt
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            1
-             
-            column
+            Try move tile in 3 row and 1 column
           </button>
         </li>
         <li
@@ -993,12 +624,7 @@ exports[`PuzzlePage > new level loading > renders new level after new level butt
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            2
-             
-            column
+            Try move tile in 3 row and 2 column
           </button>
         </li>
         <li
@@ -1009,12 +635,7 @@ exports[`PuzzlePage > new level loading > renders new level after new level butt
             class="emotion-7"
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            3
-             
-            column
+            Try move tile in 3 row and 3 column
           </button>
         </li>
       </ul>
@@ -1069,12 +690,7 @@ exports[`PuzzlePage > new level loading > updates after new level button click 1
             disabled=""
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            3
-             
-            column
+            Try move tile in 1 row and 3 column
           </button>
         </li>
         <li
@@ -1087,12 +703,7 @@ exports[`PuzzlePage > new level loading > updates after new level button click 1
             disabled=""
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            1
-             
-            column
+            Try move tile in 1 row and 1 column
           </button>
         </li>
         <li
@@ -1105,12 +716,7 @@ exports[`PuzzlePage > new level loading > updates after new level button click 1
             disabled=""
             type="button"
           >
-            Try move tile in $
-            1
-            row and $
-            2
-             
-            column
+            Try move tile in 1 row and 2 column
           </button>
         </li>
         <li
@@ -1122,12 +728,7 @@ exports[`PuzzlePage > new level loading > updates after new level button click 1
             disabled=""
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            1
-             
-            column
+            Try move tile in 2 row and 1 column
           </button>
         </li>
         <li
@@ -1139,12 +740,7 @@ exports[`PuzzlePage > new level loading > updates after new level button click 1
             disabled=""
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            2
-             
-            column
+            Try move tile in 2 row and 2 column
           </button>
         </li>
         <li
@@ -1156,12 +752,7 @@ exports[`PuzzlePage > new level loading > updates after new level button click 1
             disabled=""
             type="button"
           >
-            Try move tile in $
-            2
-            row and $
-            3
-             
-            column
+            Try move tile in 2 row and 3 column
           </button>
         </li>
         <li
@@ -1173,12 +764,7 @@ exports[`PuzzlePage > new level loading > updates after new level button click 1
             disabled=""
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            1
-             
-            column
+            Try move tile in 3 row and 1 column
           </button>
         </li>
         <li
@@ -1190,12 +776,7 @@ exports[`PuzzlePage > new level loading > updates after new level button click 1
             disabled=""
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            2
-             
-            column
+            Try move tile in 3 row and 2 column
           </button>
         </li>
         <li
@@ -1207,12 +788,7 @@ exports[`PuzzlePage > new level loading > updates after new level button click 1
             disabled=""
             type="button"
           >
-            Try move tile in $
-            3
-            row and $
-            3
-             
-            column
+            Try move tile in 3 row and 3 column
           </button>
         </li>
       </ul>

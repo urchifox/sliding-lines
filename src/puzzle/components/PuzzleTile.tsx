@@ -105,8 +105,7 @@ export function PuzzleTile({
 				onClick={handleClick}
 				disabled={isFinished || isEmpty}
 			>
-				Try move tile in ${currentPosition.row}row and ${currentPosition.column}{" "}
-				column
+				{`Try move tile in ${currentPosition.row} row and ${currentPosition.column} column`}
 			</PuzzleTileButtonStyled>
 		</PuzzleTileStyled>
 	)
