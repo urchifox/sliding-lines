@@ -30,7 +30,6 @@ vi.mock("../puzzle/domain/level", () => ({
 	restartLevel: vi.fn(),
 }))
 
-vi.useFakeTimers({ shouldAdvanceTime: true })
 
 const mockedCreatePuzzleData = vi.mocked(createPuzzleData)
 const mockedRestartLevel = vi.mocked(restartLevel)
@@ -141,12 +140,13 @@ function advanceLevelTransition() {
 }
 
 beforeEach(() => {
+	vi.useFakeTimers({ shouldAdvanceTime: true })
 	vi.resetAllMocks()
 	mockedCreatePuzzleData.mockResolvedValue(getMockedPuzzleData())
 })
 
 afterEach(() => {
-	vi.restoreAllMocks()
+	vi.useRealTimers()
 	vi.clearAllTimers()
 })
 
