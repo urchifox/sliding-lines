@@ -148,9 +148,10 @@ describe("Puzzle", () => {
 			/>
 		)
 		const emptySlotElement = getTileElement(renderResult, emptySlot)
+		const emptySlotButton = getTileButton(emptySlotElement)
 		const tilesElements = getAllTilesElements(renderResult)
 
-		fireEvent.click(emptySlotElement)
+		fireEvent.click(emptySlotButton)
 
 		expect(tilesElements.length).toBe(level.tiles.length)
 		for (const tilesElement of tilesElements) {
