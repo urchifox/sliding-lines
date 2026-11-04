@@ -3,12 +3,12 @@ import { createSerializer } from "@emotion/jest"
 import { fireEvent, render } from "@testing-library/react"
 
 import {
-	createTile,
 	expectTileBeingMovedAt,
 	expectTileNotBeingMoved,
 	getAllTilesElements,
 	getTileButton,
 	getTileElement,
+	createAlmostSolvedTiles,
 } from "../../test/testHelpers"
 import type { Level, PuzzleTileInfo } from "../domain/types"
 import { Puzzle } from "./Puzzle"
@@ -20,33 +20,7 @@ function getPuzzleData() {
 		rows: 3,
 		columns: 3,
 		shuffleSteps: 2,
-		tiles: [
-			createTile({
-				originalRow: 1,
-				originalColumn: 3,
-				currentRow: 1,
-				currentColumn: 1,
-				isEmpty: true,
-			}),
-			createTile({
-				originalRow: 1,
-				originalColumn: 1,
-				currentRow: 1,
-				currentColumn: 2,
-			}),
-			createTile({
-				originalRow: 1,
-				originalColumn: 2,
-				currentRow: 1,
-				currentColumn: 3,
-			}),
-			createTile({ originalRow: 2, originalColumn: 1 }),
-			createTile({ originalRow: 2, originalColumn: 2 }),
-			createTile({ originalRow: 2, originalColumn: 3 }),
-			createTile({ originalRow: 3, originalColumn: 1 }),
-			createTile({ originalRow: 3, originalColumn: 2 }),
-			createTile({ originalRow: 3, originalColumn: 3 }),
-		] satisfies Array<PuzzleTileInfo>,
+		tiles: createAlmostSolvedTiles()
 	} satisfies Level
 
 	const emptySlot = level.tiles.find((tile) => tile.isEmpty) as PuzzleTileInfo

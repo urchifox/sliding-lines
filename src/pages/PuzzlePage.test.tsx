@@ -13,11 +13,11 @@ import type {
 } from "../puzzle/domain/types"
 import {
 	createDeferred,
-	createTile,
 	expectTileBeingMovedAt,
 	getPuzzleBoard,
 	getTileButton,
 	getTileElement,
+	createAlmostSolvedTiles,
 	queryPuzzleBoard,
 } from "../test/testHelpers"
 import { PuzzlePage } from "./PuzzlePage"
@@ -51,40 +51,10 @@ function findErrorMessage() {
 	return screen.findByText(errorText)
 }
 
-function getTiles() {
-	return [
-		createTile({
-			originalRow: 1,
-			originalColumn: 3,
-			currentRow: 1,
-			currentColumn: 1,
-			isEmpty: true,
-		}),
-		createTile({
-			originalRow: 1,
-			originalColumn: 1,
-			currentRow: 1,
-			currentColumn: 2,
-		}),
-		createTile({
-			originalRow: 1,
-			originalColumn: 2,
-			currentRow: 1,
-			currentColumn: 3,
-		}),
-		createTile({ originalRow: 2, originalColumn: 1 }),
-		createTile({ originalRow: 2, originalColumn: 2 }),
-		createTile({ originalRow: 2, originalColumn: 3 }),
-		createTile({ originalRow: 3, originalColumn: 1 }),
-		createTile({ originalRow: 3, originalColumn: 2 }),
-		createTile({ originalRow: 3, originalColumn: 3 }),
-	] satisfies Array<PuzzleTileInfo>
-}
-
 function getMockedPuzzleData(): PuzzleData {
 	return {
 		levelNumber: 0,
-		level: { rows: 3, columns: 3, shuffleSteps: 1, tiles: getTiles() },
+		level: { rows: 3, columns: 3, shuffleSteps: 1, tiles: createAlmostSolvedTiles() },
 		imageInfo: {
 			imageUrl: "test-image.jpg",
 			width: 300,
@@ -149,7 +119,7 @@ async function renderPuzzlePage() {
 
 function clickTile(key: TileKey) {
 	const tileElement = getTileElement(key)
-	const tile = getTiles().find((item) => item.key === key) as PuzzleTileInfo
+	const tile = createAlmostSolvedTiles().find((item) => item.key === key) as PuzzleTileInfo
 	const tileButton = getTileButton(tile)
 	fireEvent.click(tileButton)
 	return { tileElement, tileButton }

@@ -88,3 +88,34 @@ export function expectTileNotBeingMoved(element: HTMLElement) {
 	expect(element.style.getPropertyValue("--row")).toBe("")
 	expect(element.style.getPropertyValue("--col")).toBe("")
 }
+
+export function createAlmostSolvedTiles() {
+	return [
+		createTile({
+			originalRow: 1,
+			originalColumn: 3,
+			currentRow: 1,
+			currentColumn: 1,
+			isEmpty: true,
+		}),
+		createTile({
+			originalRow: 1,
+			originalColumn: 1,
+			currentRow: 1,
+			currentColumn: 2,
+		}),
+		createTile({
+			originalRow: 1,
+			originalColumn: 2,
+			currentRow: 1,
+			currentColumn: 3,
+		}),
+		createTile({ originalRow: 2, originalColumn: 1 }),
+		createTile({ originalRow: 2, originalColumn: 2 }),
+		createTile({ originalRow: 2, originalColumn: 3 }),
+		createTile({ originalRow: 3, originalColumn: 1 }),
+		createTile({ originalRow: 3, originalColumn: 2 }),
+		createTile({ originalRow: 3, originalColumn: 3 }),
+	] satisfies Array<PuzzleTileInfo>
+}
+
