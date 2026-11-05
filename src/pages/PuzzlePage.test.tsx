@@ -190,8 +190,8 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-	vi.useRealTimers()
 	vi.clearAllTimers()
+	vi.useRealTimers()
 })
 
 describe("PuzzlePage", () => {
