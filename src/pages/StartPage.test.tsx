@@ -1,9 +1,20 @@
 // @vitest-environment happy-dom
-import { fireEvent, render } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import { act } from "react"
 
 import { AppRoute } from "../AppRoute"
 import { StartPage } from "./StartPage"
+import { playButtonText } from "./StartPageHelpers"
+
+function getPlayButton() {
+	return screen.getByRole("button", { name: playButtonText })
+}
+
+function renderPage() {
+	const setPage = vi.fn()
+	const renderResult = render(<StartPage setPage={setPage} />)
+	return { renderResult, setPage }
+}
 
 describe("StartPage", () => {
 	afterEach(() => {
@@ -18,19 +29,17 @@ describe("StartPage", () => {
 		)) {
 			random.mockReturnValueOnce(value)
 		}
-		const setPage = vi.fn()
 
-		const renderResult = render(<StartPage setPage={setPage} />)
+		const { renderResult } = renderPage()
 
 		expect(renderResult.container).toMatchSnapshot()
 	})
 
 	it("starts the game when the play button is clicked", async () => {
 		vi.useFakeTimers()
-		const setPage = vi.fn()
-		const renderResult = render(<StartPage setPage={setPage} />)
+		const { setPage } = renderPage()
 
-		const playButton = renderResult.getByRole("button", { name: "Play" })
+		const playButton = getPlayButton()
 		fireEvent.click(playButton)
 
 		expect(setPage).not.toHaveBeenCalled()
@@ -43,10 +52,9 @@ describe("StartPage", () => {
 
 	it("ignores repeated clicks on play button", async () => {
 		vi.useFakeTimers()
-		const setPage = vi.fn()
-		const renderResult = render(<StartPage setPage={setPage} />)
+		const { setPage } = renderPage()
 
-		const playButton = renderResult.getByRole("button", { name: "Play" })
+		const playButton = getPlayButton()
 		fireEvent.click(playButton)
 		fireEvent.click(playButton)
 
@@ -57,10 +65,9 @@ describe("StartPage", () => {
 
 	it("disables play button after click immediately", () => {
 		vi.useFakeTimers()
-		const setPage = vi.fn()
-		const renderResult = render(<StartPage setPage={setPage} />)
+		renderPage()
 
-		const playButton = renderResult.getByRole("button", { name: "Play" })
+		const playButton = getPlayButton()
 		fireEvent.click(playButton)
 		expect(playButton).toBeDisabled()
 	})
