@@ -163,7 +163,7 @@ function clickTile(key: TileKey) {
 	const tile = createAlmostSolvedTiles().find(
 		(item) => item.key === key
 	) as PuzzleTileInfo
-	const tileButton = getTileButton(tile)
+	const tileButton = getTileButton(tile.currentPosition)
 	fireEvent.click(tileButton)
 	return { tileElement, tileButton }
 }
@@ -292,7 +292,10 @@ describe("PuzzlePage", () => {
 
 			const { tileElement } = clickTile("1-1")
 
-			expectTileBeingMovedAt({ element: tileElement, row: 1, column: 1 })
+			expectTileBeingMovedAt({
+				element: tileElement,
+				currentPosition: { row: 1, column: 1 },
+			})
 			expectPageChrome({ isFinished: false, isUpdating: false })
 		})
 	})
@@ -328,13 +331,25 @@ describe("PuzzlePage", () => {
 			await renderPageWithBoard()
 			const { tileElement1, tileButton1, tileElement2, tileButton2 } =
 				finishLevel()
-			expectTileBeingMovedAt({ element: tileElement1, row: 1, column: 1 })
-			expectTileBeingMovedAt({ element: tileElement2, row: 1, column: 2 })
+			expectTileBeingMovedAt({
+				element: tileElement1,
+				currentPosition: { row: 1, column: 1 },
+			})
+			expectTileBeingMovedAt({
+				element: tileElement2,
+				currentPosition: { row: 1, column: 2 },
+			})
 
 			fireEvent.click(tileButton2)
 			fireEvent.click(tileButton1)
-			expectTileBeingMovedAt({ element: tileElement1, row: 1, column: 1 })
-			expectTileBeingMovedAt({ element: tileElement2, row: 1, column: 2 })
+			expectTileBeingMovedAt({
+				element: tileElement1,
+				currentPosition: { row: 1, column: 1 },
+			})
+			expectTileBeingMovedAt({
+				element: tileElement2,
+				currentPosition: { row: 1, column: 2 },
+			})
 		})
 	})
 

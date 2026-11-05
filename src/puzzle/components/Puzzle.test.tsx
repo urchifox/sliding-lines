@@ -79,17 +79,17 @@ describe("Puzzle", () => {
 			)
 
 			const tileElement = getTileElement(tile.key)
-			const tileButton = getTileButton(tile)
+			const tileButton = getTileButton(tile.currentPosition)
 			const emptySlotElement = getTileElement(emptySlot.key)
 			fireEvent.click(tileButton)
 
 			expectTileBeingMovedAt({
 				element: tileElement,
-				...emptySlotInitialPosition,
+				currentPosition: emptySlotInitialPosition,
 			})
 			expectTileBeingMovedAt({
 				element: emptySlotElement,
-				...tileInitialPosition,
+				currentPosition: tileInitialPosition,
 			})
 		}
 	)
@@ -99,14 +99,17 @@ describe("Puzzle", () => {
 			isFinished: false,
 			isUpdating: false,
 		})
-		const emptySlotButton = getTileButton(emptySlot)
+		const emptySlotButton = getTileButton(emptySlot.currentPosition)
 		const tilesElements = getAllTilesElements()
 
 		fireEvent.click(emptySlotButton)
 
 		expect(tilesElements.length).toBe(level.tiles.length)
-		for (const tileElement of tilesElements) {
-			expectTileNotBeingMoved(tileElement)
+		for (const tile of level.tiles) {
+			expectTileNotBeingMoved({
+				element: getTileElement(tile.key),
+				currentPosition: tile.currentPosition,
+			})
 		}
 		expect(onCompleteLevel).not.toHaveBeenCalled()
 	})
@@ -125,13 +128,16 @@ describe("Puzzle", () => {
 			})
 			const tile = level.tiles[tileIndex]
 			const tilesElements = getAllTilesElements()
-			const tileButton = getTileButton(tile)
+			const tileButton = getTileButton(tile.currentPosition)
 
 			fireEvent.click(tileButton)
 
 			expect(tilesElements.length).toBe(level.tiles.length)
-			for (const tileElement of tilesElements) {
-				expectTileNotBeingMoved(tileElement)
+			for (const tile of level.tiles) {
+				expectTileNotBeingMoved({
+					element: getTileElement(tile.key),
+					currentPosition: tile.currentPosition,
+				})
 			}
 			expect(onCompleteLevel).not.toHaveBeenCalled()
 		}
@@ -146,13 +152,16 @@ describe("Puzzle", () => {
 			})
 			const tile = level.tiles[tileIndex]
 			const tilesElements = getAllTilesElements()
-			const tileButton = getTileButton(tile)
+			const tileButton = getTileButton(tile.currentPosition)
 
 			fireEvent.click(tileButton)
 
 			expect(tilesElements.length).toBe(level.tiles.length)
-			for (const tileElement of tilesElements) {
-				expectTileNotBeingMoved(tileElement)
+			for (const tile of level.tiles) {
+				expectTileNotBeingMoved({
+					element: getTileElement(tile.key),
+					currentPosition: tile.currentPosition,
+				})
 			}
 			expect(onCompleteLevel).not.toHaveBeenCalled()
 		}
@@ -167,13 +176,16 @@ describe("Puzzle", () => {
 			})
 			const tile = level.tiles[tileIndex]
 			const tilesElements = getAllTilesElements()
-			const tileButton = getTileButton(tile)
+			const tileButton = getTileButton(tile.currentPosition)
 
 			fireEvent.click(tileButton)
 
 			expect(tilesElements.length).toBe(level.tiles.length)
-			for (const tileElement of tilesElements) {
-				expectTileNotBeingMoved(tileElement)
+			for (const tile of level.tiles) {
+				expectTileNotBeingMoved({
+					element: getTileElement(tile.key),
+					currentPosition: tile.currentPosition,
+				})
 			}
 			expect(onCompleteLevel).not.toHaveBeenCalled()
 		}
@@ -187,11 +199,10 @@ describe("Puzzle", () => {
 		const tile1 = level.tiles[1]
 		const tile2 = level.tiles[2]
 		const tile1Element = getTileElement(tile1.key)
-		const tile1Button = getTileButton(tile1)
+		const tile1Button = getTileButton(tile1.currentPosition)
 		const tile2Element = getTileElement(tile2.key)
-		const tile2Button = getTileButton(tile2)
+		const tile2Button = getTileButton(tile2.currentPosition)
 		const emptySlotElement = getTileElement(emptySlot.key)
-		const tilesElements = getAllTilesElements()
 
 		fireEvent.click(tile1Button)
 		expect(onCompleteLevel).not.toHaveBeenCalled()
@@ -201,26 +212,26 @@ describe("Puzzle", () => {
 
 		expectTileBeingMovedAt({
 			element: emptySlotElement,
-			...emptySlot.originalPosition,
+			currentPosition: emptySlot.originalPosition,
 		})
 		expectTileBeingMovedAt({
 			element: tile1Element,
-			...tile1.originalPosition,
+			currentPosition: tile1.originalPosition,
 		})
 		expectTileBeingMovedAt({
 			element: tile2Element,
-			...tile2.originalPosition,
+			currentPosition: tile2.originalPosition,
 		})
 
-		for (const tileElement of tilesElements) {
-			if (
-				tileElement === tile1Element ||
-				tileElement === tile2Element ||
-				tileElement === emptySlotElement
-			) {
+		const movedKeys = [tile1.key, tile2.key, emptySlot.key]
+		for (const tile of level.tiles) {
+			if (movedKeys.includes(tile.key)) {
 				continue
 			}
-			expectTileNotBeingMoved(tileElement)
+			expectTileNotBeingMoved({
+				element: getTileElement(tile.key),
+				currentPosition: tile.currentPosition,
+			})
 		}
 	})
 })
