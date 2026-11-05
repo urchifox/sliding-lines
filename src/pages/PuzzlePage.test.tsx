@@ -1,0 +1,443 @@
+// @vitest-environment happy-dom
+import { act, fireEvent, render, screen } from "@testing-library/react"
+import { StrictMode } from "react"
+
+import { getLevelNumber } from "../progress/user"
+import { restartLevel } from "../puzzle/domain/level"
+import { createPuzzleData } from "../puzzle/domain/puzzleData"
+import type {
+	BoardState,
+	PuzzleData,
+	PuzzleTileInfo,
+	TileKey,
+} from "../puzzle/domain/types"
+import {
+	createAlmostSolvedTiles,
+	createDeferred,
+	expectTileBeingMovedAt,
+	getPuzzleBoard,
+	getTileButton,
+	getTileElement,
+	queryPuzzleBoard,
+} from "../test/testHelpers"
+import { PuzzlePage } from "./PuzzlePage"
+import {
+	errorText,
+	getLevelNameText,
+	loadingText,
+	playButtonText,
+	restartButtonLabel,
+	winHeaderText,
+} from "./PuzzlePageHelpers"
+
+vi.mock("../puzzle/domain/puzzleData", () => ({
+	createPuzzleData: vi.fn(),
+}))
+
+vi.mock("../puzzle/domain/level", () => ({
+	restartLevel: vi.fn(),
+}))
+
+const mockedCreatePuzzleData = vi.mocked(createPuzzleData)
+const mockedRestartLevel = vi.mocked(restartLevel)
+
+function getLoadingMessage() {
+	return screen.getByText(loadingText)
+}
+
+function queryLoadingMessage() {
+	return screen.queryByText(loadingText)
+}
+
+function findErrorMessage() {
+	return screen.findByText(errorText)
+}
+
+function getRestartButton() {
+	return screen.getByRole("button", { name: restartButtonLabel })
+}
+
+function getWinHeader() {
+	return screen.getByText(winHeaderText)
+}
+
+function getPlayButton() {
+	return screen.getByText(playButtonText)
+}
+
+function findLevelName(levelNumber: number) {
+	return screen.findByText(getLevelNameText(levelNumber))
+}
+
+function getLevelName(levelNumber: number) {
+	return screen.getByText(getLevelNameText(levelNumber))
+}
+
+function getMockedPuzzleData(): PuzzleData {
+	return {
+		levelNumber: 0,
+		level: {
+			rows: 3,
+			columns: 3,
+			shuffleSteps: 1,
+			tiles: createAlmostSolvedTiles(),
+		},
+		imageInfo: {
+			imageUrl: "test-image.jpg",
+			width: 300,
+			height: 200,
+			ratio: 1.5,
+		},
+	}
+}
+
+function expectPageChrome(state: BoardState, levelNumber = 0) {
+	const puzzleBoard = getPuzzleBoard()
+	const levelName = getLevelName(levelNumber)
+	const restartButton = getRestartButton()
+	const winHeader = getWinHeader()
+	const playButton = getPlayButton()
+
+	if (state.isFinished) {
+		expect(puzzleBoard).toHaveStyle({ backgroundColor: "transparent" })
+	} else {
+		expect(puzzleBoard).not.toHaveStyle({ backgroundColor: "transparent" })
+	}
+	expect(puzzleBoard).toHaveStyle({ "--image": "url(test-image.jpg)" })
+	expect(levelName).toHaveStyle({ opacity: state.isUpdating ? 0 : 1 })
+	expect(restartButton).toHaveStyle({ opacity: state.isFinished ? 0 : 1 })
+	expect(winHeader).toHaveStyle({
+		display: state.isFinished ? "block" : "none",
+	})
+	expect(winHeader).toHaveStyle({
+		"--animation-name": state.isUpdating
+			? "slide-out-to-right"
+			: state.isFinished
+				? "slide-in-from-left"
+				: "none",
+	})
+	expect(playButton).toHaveStyle({
+		display: state.isFinished ? "block" : "none",
+	})
+	expect(playButton).toHaveStyle({
+		"--animation-name": state.isUpdating
+			? "slide-out-to-left"
+			: state.isFinished
+				? "slide-in-from-right"
+				: "none",
+	})
+	if (state.isFinished) {
+		expect(restartButton).toBeDisabled()
+	} else {
+		expect(restartButton).toBeEnabled()
+	}
+	if (state.isUpdating) {
+		expect(playButton).toBeDisabled()
+	} else {
+		expect(playButton).toBeEnabled()
+	}
+}
+
+function renderPageWithLoading() {
+	mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
+	const renderResult = render(<PuzzlePage />)
+	return renderResult
+}
+
+async function renderPageWithError() {
+	mockedCreatePuzzleData.mockRejectedValue(new Error(""))
+	const renderResult = render(<PuzzlePage />)
+	await findErrorMessage()
+	return renderResult
+}
+
+async function renderPageWithBoard() {
+	mockedCreatePuzzleData.mockResolvedValue(getMockedPuzzleData())
+	const renderResult = render(<PuzzlePage />)
+	await findLevelName(0)
+	return renderResult
+}
+
+function clickTile(key: TileKey) {
+	const tileElement = getTileElement(key)
+	const tile = createAlmostSolvedTiles().find(
+		(item) => item.key === key
+	) as PuzzleTileInfo
+	const tileButton = getTileButton(tile.currentPosition)
+	fireEvent.click(tileButton)
+	return { tileElement, tileButton }
+}
+
+function finishLevel() {
+	const { tileElement: tileElement1, tileButton: tileButton1 } =
+		clickTile("1-1")
+	const { tileElement: tileElement2, tileButton: tileButton2 } =
+		clickTile("1-2")
+	return { tileElement1, tileButton1, tileElement2, tileButton2 }
+}
+
+function requestNextLevel() {
+	fireEvent.click(getPlayButton())
+}
+
+function advanceLevelTransition() {
+	return act(() => vi.advanceTimersByTimeAsync(1000))
+}
+
+beforeEach(() => {
+	vi.useFakeTimers({ shouldAdvanceTime: true })
+	vi.resetAllMocks()
+})
+
+afterEach(() => {
+	vi.clearAllTimers()
+	vi.useRealTimers()
+})
+
+describe("PuzzlePage", () => {
+	describe("loading", () => {
+		it("renders correctly with loading state", () => {
+			const renderResult = renderPageWithLoading()
+
+			expect(renderResult.container).toMatchSnapshot()
+		})
+
+		it("renders correctly with error state", async () => {
+			const renderResult = await renderPageWithError()
+
+			expect(renderResult.container).toMatchSnapshot()
+		})
+
+		it("renders correctly with loaded image", async () => {
+			const renderResult = await renderPageWithBoard()
+
+			expect(renderResult.container).toMatchSnapshot()
+			expectPageChrome({ isFinished: false, isUpdating: false })
+		})
+
+		it("ignores promise resolution of cancelled request", async () => {
+			const deferred1 = createDeferred<PuzzleData>()
+			const deferred2 = createDeferred<PuzzleData>()
+			mockedCreatePuzzleData
+				.mockReturnValueOnce(deferred1.promise)
+				.mockReturnValueOnce(deferred2.promise)
+			render(
+				<StrictMode>
+					<PuzzlePage />
+				</StrictMode>
+			)
+
+			deferred1.resolve({ ...getMockedPuzzleData(), levelNumber: 0 })
+			await act(() => Promise.resolve())
+			expect(getLoadingMessage()).toBeInTheDocument()
+			deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
+			expect(await findLevelName(5)).toBeInTheDocument()
+		})
+
+		it("ignores promise rejection of cancelled request", async () => {
+			const deferred1 = createDeferred<PuzzleData>()
+			const deferred2 = createDeferred<PuzzleData>()
+			mockedCreatePuzzleData
+				.mockReturnValueOnce(deferred1.promise)
+				.mockReturnValueOnce(deferred2.promise)
+			render(
+				<StrictMode>
+					<PuzzlePage />
+				</StrictMode>
+			)
+
+			deferred1.reject()
+			await act(() => Promise.resolve())
+			expect(getLoadingMessage()).toBeInTheDocument()
+			deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
+			expect(await findLevelName(5)).toBeInTheDocument()
+		})
+	})
+
+	describe("restarting", () => {
+		it("restarts the puzzle on restart button click", async () => {
+			await renderPageWithBoard()
+			const restartButton = getRestartButton()
+			const tileElement = getTileElement("1-1")
+
+			fireEvent.click(restartButton)
+
+			expect(mockedRestartLevel).toHaveBeenCalledOnce()
+			expect(mockedRestartLevel).toHaveBeenCalledWith(
+				getMockedPuzzleData().level
+			)
+			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
+			expectPageChrome({ isFinished: false, isUpdating: false })
+			expect(getTileElement("1-1")).not.toBe(tileElement)
+		})
+	})
+
+	describe("game process", () => {
+		it("ignores click on play button when level is not finished", async () => {
+			await renderPageWithBoard()
+			const playButton = getPlayButton()
+
+			fireEvent.click(playButton)
+			await advanceLevelTransition()
+
+			expect(mockedRestartLevel).not.toHaveBeenCalled()
+			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
+			expect(getLevelName(0)).toBeInTheDocument()
+			expect(getRestartButton()).toBeInTheDocument()
+			expectPageChrome({ isFinished: false, isUpdating: false })
+		})
+
+		it("continues level when level is not finished", async () => {
+			await renderPageWithBoard()
+
+			const { tileElement } = clickTile("1-1")
+
+			expectTileBeingMovedAt({
+				element: tileElement,
+				currentPosition: { row: 1, column: 1 },
+			})
+			expectPageChrome({ isFinished: false, isUpdating: false })
+		})
+	})
+
+	describe("finishing level", () => {
+		it("updates level number when finished", async () => {
+			await renderPageWithBoard()
+			finishLevel()
+
+			expect(getLevelNumber()).toBe(1)
+		})
+
+		it("renders correctly when finished", async () => {
+			await renderPageWithBoard()
+			finishLevel()
+
+			expect(mockedRestartLevel).not.toHaveBeenCalled()
+			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
+			expectPageChrome({ isFinished: true, isUpdating: false })
+		})
+
+		it("ignores restart button click when level is finished", async () => {
+			await renderPageWithBoard()
+			finishLevel()
+
+			const restartButton = getRestartButton()
+			fireEvent.click(restartButton)
+
+			expect(mockedRestartLevel).not.toHaveBeenCalled()
+		})
+
+		it("ignores tile clicks when level is finished", async () => {
+			await renderPageWithBoard()
+			const { tileElement1, tileButton1, tileElement2, tileButton2 } =
+				finishLevel()
+			expectTileBeingMovedAt({
+				element: tileElement1,
+				currentPosition: { row: 1, column: 1 },
+			})
+			expectTileBeingMovedAt({
+				element: tileElement2,
+				currentPosition: { row: 1, column: 2 },
+			})
+
+			fireEvent.click(tileButton2)
+			fireEvent.click(tileButton1)
+			expectTileBeingMovedAt({
+				element: tileElement1,
+				currentPosition: { row: 1, column: 1 },
+			})
+			expectTileBeingMovedAt({
+				element: tileElement2,
+				currentPosition: { row: 1, column: 2 },
+			})
+		})
+	})
+
+	describe("new level loading", () => {
+		it("updates after new level button click", async () => {
+			await renderPageWithBoard()
+			finishLevel()
+			requestNextLevel()
+
+			expectPageChrome({ isFinished: true, isUpdating: true })
+			expect(queryLoadingMessage()).not.toBeInTheDocument()
+		})
+
+		it("does nothing before transition ends", async () => {
+			await renderPageWithBoard()
+			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
+			finishLevel()
+			requestNextLevel()
+			act(() => {
+				vi.advanceTimersByTime(999)
+			})
+
+			expectPageChrome({ isFinished: true, isUpdating: true })
+			expect(queryLoadingMessage()).not.toBeInTheDocument()
+			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
+		})
+
+		it("loads new level after new level button click", async () => {
+			await renderPageWithBoard()
+			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
+			finishLevel()
+			requestNextLevel()
+			await advanceLevelTransition()
+
+			expect(getLoadingMessage()).toBeInTheDocument()
+			expect(queryPuzzleBoard()).not.toBeInTheDocument()
+			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)
+		})
+
+		it("renders new level after new level button click", async () => {
+			await renderPageWithBoard()
+			const { promise, resolve } = createDeferred<PuzzleData>()
+			mockedCreatePuzzleData.mockReturnValue(promise)
+			finishLevel()
+			requestNextLevel()
+			await advanceLevelTransition()
+			resolve({
+				...getMockedPuzzleData(),
+				levelNumber: 1,
+			})
+
+			await findLevelName(1)
+			expectPageChrome({ isFinished: false, isUpdating: false }, 1)
+			expect(mockedRestartLevel).not.toHaveBeenCalled()
+			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)
+		})
+
+		it("renders error message if new level loading fails", async () => {
+			await renderPageWithBoard()
+			const { promise, reject } = createDeferred<PuzzleData>()
+			mockedCreatePuzzleData.mockReturnValue(promise)
+			finishLevel()
+			requestNextLevel()
+			await advanceLevelTransition()
+			reject()
+
+			expect(await findErrorMessage()).toBeInTheDocument()
+			expect(queryLoadingMessage()).not.toBeInTheDocument()
+			expect(queryPuzzleBoard()).not.toBeInTheDocument()
+		})
+
+		it("ignores clicks on any button when new level is loading", async () => {
+			await renderPageWithBoard()
+			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
+			finishLevel()
+			requestNextLevel()
+
+			const restartButton = getRestartButton()
+			fireEvent.click(restartButton)
+			requestNextLevel()
+			expect(restartButton).toBeDisabled()
+			expect(getPlayButton()).toBeDisabled()
+
+			await advanceLevelTransition()
+			await advanceLevelTransition()
+
+			expect(mockedRestartLevel).not.toHaveBeenCalled()
+			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)
+		})
+	})
+})

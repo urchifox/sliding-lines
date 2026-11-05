@@ -1,120 +1,8 @@
 // @vitest-environment happy-dom
 import { getLevelNumber } from "../../progress/user"
+import { createAlmostSolvedTiles } from "../../test/testHelpers"
 import { getCurrentNeighborsOf, swap, tryMove } from "./game"
 import type { PuzzleTileInfo } from "./types"
-
-function getTiles() {
-	return [
-		{
-			key: "1-3",
-			originalPosition: {
-				row: 1,
-				column: 3,
-			},
-			currentPosition: {
-				row: 1,
-				column: 1,
-			},
-			isEmpty: true,
-		},
-		{
-			key: "1-1",
-			originalPosition: {
-				row: 1,
-				column: 1,
-			},
-			currentPosition: {
-				row: 1,
-				column: 2,
-			},
-			isEmpty: false,
-		},
-		{
-			key: "1-2",
-			originalPosition: {
-				row: 1,
-				column: 2,
-			},
-			currentPosition: {
-				row: 1,
-				column: 3,
-			},
-			isEmpty: false,
-		},
-		{
-			key: "2-1",
-			originalPosition: {
-				row: 2,
-				column: 1,
-			},
-			currentPosition: {
-				row: 2,
-				column: 1,
-			},
-			isEmpty: false,
-		},
-		{
-			key: "2-2",
-			originalPosition: {
-				row: 2,
-				column: 2,
-			},
-			currentPosition: {
-				row: 2,
-				column: 2,
-			},
-			isEmpty: false,
-		},
-		{
-			key: "2-3",
-			originalPosition: {
-				row: 2,
-				column: 3,
-			},
-			currentPosition: {
-				row: 2,
-				column: 3,
-			},
-			isEmpty: false,
-		},
-		{
-			key: "3-1",
-			originalPosition: {
-				row: 3,
-				column: 1,
-			},
-			currentPosition: {
-				row: 3,
-				column: 1,
-			},
-			isEmpty: false,
-		},
-		{
-			key: "3-2",
-			originalPosition: {
-				row: 3,
-				column: 2,
-			},
-			currentPosition: {
-				row: 3,
-				column: 2,
-			},
-			isEmpty: false,
-		},
-		{
-			key: "3-3",
-			originalPosition: {
-				row: 3,
-				column: 3,
-			},
-			currentPosition: {
-				row: 3,
-				column: 3,
-			},
-			isEmpty: false,
-		},
-	] satisfies Array<PuzzleTileInfo>
-}
 
 describe("game", () => {
 	it.each([
@@ -141,7 +29,7 @@ describe("game", () => {
 	])(
 		"finds side neighbors of position $position",
 		({ position, expectedNeighborsIndexes }) => {
-			const tiles = getTiles()
+			const tiles = createAlmostSolvedTiles()
 			const expectedTiles = expectedNeighborsIndexes.map(
 				(index) => tiles[index]
 			)
@@ -159,7 +47,7 @@ describe("game", () => {
 		}
 
 		it("changes only current positions of tiles when swapping two different tiles", () => {
-			const tiles = getTiles()
+			const tiles = createAlmostSolvedTiles()
 			const tile1 = tiles[1]
 			const tile1CurrentPosition = structuredClone(tile1.currentPosition)
 			const tile1Rest = getTileStaticInfo(tile1)
@@ -176,7 +64,7 @@ describe("game", () => {
 		})
 
 		it("changes nothing when swaps same tile", () => {
-			const tiles = getTiles()
+			const tiles = createAlmostSolvedTiles()
 			const tile = tiles[1]
 			const tileClone = structuredClone(tile)
 
@@ -188,7 +76,7 @@ describe("game", () => {
 
 	describe("tryMove", () => {
 		it("attempt to move empty tile makes nothing", () => {
-			const tiles = getTiles()
+			const tiles = createAlmostSolvedTiles()
 			const tilesClone = structuredClone(tiles)
 			const emptySlot = tiles[0]
 
@@ -207,7 +95,7 @@ describe("game", () => {
 		])(
 			"attempt on move tile without empty tile as neighbour makes nothing",
 			({ tileIndex }) => {
-				const tiles = getTiles()
+				const tiles = createAlmostSolvedTiles()
 				const tilesClone = structuredClone(tiles)
 				const tile = tiles[tileIndex]
 
@@ -220,7 +108,7 @@ describe("game", () => {
 		)
 
 		it("moves tile with  empty tile as neighbour", () => {
-			const tiles = getTiles()
+			const tiles = createAlmostSolvedTiles()
 			const [emptySlot, tile, ...otherTiles] = tiles
 			const otherTilesClone = structuredClone(otherTiles)
 			const emptySlotPosition = structuredClone(emptySlot.currentPosition)
@@ -242,7 +130,7 @@ describe("game", () => {
 		})
 
 		it("completes level when all tiles on original positions", () => {
-			const tiles = getTiles()
+			const tiles = createAlmostSolvedTiles()
 			const [emptySlot, tile1, tile2, ...otherTiles] = tiles
 			const otherTilesClone = structuredClone(otherTiles)
 			const initialLevel = getLevelNumber()

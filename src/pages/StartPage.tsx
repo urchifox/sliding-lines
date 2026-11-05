@@ -8,6 +8,7 @@ import { Lines } from "../ui/Lines"
 import { LinkStyled } from "../ui/Link"
 import { PageStyled } from "../ui/Page"
 import { TextStyled } from "../ui/Text"
+import { playButtonText } from "./StartPageHelpers"
 
 const StartPageStyled = styled(PageStyled)`
 	grid-template-rows: repeat(3, auto);
@@ -80,7 +81,7 @@ export function StartPage({
 				onClick={handleStartClick}
 				disabled={isUpdating}
 			>
-				Play
+				{playButtonText}
 			</PlayButton>
 		</StartPageStyled>
 	)

@@ -1,6 +1,8 @@
 import styled from "@emotion/styled"
 
+import { theme } from "../../assets/styles/theme"
 import type { PuzzleTileInfo } from "../domain/types"
+import { getTileButtonText, getTileLabel } from "./helpers"
 
 const PuzzleTileStyled = styled.li<{
 	isEmpty?: boolean
@@ -8,10 +10,9 @@ const PuzzleTileStyled = styled.li<{
 	col: number
 	spRow: number
 	spCol: number
-	isDisabled: boolean
 	isFinished: boolean
 }>(
-	({ isEmpty, row, col, spRow, spCol, isDisabled, isFinished }) => `
+	({ row, col, spRow, spCol, isEmpty, isFinished }) => `
 	--row: ${row};
 	--col: ${col};
 
@@ -31,7 +32,7 @@ const PuzzleTileStyled = styled.li<{
 	grid-column: 1 / 2;
 
 	border-radius: inherit;
-	border: 1px solid ${isEmpty || isFinished ? "transparent" : "#d4c9eb"};
+	border: 1px solid ${isEmpty || isFinished ? "transparent" : theme.color.secondary};
 	width: calc(100% / var(--columns));
 	height: calc(100% / var(--rows));
 
@@ -46,17 +47,30 @@ const PuzzleTileStyled = styled.li<{
 	background-position-y: calc(
 		(${spRow} - 1) / max(1, (var(--ss-rows) - 1)) * 100%
 	);
-	background-image: ${isEmpty ? "transparent" : "var(--image)"};
+	background-image: var(--image);
 
+	opacity: ${isEmpty ? "0" : "1"};
 	transform: translate(var(--offsetX), var(--offsetY));
 	transition:
 		transform 0.3s ease,
-		border-color 0.3s ease,
-		background-color 0.3s ease;
+		border-color var(--reveal-duration) var(--reveal-delay) ease;
+`
+)
 
-    pointer-events: ${isDisabled || isEmpty ? "none" : "auto"};
-
+const PuzzleTileButtonStyled = styled.button(
+	() => `
+	width: 100%;
+	height: 100%;
+	border: none;
+	background: none;
+	cursor: pointer;
+	font-size: 0;
 	color: transparent;
+	opacity: 0;
+
+	&:disabled {
+		cursor: auto;
+	}
 `
 )
 
@@ -64,32 +78,36 @@ export function PuzzleTile({
 	tile,
 	handleClick,
 	puzzleRef,
-	isDisabled,
 	isFinished,
 }: {
 	tile: PuzzleTileInfo
 	handleClick: () => void
 	puzzleRef: React.RefObject<Record<string, HTMLElement | null>>
-	isDisabled: boolean
 	isFinished: boolean
 }) {
 	const { key, currentPosition, originalPosition, isEmpty } = tile
 
 	return (
 		<PuzzleTileStyled
-			isEmpty={isEmpty}
+			key={key}
 			ref={(el) => {
 				puzzleRef.current[key] = el
 			}}
-			key={key}
-			onClick={handleClick}
 			row={currentPosition.row}
 			col={currentPosition.column}
 			spRow={originalPosition.row}
 			spCol={originalPosition.column}
-			isDisabled={isDisabled}
+			isEmpty={isEmpty}
 			isFinished={isFinished}
-			aria-label={`Tile ${key}`}
-		/>
+			aria-label={getTileLabel(key)}
+		>
+			<PuzzleTileButtonStyled
+				type="button"
+				onClick={handleClick}
+				disabled={isFinished || isEmpty}
+			>
+				{getTileButtonText(currentPosition)}
+			</PuzzleTileButtonStyled>
+		</PuzzleTileStyled>
 	)
 }

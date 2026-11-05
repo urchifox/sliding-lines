@@ -1,4 +1,4 @@
-import { createLevel, resetLevel, shuffleLevel } from "./level"
+import { createLevel, resetLevel, restartLevel, shuffleLevel } from "./level"
 
 describe("Level", () => {
 	describe("createLevel", () => {
@@ -139,14 +139,37 @@ describe("Level", () => {
 	})
 
 	it("shuffles the level", () => {
+		const random = vi.spyOn(Math, "random")
+		random.mockReturnValue(0)
 		const level = createLevel(0)
 		resetLevel(level)
 		const { tiles } = level
 		const tilesBeforeShuffle = structuredClone(tiles)
+		random.mockReturnValue(0.5)
 
 		shuffleLevel(level)
 
 		expect(tiles).not.toEqual(tilesBeforeShuffle)
+		expect(
+			level.tiles.some(
+				(tile) =>
+					tile.currentPosition.row !== tile.originalPosition.row ||
+					tile.currentPosition.column !== tile.originalPosition.column
+			)
+		).toBe(true)
+	})
+
+	it("restarts the level", () => {
+		const random = vi.spyOn(Math, "random")
+		random.mockReturnValue(0)
+		const level = createLevel(0)
+		const { tiles } = level
+		const tilesBeforeRestart = structuredClone(tiles)
+		random.mockReturnValue(0.5)
+
+		restartLevel(level)
+
+		expect(tiles).not.toEqual(tilesBeforeRestart)
 		expect(
 			level.tiles.some(
 				(tile) =>

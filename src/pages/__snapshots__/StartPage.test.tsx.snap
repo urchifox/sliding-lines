@@ -1,0 +1,67 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`StartPage > renders correctly 1`] = `
+<div>
+  <section
+    class="emotion-0"
+  >
+    <div
+      class="emotion-1"
+    >
+      <h1
+        class="emotion-2"
+      >
+        Sliding Lines
+      </h1>
+      <div
+        class="emotion-3"
+      >
+        <div
+          class="emotion-4"
+          direction="reverse"
+          height="1"
+          width="31"
+        />
+        <div
+          class="emotion-5"
+          direction="reverse"
+          height="1"
+          width="39"
+        />
+        <div
+          class="emotion-6"
+          direction="reverse"
+          height="2"
+          width="47"
+        />
+      </div>
+    </div>
+    <p
+      class="emotion-7"
+    >
+      A small game by
+       
+      <a
+        class="emotion-8"
+        href="https://github.com/urchifox"
+      >
+        urchifox
+      </a>
+       
+      with arts from
+       
+      <a
+        class="emotion-8"
+        href="https://www.instagram.com/playful.lines/"
+      >
+        playful.lines
+      </a>
+    </p>
+    <button
+      class="emotion-10"
+    >
+      Play
+    </button>
+  </section>
+</div>
+`;

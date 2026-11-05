@@ -4,20 +4,20 @@ import { useRef } from "react"
 import { clearList } from "../../assets/styles/mixins"
 import { theme } from "../../assets/styles/theme"
 import { tryMove } from "../domain/game"
-import { type ImageInfo } from "../domain/images"
-import { type Level } from "../domain/types"
+import { type BoardState, type ImageInfo, type Level } from "../domain/types"
 import { PuzzleTile } from "./PuzzleTile"
+import { getTileButtonText, puzzleBoardName } from "./helpers"
 
-const PuzzleStyled = styled.ul<{
-	width: number
-	height: number
-	ratio: number
-	columns: number
-	rows: number
-	imageUrl: string
-	isFinished: boolean
-	isUpdating: boolean
-}>(
+const PuzzleStyled = styled.ul<
+	{
+		width: number
+		height: number
+		ratio: number
+		columns: number
+		rows: number
+		imageUrl: string
+	} & BoardState
+>(
 	({
 		width,
 		height,
@@ -37,16 +37,19 @@ const PuzzleStyled = styled.ul<{
 		--rows: ${rows};
 		--image: url(${imageUrl});
 
+		--reveal-delay: ${isFinished ? "0.3s" : "0s"};
+		--reveal-duration: 0.3s;
+
 		position: relative;
 
 		border-radius: 5px;
-		border: 2px solid ${isFinished || isUpdating ? "transparent" : theme.color.secondary};
+		border: 2px solid ${isFinished ? "transparent" : theme.color.secondary};
 		width: min(var(--max-puzzle-width), calc(var(--max-puzzle-height) * var(--ratio)));
 		height: min(var(--max-puzzle-height), calc(var(--max-puzzle-width) / var(--ratio)));
 
 		aspect-ratio: var(--ratio);
 
-		background-color: ${isFinished || isUpdating ? "transparent" : theme.color.secondary};
+		background-color: ${isFinished ? "transparent" : theme.color.secondary};
 
 		display: grid;
 		grid-template-rows: 1fr;
@@ -54,9 +57,11 @@ const PuzzleStyled = styled.ul<{
 
 		overflow: hidden;
 
-		animation: ${isUpdating ? "disappear" : "appear"} 0.3s ease both;
+		animation: ${isUpdating ? "disappear" : "appear"} var(--reveal-duration) ease both;
 
-		transition: background-color 0.3s ease, border-color 0.3s ease;
+		transition:
+			background-color var(--reveal-duration) var(--reveal-delay) ease,
+			border-color var(--reveal-duration) var(--reveal-delay) ease;
 
 		&::before {
 			content: "";
@@ -73,9 +78,9 @@ const PuzzleStyled = styled.ul<{
 			background-size: cover;
 			background-position: center;
 			background-image: var(--image);
-			
+
 			opacity: ${isFinished ? 1 : 0};
-			transition: opacity 0.3s ease;
+			transition: opacity var(--reveal-duration) var(--reveal-delay) ease;
 		}
 	`
 )
@@ -83,24 +88,20 @@ const PuzzleStyled = styled.ul<{
 export function Puzzle({
 	imageInfo,
 	onCompleteLevel,
-	isDisabled,
-	isFinished,
-	isUpdating,
+	boardState,
 	level,
 }: {
 	imageInfo: ImageInfo
 	onCompleteLevel: () => void
-	isDisabled: boolean
-	isFinished: boolean
-	isUpdating: boolean
 	level: Level
+	boardState: BoardState
 }) {
 	const { tiles, columns, rows } = level
 	const puzzleRef = useRef<Record<string, HTMLElement | null>>({})
 
 	const elements = tiles.map((tile) => {
 		const handleClick = () => {
-			if (isDisabled || isUpdating) {
+			if (boardState.isFinished) {
 				return
 			}
 
@@ -110,6 +111,10 @@ export function Puzzle({
 				const { row, column } = currentPosition
 				changedElement?.style.setProperty("--row", row.toString())
 				changedElement?.style.setProperty("--col", column.toString())
+				const button = changedElement?.querySelector("button")
+				if (button !== null && button !== undefined) {
+					button.textContent = getTileButtonText(currentPosition)
+				}
 			})
 
 			if (isSolved) {
@@ -123,8 +128,7 @@ export function Puzzle({
 				tile={tile}
 				handleClick={handleClick}
 				puzzleRef={puzzleRef}
-				isDisabled={isDisabled}
-				isFinished={isFinished}
+				isFinished={boardState.isFinished}
 			/>
 		)
 	})
@@ -132,10 +136,10 @@ export function Puzzle({
 	return (
 		<PuzzleStyled
 			{...imageInfo}
+			{...boardState}
 			columns={columns}
 			rows={rows}
-			isFinished={isFinished}
-			isUpdating={isUpdating}
+			aria-label={puzzleBoardName}
 		>
 			{elements}
 		</PuzzleStyled>

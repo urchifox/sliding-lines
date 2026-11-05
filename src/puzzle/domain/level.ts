@@ -105,3 +105,8 @@ export function shuffleLevel(level: Level) {
 		steps--
 	}
 }
+
+export function restartLevel(level: Level) {
+	resetLevel(level)
+	shuffleLevel(level)
+}
