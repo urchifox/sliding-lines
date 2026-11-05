@@ -9,7 +9,7 @@ import {
 	getTileButton,
 	getTileElement,
 } from "../../test/testHelpers"
-import type { Level, PuzzleTileInfo } from "../domain/types"
+import type { BoardState, Level, PuzzleTileInfo } from "../domain/types"
 import { Puzzle } from "./Puzzle"
 
 function getPuzzleData() {
@@ -39,6 +39,19 @@ function getPuzzleData() {
 	}
 }
 
+function renderPuzzle(boardState: BoardState) {
+	const puzzleData = getPuzzleData()
+	const renderResult = render(
+		<Puzzle
+			imageInfo={puzzleData.imageInfo}
+			onCompleteLevel={puzzleData.onCompleteLevel}
+			boardState={boardState}
+			level={puzzleData.level}
+		/>
+	)
+	return { renderResult, ...puzzleData }
+}
+
 describe("Puzzle", () => {
 	it.each([
 		{ isFinished: false, isUpdating: false } as const,
@@ -46,16 +59,7 @@ describe("Puzzle", () => {
 	])(
 		"renders correctly with states isFinished: $isFinished, isUpdating: $isUpdating",
 		(boardState) => {
-			const { level, imageInfo, onCompleteLevel } = getPuzzleData()
-
-			const renderResult = render(
-				<Puzzle
-					imageInfo={imageInfo}
-					onCompleteLevel={onCompleteLevel}
-					level={level}
-					boardState={boardState}
-				/>
-			)
+			const { renderResult } = renderPuzzle(boardState)
 
 			expect(renderResult.container).toMatchSnapshot()
 		}
@@ -64,19 +68,14 @@ describe("Puzzle", () => {
 	it.each([{ tileIndex: 1 }, { tileIndex: 3 }])(
 		"swaps tile with empty slot",
 		({ tileIndex }) => {
-			const { level, imageInfo, onCompleteLevel, emptySlot } = getPuzzleData()
+			const { level, emptySlot } = renderPuzzle({
+				isFinished: false,
+				isUpdating: false,
+			})
 			const tile = level.tiles[tileIndex]
 			const tileInitialPosition = structuredClone(tile.currentPosition)
 			const emptySlotInitialPosition = structuredClone(
 				emptySlot.currentPosition
-			)
-			render(
-				<Puzzle
-					imageInfo={imageInfo}
-					onCompleteLevel={onCompleteLevel}
-					boardState={{ isFinished: false, isUpdating: false }}
-					level={level}
-				/>
 			)
 
 			const tileElement = getTileElement(tile.key)
@@ -96,25 +95,18 @@ describe("Puzzle", () => {
 	)
 
 	it("ignores clicks on empty slot", () => {
-		const { level, imageInfo, onCompleteLevel, emptySlot } = getPuzzleData()
-		render(
-			<Puzzle
-				imageInfo={imageInfo}
-				onCompleteLevel={onCompleteLevel}
-				boardState={{ isFinished: false, isUpdating: false }}
-				level={level}
-			/>
-		)
+		const { level, onCompleteLevel, emptySlot } = renderPuzzle({
+			isFinished: false,
+			isUpdating: false,
+		})
 		const emptySlotButton = getTileButton(emptySlot)
 		const tilesElements = getAllTilesElements()
 
 		fireEvent.click(emptySlotButton)
 
 		expect(tilesElements.length).toBe(level.tiles.length)
-		for (const tilesElement of tilesElements) {
-			expect(tilesElement).toBeInTheDocument()
-			expect(tilesElement.style.getPropertyValue("--row") === "").toBe(true)
-			expect(tilesElement.style.getPropertyValue("--col") === "").toBe(true)
+		for (const tileElement of tilesElements) {
+			expectTileNotBeingMoved(tileElement)
 		}
 		expect(onCompleteLevel).not.toHaveBeenCalled()
 	})
@@ -127,26 +119,19 @@ describe("Puzzle", () => {
 	])(
 		"ignores clicks on tiles without empty slot as neighbour",
 		({ tileIndex }) => {
-			const { level, imageInfo, onCompleteLevel } = getPuzzleData()
+			const { level, onCompleteLevel } = renderPuzzle({
+				isFinished: false,
+				isUpdating: false,
+			})
 			const tile = level.tiles[tileIndex]
-			render(
-				<Puzzle
-					imageInfo={imageInfo}
-					onCompleteLevel={onCompleteLevel}
-					boardState={{ isFinished: false, isUpdating: false }}
-					level={level}
-				/>
-			)
 			const tilesElements = getAllTilesElements()
 			const tileButton = getTileButton(tile)
 
 			fireEvent.click(tileButton)
 
 			expect(tilesElements.length).toBe(level.tiles.length)
-			for (const tilesElement of tilesElements) {
-				expect(tilesElement).toBeInTheDocument()
-				expect(tilesElement.style.getPropertyValue("--row") === "").toBe(true)
-				expect(tilesElement.style.getPropertyValue("--col") === "").toBe(true)
+			for (const tileElement of tilesElements) {
+				expectTileNotBeingMoved(tileElement)
 			}
 			expect(onCompleteLevel).not.toHaveBeenCalled()
 		}
@@ -155,26 +140,19 @@ describe("Puzzle", () => {
 	it.each([{ tileIndex: 1 }, { tileIndex: 3 }])(
 		"ignores clicks on tiles when isFinished is true",
 		({ tileIndex }) => {
-			const { level, imageInfo, onCompleteLevel } = getPuzzleData()
+			const { level, onCompleteLevel } = renderPuzzle({
+				isFinished: true,
+				isUpdating: false,
+			})
 			const tile = level.tiles[tileIndex]
-			render(
-				<Puzzle
-					imageInfo={imageInfo}
-					onCompleteLevel={onCompleteLevel}
-					boardState={{ isFinished: true, isUpdating: false }}
-					level={level}
-				/>
-			)
 			const tilesElements = getAllTilesElements()
 			const tileButton = getTileButton(tile)
 
 			fireEvent.click(tileButton)
 
 			expect(tilesElements.length).toBe(level.tiles.length)
-			for (const tilesElement of tilesElements) {
-				expect(tilesElement).toBeInTheDocument()
-				expect(tilesElement.style.getPropertyValue("--row") === "").toBe(true)
-				expect(tilesElement.style.getPropertyValue("--col") === "").toBe(true)
+			for (const tileElement of tilesElements) {
+				expectTileNotBeingMoved(tileElement)
 			}
 			expect(onCompleteLevel).not.toHaveBeenCalled()
 		}
@@ -183,43 +161,31 @@ describe("Puzzle", () => {
 	it.each([{ tileIndex: 1 }, { tileIndex: 3 }])(
 		"ignores clicks on tiles when isUpdating is true",
 		({ tileIndex }) => {
-			const { level, imageInfo, onCompleteLevel } = getPuzzleData()
+			const { level, onCompleteLevel } = renderPuzzle({
+				isFinished: true,
+				isUpdating: true,
+			})
 			const tile = level.tiles[tileIndex]
-			render(
-				<Puzzle
-					imageInfo={imageInfo}
-					onCompleteLevel={onCompleteLevel}
-					boardState={{ isFinished: true, isUpdating: true }}
-					level={level}
-				/>
-			)
 			const tilesElements = getAllTilesElements()
 			const tileButton = getTileButton(tile)
 
 			fireEvent.click(tileButton)
 
 			expect(tilesElements.length).toBe(level.tiles.length)
-			for (const tilesElement of tilesElements) {
-				expect(tilesElement).toBeInTheDocument()
-				expect(tilesElement.style.getPropertyValue("--row") === "").toBe(true)
-				expect(tilesElement.style.getPropertyValue("--col") === "").toBe(true)
+			for (const tileElement of tilesElements) {
+				expectTileNotBeingMoved(tileElement)
 			}
 			expect(onCompleteLevel).not.toHaveBeenCalled()
 		}
 	)
 
 	it("calls onCompleteLevel when all tiles are in the correct position", () => {
-		const { level, imageInfo, onCompleteLevel, emptySlot } = getPuzzleData()
+		const { level, onCompleteLevel, emptySlot } = renderPuzzle({
+			isFinished: false,
+			isUpdating: false,
+		})
 		const tile1 = level.tiles[1]
 		const tile2 = level.tiles[2]
-		render(
-			<Puzzle
-				imageInfo={imageInfo}
-				onCompleteLevel={onCompleteLevel}
-				boardState={{ isFinished: false, isUpdating: false }}
-				level={level}
-			/>
-		)
 		const tile1Element = getTileElement(tile1.key)
 		const tile1Button = getTileButton(tile1)
 		const tile2Element = getTileElement(tile2.key)
