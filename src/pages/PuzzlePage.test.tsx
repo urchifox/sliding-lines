@@ -20,6 +20,14 @@ import {
 	getTileElement,
 	queryPuzzleBoard,
 } from "../test/testHelpers"
+import {
+	errorText,
+	getLevelNameText,
+	loadingText,
+	playButtonText,
+	restartButtonLabel,
+	winHeaderText,
+} from "./PuzzlePageHelpers"
 import { PuzzlePage } from "./PuzzlePage"
 
 vi.mock("../puzzle/domain/puzzleData", () => ({
@@ -33,9 +41,6 @@ vi.mock("../puzzle/domain/level", () => ({
 const mockedCreatePuzzleData = vi.mocked(createPuzzleData)
 const mockedRestartLevel = vi.mocked(restartLevel)
 
-const loadingText = "Loading…"
-const errorText = "An error occurred, try to reload the page"
-
 function getLoadingMessage() {
 	return screen.getByText(loadingText)
 }
@@ -46,6 +51,26 @@ function queryLoadingMessage() {
 
 function findErrorMessage() {
 	return screen.findByText(errorText)
+}
+
+function getRestartButton() {
+	return screen.getByRole("button", { name: restartButtonLabel })
+}
+
+function getWinHeader() {
+	return screen.getByText(winHeaderText)
+}
+
+function getPlayButton() {
+	return screen.getByText(playButtonText)
+}
+
+function findLevelName(levelNumber: number) {
+	return screen.findByText(getLevelNameText(levelNumber))
+}
+
+function getLevelName(levelNumber: number) {
+	return screen.getByText(getLevelNameText(levelNumber))
 }
 
 function getMockedPuzzleData(): PuzzleData {
@@ -66,12 +91,12 @@ function getMockedPuzzleData(): PuzzleData {
 	}
 }
 
-function expectPageChrome(state: BoardState, levelText = "Level 1") {
+function expectPageChrome(state: BoardState, levelNumber = 0) {
 	const puzzleBoard = getPuzzleBoard()
-	const levelName = screen.getByText(levelText)
-	const restartButton = screen.getByRole("button", { name: "Restart" })
-	const winHeader = screen.getByText("You have won!")
-	const playButton = screen.getByText("Solve next puzzle")
+	const levelName = getLevelName(levelNumber)
+	const restartButton = getRestartButton()
+	const winHeader = getWinHeader()
+	const playButton = getPlayButton()
 
 	if (state.isFinished) {
 		expect(puzzleBoard).toHaveStyle({ backgroundColor: "transparent" })
@@ -119,16 +144,17 @@ function renderPageWithLoading() {
 	return renderResult
 }
 
-function renderPageWithError() {
+async function renderPageWithError() {
 	mockedCreatePuzzleData.mockRejectedValue(new Error(""))
 	const renderResult = render(<PuzzlePage />)
+	await findErrorMessage()
 	return renderResult
 }
 
 async function renderPageWithBoard() {
 	mockedCreatePuzzleData.mockResolvedValue(getMockedPuzzleData())
 	const renderResult = render(<PuzzlePage />)
-	await screen.findByText("Level 1")
+	await findLevelName(0)
 	return renderResult
 }
 
@@ -151,7 +177,7 @@ function finishLevel() {
 }
 
 function requestNextLevel() {
-	fireEvent.click(screen.getByText("Solve next puzzle"))
+	fireEvent.click(getPlayButton())
 }
 
 function advanceLevelTransition() {
@@ -173,14 +199,12 @@ describe("PuzzlePage", () => {
 		it("renders correctly with loading state", () => {
 			const renderResult = renderPageWithLoading()
 
-			expect(getLoadingMessage()).toBeInTheDocument()
 			expect(renderResult.container).toMatchSnapshot()
 		})
 
 		it("renders correctly with error state", async () => {
-			const renderResult = renderPageWithError()
+			const renderResult = await renderPageWithError()
 
-			await findErrorMessage()
 			expect(renderResult.container).toMatchSnapshot()
 		})
 
@@ -207,7 +231,7 @@ describe("PuzzlePage", () => {
 			await act(() => Promise.resolve())
 			expect(getLoadingMessage()).toBeInTheDocument()
 			deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
-			expect(await screen.findByText("Level 6")).toBeInTheDocument()
+			expect(await findLevelName(5)).toBeInTheDocument()
 		})
 
 		it("ignores promise rejection of cancelled request", async () => {
@@ -226,16 +250,14 @@ describe("PuzzlePage", () => {
 			await act(() => Promise.resolve())
 			expect(getLoadingMessage()).toBeInTheDocument()
 			deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
-			expect(await screen.findByText("Level 6")).toBeInTheDocument()
+			expect(await findLevelName(5)).toBeInTheDocument()
 		})
 	})
 
 	describe("restarting", () => {
 		it("restarts the puzzle on restart button click", async () => {
 			await renderPageWithBoard()
-			const restartButton = screen.getByRole("button", {
-				name: "Restart",
-			})
+			const restartButton = getRestartButton()
 			const tileElement = getTileElement("1-1")
 
 			fireEvent.click(restartButton)
@@ -253,17 +275,15 @@ describe("PuzzlePage", () => {
 	describe("game process", () => {
 		it("ignores click on play button when level is not finished", async () => {
 			await renderPageWithBoard()
-			const playButton = screen.getByText("Solve next puzzle")
+			const playButton = getPlayButton()
 
 			fireEvent.click(playButton)
 			await advanceLevelTransition()
 
 			expect(mockedRestartLevel).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
-			expect(screen.getByText("Level 1")).toBeInTheDocument()
-			expect(
-				screen.getByRole("button", { name: "Restart" })
-			).toBeInTheDocument()
+			expect(getLevelName(0)).toBeInTheDocument()
+			expect(getRestartButton()).toBeInTheDocument()
 			expectPageChrome({ isFinished: false, isUpdating: false })
 		})
 
@@ -298,9 +318,7 @@ describe("PuzzlePage", () => {
 			await renderPageWithBoard()
 			finishLevel()
 
-			const restartButton = await screen.findByRole("button", {
-				name: "Restart",
-			})
+			const restartButton = getRestartButton()
 			fireEvent.click(restartButton)
 
 			expect(mockedRestartLevel).not.toHaveBeenCalled()
@@ -368,8 +386,8 @@ describe("PuzzlePage", () => {
 				levelNumber: 1,
 			})
 
-			await screen.findByText("Level 2")
-			expectPageChrome({ isFinished: false, isUpdating: false }, "Level 2")
+			await findLevelName(1)
+			expectPageChrome({ isFinished: false, isUpdating: false }, 1)
 			expect(mockedRestartLevel).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)
 		})
@@ -394,11 +412,11 @@ describe("PuzzlePage", () => {
 			finishLevel()
 			requestNextLevel()
 
-			const restartButton = screen.getByRole("button", { name: "Restart" })
+			const restartButton = getRestartButton()
 			fireEvent.click(restartButton)
 			requestNextLevel()
 			expect(restartButton).toBeDisabled()
-			expect(screen.getByText("Solve next puzzle")).toBeDisabled()
+			expect(getPlayButton()).toBeDisabled()
 
 			await advanceLevelTransition()
 			await advanceLevelTransition()

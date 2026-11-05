@@ -12,6 +12,14 @@ import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { PageStyled } from "../ui/Page"
 import { TextStyled } from "../ui/Text"
+import {
+	errorText,
+	getLevelNameText,
+	loadingText,
+	playButtonText,
+	restartButtonLabel,
+	winHeaderText,
+} from "./PuzzlePageHelpers"
 
 const LoadingText = styled(TextStyled)`
 	animation: appear 1s 0.3s ease both;
@@ -141,7 +149,7 @@ export function PuzzlePage() {
 		return (
 			<PageStyled>
 				<LoadingText color={theme.color.secondary}>
-					{isError ? "An error occurred, try to reload the page" : "Loading…"}
+					{isError ? errorText : loadingText}
 				</LoadingText>
 			</PageStyled>
 		)
@@ -172,19 +180,18 @@ export function PuzzlePage() {
 		}, 1 * 1000)
 	}
 
-	// Progress stores how many levels are finished, starting at 0.
-	const visualLevelNumber = puzzleData.levelNumber + 1
-
 	return (
 		<PuzzlePageStyled>
-			<LevelName {...boardState}>Level {visualLevelNumber}</LevelName>
+			<LevelName {...boardState}>
+				{getLevelNameText(puzzleData.levelNumber)}
+			</LevelName>
 			<RestartButton
-				aria-label="Restart"
+				aria-label={restartButtonLabel}
 				onClick={handleRestartClick}
 				disabled={boardState.isFinished}
 				{...boardState}
 			/>
-			<WinHeader {...boardState}>You have won!</WinHeader>
+			<WinHeader {...boardState}>{winHeaderText}</WinHeader>
 			<PuzzleWrapper>
 				<Puzzle
 					key={boardVersion}
@@ -199,7 +206,7 @@ export function PuzzlePage() {
 				disabled={boardState.isUpdating}
 				onClick={handleStartClick}
 			>
-				Solve next puzzle
+				{playButtonText}
 			</PlayButton>
 		</PuzzlePageStyled>
 	)

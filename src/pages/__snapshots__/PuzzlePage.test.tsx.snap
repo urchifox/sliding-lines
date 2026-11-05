@@ -23,8 +23,7 @@ exports[`PuzzlePage > loading > renders correctly with loaded image 1`] = `
     <p
       class="emotion-1"
     >
-      Level 
-      1
+      Level 1
     </p>
     <button
       aria-label="Restart"
