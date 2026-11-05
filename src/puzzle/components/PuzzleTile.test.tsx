@@ -2,52 +2,44 @@
 import { fireEvent, render } from "@testing-library/react"
 
 import { createTile } from "../../test/testHelpers"
+import type { PuzzleTileInfo } from "../domain/types"
 import { PuzzleTile } from "./PuzzleTile"
 import { getTileButtonText, getTileLabel, tileLabelMatcher } from "./helpers"
 
-function getPuzzleTileData() {
-	const tile = createTile({ originalRow: 1, originalColumn: 1 })
+function renderPuzzleTile(props?: {
+	tile?: PuzzleTileInfo
+	isFinished?: boolean
+}) {
+	const {
+		tile = createTile({ originalRow: 1, originalColumn: 1 }),
+		isFinished = false,
+	} = props ?? {}
 	const handleClick = vi.fn()
 	const puzzleRef = {
 		current: {
 			"1-1": null,
 		},
 	}
-
-	return {
-		tile,
-		handleClick,
-		puzzleRef,
-	}
+	const renderResult = render(
+		<PuzzleTile
+			handleClick={handleClick}
+			puzzleRef={puzzleRef}
+			tile={tile}
+			isFinished={isFinished}
+		/>
+	)
+	return { renderResult, handleClick, tile }
 }
 
 describe("PuzzleTile", () => {
 	it("renders correctly", () => {
-		const { tile, handleClick, puzzleRef } = getPuzzleTileData()
-
-		const renderResult = render(
-			<PuzzleTile
-				tile={tile}
-				handleClick={handleClick}
-				puzzleRef={puzzleRef}
-				isFinished={false}
-			/>
-		)
+		const { renderResult } = renderPuzzleTile()
 
 		expect(renderResult.container).toMatchSnapshot()
 	})
 
 	it("has correct label on li and button text", () => {
-		const { tile, handleClick, puzzleRef } = getPuzzleTileData()
-
-		const renderResult = render(
-			<PuzzleTile
-				tile={tile}
-				handleClick={handleClick}
-				puzzleRef={puzzleRef}
-				isFinished={false}
-			/>
-		)
+		const { renderResult, tile } = renderPuzzleTile()
 
 		const element = renderResult.container.firstChild as HTMLElement
 		const ariaLabel = element.getAttribute("aria-label")
@@ -59,16 +51,7 @@ describe("PuzzleTile", () => {
 	})
 
 	it("sets click listener", () => {
-		const { tile, handleClick, puzzleRef } = getPuzzleTileData()
-
-		const renderResult = render(
-			<PuzzleTile
-				tile={tile}
-				handleClick={handleClick}
-				puzzleRef={puzzleRef}
-				isFinished={false}
-			/>
-		)
+		const { renderResult, handleClick } = renderPuzzleTile()
 
 		const button = renderResult.getByRole("button")
 		fireEvent.click(button)
@@ -77,32 +60,19 @@ describe("PuzzleTile", () => {
 	})
 
 	it("disables the button of an empty tile", () => {
-		const { handleClick, puzzleRef } = getPuzzleTileData()
-		const tile = createTile({ originalRow: 1, originalColumn: 1, isEmpty: true })
+		const tile = createTile({
+			originalRow: 1,
+			originalColumn: 1,
+			isEmpty: true,
+		})
 
-		const renderResult = render(
-			<PuzzleTile
-				tile={tile}
-				handleClick={handleClick}
-				puzzleRef={puzzleRef}
-				isFinished={false}
-			/>
-		)
+		const { renderResult } = renderPuzzleTile({ tile })
 
 		expect(renderResult.getByRole("button")).toBeDisabled()
 	})
 
 	it("disables the button when the puzzle is finished", () => {
-		const { tile, handleClick, puzzleRef } = getPuzzleTileData()
-
-		const renderResult = render(
-			<PuzzleTile
-				tile={tile}
-				handleClick={handleClick}
-				puzzleRef={puzzleRef}
-				isFinished={true}
-			/>
-		)
+		const { renderResult } = renderPuzzleTile({ isFinished: true })
 
 		expect(renderResult.getByRole("button")).toBeDisabled()
 	})
