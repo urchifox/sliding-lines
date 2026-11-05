@@ -2,12 +2,12 @@
 import { fireEvent, render } from "@testing-library/react"
 
 import {
+	createAlmostSolvedTiles,
 	expectTileBeingMovedAt,
 	expectTileNotBeingMoved,
 	getAllTilesElements,
 	getTileButton,
 	getTileElement,
-	createAlmostSolvedTiles,
 } from "../../test/testHelpers"
 import type { Level, PuzzleTileInfo } from "../domain/types"
 import { Puzzle } from "./Puzzle"
@@ -17,7 +17,7 @@ function getPuzzleData() {
 		rows: 3,
 		columns: 3,
 		shuffleSteps: 2,
-		tiles: createAlmostSolvedTiles()
+		tiles: createAlmostSolvedTiles(),
 	} satisfies Level
 
 	const emptySlot = level.tiles.find((tile) => tile.isEmpty) as PuzzleTileInfo

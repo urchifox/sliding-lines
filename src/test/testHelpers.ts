@@ -118,4 +118,3 @@ export function createAlmostSolvedTiles() {
 		createTile({ originalRow: 3, originalColumn: 3 }),
 	] satisfies Array<PuzzleTileInfo>
 }
-

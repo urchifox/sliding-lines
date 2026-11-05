@@ -1,8 +1,8 @@
+import { createSerializer } from "@emotion/jest"
 import "@testing-library/jest-dom/vitest"
 import { cleanup } from "@testing-library/react"
 
 import { resetUserInfo } from "../progress/user"
-import { createSerializer } from "@emotion/jest"
 
 expect.addSnapshotSerializer(createSerializer({ includeStyles: false }))
 

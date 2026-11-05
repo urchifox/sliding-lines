@@ -20,6 +20,7 @@ import {
 	getTileElement,
 	queryPuzzleBoard,
 } from "../test/testHelpers"
+import { PuzzlePage } from "./PuzzlePage"
 import {
 	errorText,
 	getLevelNameText,
@@ -28,7 +29,6 @@ import {
 	restartButtonLabel,
 	winHeaderText,
 } from "./PuzzlePageHelpers"
-import { PuzzlePage } from "./PuzzlePage"
 
 vi.mock("../puzzle/domain/puzzleData", () => ({
 	createPuzzleData: vi.fn(),
