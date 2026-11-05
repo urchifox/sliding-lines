@@ -75,4 +75,35 @@ describe("PuzzleTile", () => {
 
 		expect(handleClick).toHaveBeenCalledOnce()
 	})
+
+	it("disables the button of an empty tile", () => {
+		const { handleClick, puzzleRef } = getPuzzleTileData()
+		const tile = createTile({ originalRow: 1, originalColumn: 1, isEmpty: true })
+
+		const renderResult = render(
+			<PuzzleTile
+				tile={tile}
+				handleClick={handleClick}
+				puzzleRef={puzzleRef}
+				isFinished={false}
+			/>
+		)
+
+		expect(renderResult.getByRole("button")).toBeDisabled()
+	})
+
+	it("disables the button when the puzzle is finished", () => {
+		const { tile, handleClick, puzzleRef } = getPuzzleTileData()
+
+		const renderResult = render(
+			<PuzzleTile
+				tile={tile}
+				handleClick={handleClick}
+				puzzleRef={puzzleRef}
+				isFinished={true}
+			/>
+		)
+
+		expect(renderResult.getByRole("button")).toBeDisabled()
+	})
 })
