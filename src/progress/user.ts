@@ -47,9 +47,13 @@ export function resetUserInfo() {
 export function saveUserInfo() {
 	const isValid = isUserInfoValid(userInfo)
 	if (!isValid) {
-		throw new Error("User info is not valid")
+		console.error("User info is not valid")
 	}
-	localStorage.setItem(LOCAL_STORAGE_USER_INFO_KEY, JSON.stringify(userInfo))
+	try {
+		localStorage.setItem(LOCAL_STORAGE_USER_INFO_KEY, JSON.stringify(userInfo))
+	} catch (error) {
+		console.error("Error saving user info", error)
+	}
 }
 
 function isUserInfoValid(info: unknown): info is UserInfo {
