@@ -71,7 +71,7 @@ export function createTile(props: {
 	}
 }
 
-export function expectTileBeingMovedAt({
+export function expectTilePlacedAtPosition({
 	element,
 	currentPosition,
 }: {
@@ -86,19 +86,6 @@ export function expectTileBeingMovedAt({
 	)
 	const button = element.querySelector("button")
 	expect(button?.textContent).toBe(getTileButtonText(currentPosition))
-}
-
-export function expectTileNotBeingMoved({
-	element,
-	currentPosition,
-}: {
-	element: HTMLElement
-	currentPosition: Position
-}) {
-	expect(element.style.getPropertyValue("--row")).toBe("")
-	expect(element.style.getPropertyValue("--col")).toBe("")
-	const button = getTileButton(currentPosition)
-	expect(button.textContent).toBe(getTileButtonText(currentPosition))
 }
 
 export function createAlmostSolvedTiles() {

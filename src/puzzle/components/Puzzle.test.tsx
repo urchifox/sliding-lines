@@ -3,8 +3,7 @@ import { fireEvent, render } from "@testing-library/react"
 
 import {
 	createAlmostSolvedTiles,
-	expectTileBeingMovedAt,
-	expectTileNotBeingMoved,
+	expectTilePlacedAtPosition,
 	getAllTilesElements,
 	getTileButton,
 	getTileElement,
@@ -81,13 +80,21 @@ describe("Puzzle", () => {
 			const tileElement = getTileElement(tile.key)
 			const tileButton = getTileButton(tile.currentPosition)
 			const emptySlotElement = getTileElement(emptySlot.key)
+			const board = tileElement.parentElement as HTMLElement
+			const indexOf = (element: HTMLElement) =>
+				Array.from(board.children).indexOf(element)
+			const tileIndexBefore = indexOf(tileElement)
+			const emptyIndexBefore = indexOf(emptySlotElement)
 			fireEvent.click(tileButton)
 
-			expectTileBeingMovedAt({
+			expect(indexOf(tileElement)).toBe(emptyIndexBefore)
+			expect(indexOf(emptySlotElement)).toBe(tileIndexBefore)
+
+			expectTilePlacedAtPosition({
 				element: tileElement,
 				currentPosition: emptySlotInitialPosition,
 			})
-			expectTileBeingMovedAt({
+			expectTilePlacedAtPosition({
 				element: emptySlotElement,
 				currentPosition: tileInitialPosition,
 			})
@@ -106,7 +113,7 @@ describe("Puzzle", () => {
 
 		expect(tilesElements.length).toBe(level.tiles.length)
 		for (const tile of level.tiles) {
-			expectTileNotBeingMoved({
+			expectTilePlacedAtPosition({
 				element: getTileElement(tile.key),
 				currentPosition: tile.currentPosition,
 			})
@@ -134,7 +141,7 @@ describe("Puzzle", () => {
 
 			expect(tilesElements.length).toBe(level.tiles.length)
 			for (const tile of level.tiles) {
-				expectTileNotBeingMoved({
+				expectTilePlacedAtPosition({
 					element: getTileElement(tile.key),
 					currentPosition: tile.currentPosition,
 				})
@@ -158,7 +165,7 @@ describe("Puzzle", () => {
 
 			expect(tilesElements.length).toBe(level.tiles.length)
 			for (const tile of level.tiles) {
-				expectTileNotBeingMoved({
+				expectTilePlacedAtPosition({
 					element: getTileElement(tile.key),
 					currentPosition: tile.currentPosition,
 				})
@@ -182,7 +189,7 @@ describe("Puzzle", () => {
 
 			expect(tilesElements.length).toBe(level.tiles.length)
 			for (const tile of level.tiles) {
-				expectTileNotBeingMoved({
+				expectTilePlacedAtPosition({
 					element: getTileElement(tile.key),
 					currentPosition: tile.currentPosition,
 				})
@@ -210,15 +217,15 @@ describe("Puzzle", () => {
 		fireEvent.click(tile2Button)
 		expect(onCompleteLevel).toHaveBeenCalledOnce()
 
-		expectTileBeingMovedAt({
+		expectTilePlacedAtPosition({
 			element: emptySlotElement,
 			currentPosition: emptySlot.originalPosition,
 		})
-		expectTileBeingMovedAt({
+		expectTilePlacedAtPosition({
 			element: tile1Element,
 			currentPosition: tile1.originalPosition,
 		})
-		expectTileBeingMovedAt({
+		expectTilePlacedAtPosition({
 			element: tile2Element,
 			currentPosition: tile2.originalPosition,
 		})
@@ -228,7 +235,7 @@ describe("Puzzle", () => {
 			if (movedKeys.includes(tile.key)) {
 				continue
 			}
-			expectTileNotBeingMoved({
+			expectTilePlacedAtPosition({
 				element: getTileElement(tile.key),
 				currentPosition: tile.currentPosition,
 			})

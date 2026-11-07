@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import { useEffect, useRef } from "react"
 
 import { theme } from "../../assets/styles/theme"
 import type { PuzzleTileInfo } from "../domain/types"
@@ -81,22 +82,29 @@ const PuzzleTileButtonStyled = styled.button(
 export function PuzzleTile({
 	tile,
 	handleClick,
-	puzzleRef,
 	isFinished,
 }: {
 	tile: PuzzleTileInfo
-	handleClick: () => void
-	puzzleRef: React.RefObject<Record<string, HTMLElement | null>>
+	handleClick: (tile: PuzzleTileInfo) => void
 	isFinished: boolean
 }) {
 	const { key, currentPosition, originalPosition, isEmpty } = tile
 
+	const tileRef = useRef<HTMLLIElement | null>(null)
+	const onClick = () => handleClick(tile)
+
+	useEffect(() => {
+		tileRef.current?.style.setProperty("--row", currentPosition.row.toString())
+		tileRef.current?.style.setProperty(
+			"--col",
+			currentPosition.column.toString()
+		)
+	}, [currentPosition.row, currentPosition.column])
+
 	return (
 		<PuzzleTileStyled
 			key={key}
-			ref={(el) => {
-				puzzleRef.current[key] = el
-			}}
+			ref={tileRef}
 			row={currentPosition.row}
 			col={currentPosition.column}
 			spRow={originalPosition.row}
@@ -107,7 +115,7 @@ export function PuzzleTile({
 		>
 			<PuzzleTileButtonStyled
 				type="button"
-				onClick={handleClick}
+				onClick={onClick}
 				disabled={isFinished || isEmpty}
 			>
 				{getTileButtonText(currentPosition)}

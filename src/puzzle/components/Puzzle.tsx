@@ -1,12 +1,17 @@
 import styled from "@emotion/styled"
-import { useRef } from "react"
+import { useState } from "react"
 
 import { clearList } from "../../assets/styles/mixins"
 import { theme } from "../../assets/styles/theme"
 import { tryMove } from "../domain/game"
-import { type BoardState, type ImageInfo, type Level } from "../domain/types"
+import {
+	type BoardState,
+	type ImageInfo,
+	type Level,
+	type PuzzleTileInfo,
+} from "../domain/types"
 import { PuzzleTile } from "./PuzzleTile"
-import { getTileButtonText, puzzleBoardName } from "./helpers"
+import { puzzleBoardName } from "./helpers"
 
 const PuzzleStyled = styled.ul<
 	{
@@ -83,6 +88,16 @@ const PuzzleStyled = styled.ul<
 	`
 )
 
+function getTileIndex(tile: PuzzleTileInfo, columns: number) {
+	return tile.currentPosition.row * columns + tile.currentPosition.column
+}
+
+function sortTiles(tiles: PuzzleTileInfo[], columns: number) {
+	return [...tiles].sort(
+		(a, b) => getTileIndex(a, columns) - getTileIndex(b, columns)
+	)
+}
+
 export function Puzzle({
 	imageInfo,
 	onCompleteLevel,
@@ -95,37 +110,34 @@ export function Puzzle({
 	boardState: BoardState
 }) {
 	const { tiles, columns, rows } = level
-	const puzzleRef = useRef<Record<string, HTMLElement | null>>({})
+	const [tilesSorted, setTilesSorted] = useState<PuzzleTileInfo[]>(
+		sortTiles(tiles, columns)
+	)
 
-	const elements = tiles.map((tile) => {
-		const handleClick = () => {
-			if (boardState.isFinished) {
-				return
-			}
-
-			const { isSolved, updatedTiles } = tryMove(tile, tiles)
-			updatedTiles?.forEach(({ currentPosition, key }) => {
-				const changedElement = puzzleRef.current[key]
-				const { row, column } = currentPosition
-				changedElement?.style.setProperty("--row", row.toString())
-				changedElement?.style.setProperty("--col", column.toString())
-				const button = changedElement?.querySelector("button")
-				if (button !== null && button !== undefined) {
-					button.textContent = getTileButtonText(currentPosition)
-				}
-			})
-
-			if (isSolved) {
-				onCompleteLevel()
-			}
+	const handleClick = (tile: PuzzleTileInfo) => {
+		if (boardState.isFinished) {
+			return
 		}
 
+		const { isSolved, updatedTiles } = tryMove(tile, tilesSorted)
+
+		if (updatedTiles === null) {
+			return
+		}
+
+		setTilesSorted(sortTiles(tilesSorted, columns))
+
+		if (isSolved) {
+			onCompleteLevel()
+		}
+	}
+
+	const elements = tilesSorted.map((tile) => {
 		return (
 			<PuzzleTile
 				key={tile.key}
 				tile={tile}
 				handleClick={handleClick}
-				puzzleRef={puzzleRef}
 				isFinished={boardState.isFinished}
 			/>
 		)

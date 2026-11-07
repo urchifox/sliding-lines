@@ -66,11 +66,11 @@ export function swap({
 	tile1: PuzzleTileInfo
 	tile2: PuzzleTileInfo
 }) {
-	const tilePosition = tile2.currentPosition
-	const emptyPosition = tile1.currentPosition
+	const tile1Position = { ...tile1.currentPosition }
+	const tile2Position = { ...tile2.currentPosition }
 
-	tile2.currentPosition = emptyPosition
-	tile1.currentPosition = tilePosition
+	tile1.currentPosition = { ...tile2Position }
+	tile2.currentPosition = { ...tile1Position }
 }
 
 function isPuzzleSolved(tiles: Array<PuzzleTileInfo>) {

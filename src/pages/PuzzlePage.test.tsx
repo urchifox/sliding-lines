@@ -14,7 +14,7 @@ import type {
 import {
 	createAlmostSolvedTiles,
 	createDeferred,
-	expectTileBeingMovedAt,
+	expectTilePlacedAtPosition,
 	getPuzzleBoard,
 	getTileButton,
 	getTileElement,
@@ -292,7 +292,7 @@ describe("PuzzlePage", () => {
 
 			const { tileElement } = clickTile("1-1")
 
-			expectTileBeingMovedAt({
+			expectTilePlacedAtPosition({
 				element: tileElement,
 				currentPosition: { row: 1, column: 1 },
 			})
@@ -331,22 +331,22 @@ describe("PuzzlePage", () => {
 			await renderPageWithBoard()
 			const { tileElement1, tileButton1, tileElement2, tileButton2 } =
 				finishLevel()
-			expectTileBeingMovedAt({
+			expectTilePlacedAtPosition({
 				element: tileElement1,
 				currentPosition: { row: 1, column: 1 },
 			})
-			expectTileBeingMovedAt({
+			expectTilePlacedAtPosition({
 				element: tileElement2,
 				currentPosition: { row: 1, column: 2 },
 			})
 
 			fireEvent.click(tileButton2)
 			fireEvent.click(tileButton1)
-			expectTileBeingMovedAt({
+			expectTilePlacedAtPosition({
 				element: tileElement1,
 				currentPosition: { row: 1, column: 1 },
 			})
-			expectTileBeingMovedAt({
+			expectTilePlacedAtPosition({
 				element: tileElement2,
 				currentPosition: { row: 1, column: 2 },
 			})
