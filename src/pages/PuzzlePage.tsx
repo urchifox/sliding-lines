@@ -26,6 +26,7 @@ const LoadingText = styled(TextStyled)`
 `
 
 const PuzzlePageStyled = styled(PageStyled)`
+	--color-focus: ${theme.color.interactive.active};
 	--padding-block: ${theme.fontSize.l};
 	--padding-inline: ${theme.fontSize.xl};
 	--extreme-rows-height: ${theme.fontSize.l};
@@ -63,11 +64,11 @@ const LevelName = styled(TextStyled)<BoardState>(
 
 const RestartButton = styled(ButtonIconStyled)<BoardState>(
 	({ isFinished }) => `
+	--mask-image: url(${replayIcon});
+
 	grid-column: 2 / 3;
 	grid-row: 1 / 2;
 	justify-self: end;
-
-	mask-image: url(${replayIcon});
 
 	opacity: ${isFinished ? 0 : 1};
 	transition: opacity 0.3s ease;

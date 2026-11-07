@@ -9,8 +9,10 @@ import { LinkStyled } from "../ui/Link"
 import { PageStyled } from "../ui/Page"
 import { TextStyled } from "../ui/Text"
 import { playButtonText } from "./StartPageHelpers"
+import { theme } from "../assets/styles/theme"
 
 const StartPageStyled = styled(PageStyled)`
+	--color-focus: ${theme.color.interactive.active};
 	grid-template-rows: repeat(3, auto);
 `
 

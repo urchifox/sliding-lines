@@ -55,8 +55,6 @@ const PuzzleStyled = styled.ul<
 		grid-template-rows: 1fr;
 		grid-template-columns: 1fr;
 
-		overflow: hidden;
-
 		animation: ${isUpdating ? "disappear" : "appear"} var(--reveal-duration) ease both;
 
 		transition:

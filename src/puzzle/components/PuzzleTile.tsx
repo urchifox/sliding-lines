@@ -54,6 +54,10 @@ const PuzzleTileStyled = styled.li<{
 	transition:
 		transform 0.3s ease,
 		border-color var(--reveal-duration) var(--reveal-delay) ease;
+
+	&:has(:focus-visible) {
+		z-index: 1;
+	}
 `
 )
 
@@ -62,11 +66,11 @@ const PuzzleTileButtonStyled = styled.button(
 	width: 100%;
 	height: 100%;
 	border: none;
+	padding: 0;
 	background: none;
 	cursor: pointer;
 	font-size: 0;
 	color: transparent;
-	opacity: 0;
 
 	&:disabled {
 		cursor: auto;
