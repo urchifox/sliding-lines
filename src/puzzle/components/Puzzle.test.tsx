@@ -78,7 +78,7 @@ describe("Puzzle", () => {
 			)
 
 			const tileElement = getTileElement(tile.key)
-			const tileButton = getTileButton(tile.currentPosition)
+			const tileButton = getTileButton(tile)
 			const emptySlotElement = getTileElement(emptySlot.key)
 			const board = tileElement.parentElement as HTMLElement
 			const indexOf = (element: HTMLElement) =>
@@ -92,11 +92,11 @@ describe("Puzzle", () => {
 
 			expectTilePlacedAtPosition({
 				element: tileElement,
-				currentPosition: emptySlotInitialPosition,
+				tileInfo: { ...tile, currentPosition: emptySlotInitialPosition },
 			})
 			expectTilePlacedAtPosition({
 				element: emptySlotElement,
-				currentPosition: tileInitialPosition,
+				tileInfo: { ...emptySlot, currentPosition: tileInitialPosition },
 			})
 		}
 	)
@@ -106,7 +106,7 @@ describe("Puzzle", () => {
 			isFinished: false,
 			isUpdating: false,
 		})
-		const emptySlotButton = getTileButton(emptySlot.currentPosition)
+		const emptySlotButton = getTileButton(emptySlot)
 		const tilesElements = getAllTilesElements()
 
 		fireEvent.click(emptySlotButton)
@@ -115,7 +115,7 @@ describe("Puzzle", () => {
 		for (const tile of level.tiles) {
 			expectTilePlacedAtPosition({
 				element: getTileElement(tile.key),
-				currentPosition: tile.currentPosition,
+				tileInfo: tile,
 			})
 		}
 		expect(onCompleteLevel).not.toHaveBeenCalled()
@@ -135,7 +135,7 @@ describe("Puzzle", () => {
 			})
 			const tile = level.tiles[tileIndex]
 			const tilesElements = getAllTilesElements()
-			const tileButton = getTileButton(tile.currentPosition)
+			const tileButton = getTileButton(tile)
 
 			fireEvent.click(tileButton)
 
@@ -143,7 +143,7 @@ describe("Puzzle", () => {
 			for (const tile of level.tiles) {
 				expectTilePlacedAtPosition({
 					element: getTileElement(tile.key),
-					currentPosition: tile.currentPosition,
+					tileInfo: tile,
 				})
 			}
 			expect(onCompleteLevel).not.toHaveBeenCalled()
@@ -159,7 +159,7 @@ describe("Puzzle", () => {
 			})
 			const tile = level.tiles[tileIndex]
 			const tilesElements = getAllTilesElements()
-			const tileButton = getTileButton(tile.currentPosition)
+			const tileButton = getTileButton(tile)
 
 			fireEvent.click(tileButton)
 
@@ -167,7 +167,7 @@ describe("Puzzle", () => {
 			for (const tile of level.tiles) {
 				expectTilePlacedAtPosition({
 					element: getTileElement(tile.key),
-					currentPosition: tile.currentPosition,
+					tileInfo: tile,
 				})
 			}
 			expect(onCompleteLevel).not.toHaveBeenCalled()
@@ -183,7 +183,7 @@ describe("Puzzle", () => {
 			})
 			const tile = level.tiles[tileIndex]
 			const tilesElements = getAllTilesElements()
-			const tileButton = getTileButton(tile.currentPosition)
+			const tileButton = getTileButton(tile)
 
 			fireEvent.click(tileButton)
 
@@ -191,7 +191,7 @@ describe("Puzzle", () => {
 			for (const tile of level.tiles) {
 				expectTilePlacedAtPosition({
 					element: getTileElement(tile.key),
-					currentPosition: tile.currentPosition,
+					tileInfo: tile,
 				})
 			}
 			expect(onCompleteLevel).not.toHaveBeenCalled()
@@ -206,9 +206,9 @@ describe("Puzzle", () => {
 		const tile1 = level.tiles[1]
 		const tile2 = level.tiles[2]
 		const tile1Element = getTileElement(tile1.key)
-		const tile1Button = getTileButton(tile1.currentPosition)
+		const tile1Button = getTileButton(tile1)
 		const tile2Element = getTileElement(tile2.key)
-		const tile2Button = getTileButton(tile2.currentPosition)
+		const tile2Button = getTileButton(tile2)
 		const emptySlotElement = getTileElement(emptySlot.key)
 
 		fireEvent.click(tile1Button)
@@ -219,15 +219,15 @@ describe("Puzzle", () => {
 
 		expectTilePlacedAtPosition({
 			element: emptySlotElement,
-			currentPosition: emptySlot.originalPosition,
+			tileInfo: { ...emptySlot, currentPosition: emptySlot.originalPosition },
 		})
 		expectTilePlacedAtPosition({
 			element: tile1Element,
-			currentPosition: tile1.originalPosition,
+			tileInfo: { ...tile1, currentPosition: tile1.originalPosition },
 		})
 		expectTilePlacedAtPosition({
 			element: tile2Element,
-			currentPosition: tile2.originalPosition,
+			tileInfo: { ...tile2, currentPosition: tile2.originalPosition },
 		})
 
 		const movedKeys = [tile1.key, tile2.key, emptySlot.key]
@@ -237,7 +237,7 @@ describe("Puzzle", () => {
 			}
 			expectTilePlacedAtPosition({
 				element: getTileElement(tile.key),
-				currentPosition: tile.currentPosition,
+				tileInfo: tile,
 			})
 		}
 	})

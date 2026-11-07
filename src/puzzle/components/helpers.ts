@@ -1,7 +1,7 @@
-import type { Position, TileKey } from "../domain/types"
+import type { PuzzleTileInfo, TileKey } from "../domain/types"
 
-export function getTileButtonText(currentPosition: Position): string {
-	return `Try move tile in ${currentPosition.row} row and ${currentPosition.column} column`
+export function getTileButtonText(tileInfo: PuzzleTileInfo): string {
+	return `Try move tile ${tileInfo.key} at row ${tileInfo.currentPosition.row}, column ${tileInfo.currentPosition.column}`
 }
 
 export const tileLabelPrefix = "Tile "

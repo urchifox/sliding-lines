@@ -38,7 +38,7 @@ describe("PuzzleTile", () => {
 		expect(ariaLabel).toMatch(tileLabelMatcher)
 		const button = renderResult.getByRole("button")
 		const buttonText = button.textContent
-		expect(buttonText).toBe(getTileButtonText(tile.currentPosition))
+		expect(buttonText).toBe(getTileButtonText(tile))
 	})
 
 	it("sets click listener", () => {

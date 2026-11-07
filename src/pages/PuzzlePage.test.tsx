@@ -163,17 +163,30 @@ function clickTile(key: TileKey) {
 	const tile = createAlmostSolvedTiles().find(
 		(item) => item.key === key
 	) as PuzzleTileInfo
-	const tileButton = getTileButton(tile.currentPosition)
+	const tileButton = getTileButton(tile)
 	fireEvent.click(tileButton)
-	return { tileElement, tileButton }
+	return { tileElement, tileButton, tile }
 }
 
 function finishLevel() {
-	const { tileElement: tileElement1, tileButton: tileButton1 } =
-		clickTile("1-1")
-	const { tileElement: tileElement2, tileButton: tileButton2 } =
-		clickTile("1-2")
-	return { tileElement1, tileButton1, tileElement2, tileButton2 }
+	const {
+		tileElement: tileElement1,
+		tileButton: tileButton1,
+		tile: tile1,
+	} = clickTile("1-1")
+	const {
+		tileElement: tileElement2,
+		tileButton: tileButton2,
+		tile: tile2,
+	} = clickTile("1-2")
+	return {
+		tileElement1,
+		tileButton1,
+		tile1,
+		tileElement2,
+		tileButton2,
+		tile2,
+	}
 }
 
 function requestNextLevel() {
@@ -290,11 +303,11 @@ describe("PuzzlePage", () => {
 		it("continues level when level is not finished", async () => {
 			await renderPageWithBoard()
 
-			const { tileElement } = clickTile("1-1")
+			const { tileElement, tile } = clickTile("1-1")
 
 			expectTilePlacedAtPosition({
 				element: tileElement,
-				currentPosition: { row: 1, column: 1 },
+				tileInfo: { ...tile, currentPosition: { row: 1, column: 1 } },
 			})
 			expectPageChrome({ isFinished: false, isUpdating: false })
 		})
@@ -329,26 +342,32 @@ describe("PuzzlePage", () => {
 
 		it("ignores tile clicks when level is finished", async () => {
 			await renderPageWithBoard()
-			const { tileElement1, tileButton1, tileElement2, tileButton2 } =
-				finishLevel()
+			const {
+				tileElement1,
+				tileButton1,
+				tile1,
+				tileElement2,
+				tileButton2,
+				tile2,
+			} = finishLevel()
 			expectTilePlacedAtPosition({
 				element: tileElement1,
-				currentPosition: { row: 1, column: 1 },
+				tileInfo: { ...tile1, currentPosition: { row: 1, column: 1 } },
 			})
 			expectTilePlacedAtPosition({
 				element: tileElement2,
-				currentPosition: { row: 1, column: 2 },
+				tileInfo: { ...tile2, currentPosition: { row: 1, column: 2 } },
 			})
 
 			fireEvent.click(tileButton2)
 			fireEvent.click(tileButton1)
 			expectTilePlacedAtPosition({
 				element: tileElement1,
-				currentPosition: { row: 1, column: 1 },
+				tileInfo: { ...tile1, currentPosition: { row: 1, column: 1 } },
 			})
 			expectTilePlacedAtPosition({
 				element: tileElement2,
-				currentPosition: { row: 1, column: 2 },
+				tileInfo: { ...tile2, currentPosition: { row: 1, column: 2 } },
 			})
 		})
 	})

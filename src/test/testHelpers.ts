@@ -6,7 +6,7 @@ import {
 	puzzleBoardName,
 	tileLabelMatcher,
 } from "../puzzle/components/helpers"
-import type { Position, PuzzleTileInfo, TileKey } from "../puzzle/domain/types"
+import type { PuzzleTileInfo, TileKey } from "../puzzle/domain/types"
 
 export type Deferred<T> = {
 	promise: Promise<T>
@@ -32,8 +32,8 @@ export function getTileElement(key: TileKey) {
 	return screen.getByRole("listitem", { name: label })
 }
 
-export function getTileButton(currentPosition: Position) {
-	const text = getTileButtonText(currentPosition)
+export function getTileButton(tileInfo: PuzzleTileInfo) {
+	const text = getTileButtonText(tileInfo)
 	return screen.getByRole("button", { name: text })
 }
 
@@ -73,19 +73,19 @@ export function createTile(props: {
 
 export function expectTilePlacedAtPosition({
 	element,
-	currentPosition,
+	tileInfo,
 }: {
 	element: HTMLElement
-	currentPosition: Position
+	tileInfo: PuzzleTileInfo
 }) {
 	expect(element.style.getPropertyValue("--row")).toBe(
-		currentPosition.row.toString()
+		tileInfo.currentPosition.row.toString()
 	)
 	expect(element.style.getPropertyValue("--col")).toBe(
-		currentPosition.column.toString()
+		tileInfo.currentPosition.column.toString()
 	)
 	const button = element.querySelector("button")
-	expect(button?.textContent).toBe(getTileButtonText(currentPosition))
+	expect(button?.textContent).toBe(getTileButtonText(tileInfo))
 }
 
 export function createAlmostSolvedTiles() {

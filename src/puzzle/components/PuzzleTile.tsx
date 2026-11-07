@@ -118,7 +118,7 @@ export function PuzzleTile({
 				onClick={onClick}
 				disabled={isFinished || isEmpty}
 			>
-				{getTileButtonText(currentPosition)}
+				{getTileButtonText(tile)}
 			</PuzzleTileButtonStyled>
 		</PuzzleTileStyled>
 	)
