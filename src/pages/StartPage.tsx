@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { useState } from "react"
 
 import { AppRoute } from "../AppRoute"
+import { theme } from "../assets/styles/theme"
 import { ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { Lines } from "../ui/Lines"
@@ -9,7 +10,6 @@ import { LinkStyled } from "../ui/Link"
 import { PageStyled } from "../ui/Page"
 import { TextStyled } from "../ui/Text"
 import { playButtonText } from "./StartPageHelpers"
-import { theme } from "../assets/styles/theme"
 
 const StartPageStyled = styled(PageStyled)`
 	--color-focus: ${theme.color.interactive.active};
