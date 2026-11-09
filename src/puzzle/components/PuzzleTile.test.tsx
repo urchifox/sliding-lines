@@ -50,21 +50,32 @@ describe("PuzzleTile", () => {
 		expect(handleClick).toHaveBeenCalledOnce()
 	})
 
-	it("disables the button of an empty tile", () => {
+	it("does nothing when an empty tile is clicked", () => {
 		const tile = createTile({
 			originalRow: 1,
 			originalColumn: 1,
 			isEmpty: true,
 		})
+		const { renderResult, handleClick } = renderPuzzleTile({ tile })
+		const button = renderResult.getByRole("button") as HTMLButtonElement
 
-		const { renderResult } = renderPuzzleTile({ tile })
+		expect(button).toBeDisabled()
+		button.disabled = false
+		fireEvent.click(button)
 
-		expect(renderResult.getByRole("button")).toBeDisabled()
+		expect(handleClick).not.toHaveBeenCalled()
 	})
 
-	it("disables the button when the puzzle is finished", () => {
-		const { renderResult } = renderPuzzleTile({ isFinished: true })
+	it("does nothing when a tile is clicked and the puzzle is finished", () => {
+		const { renderResult, handleClick } = renderPuzzleTile({
+			isFinished: true,
+		})
+		const button = renderResult.getByRole("button") as HTMLButtonElement
 
-		expect(renderResult.getByRole("button")).toBeDisabled()
+		expect(button).toBeDisabled()
+		button.disabled = false
+		fireEvent.click(button)
+
+		expect(handleClick).not.toHaveBeenCalled()
 	})
 })

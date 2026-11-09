@@ -6,7 +6,11 @@ import {
 	puzzleBoardName,
 	tileLabelMatcher,
 } from "../puzzle/components/helpers"
-import type { PuzzleTileInfo, TileKey } from "../puzzle/domain/types"
+import type {
+	PuzzleTileInfo,
+	PuzzleTilesArray,
+	TileKey,
+} from "../puzzle/domain/types"
 
 export type Deferred<T> = {
 	promise: Promise<T>
@@ -115,5 +119,5 @@ export function createAlmostSolvedTiles() {
 		createTile({ originalRow: 3, originalColumn: 1 }),
 		createTile({ originalRow: 3, originalColumn: 2 }),
 		createTile({ originalRow: 3, originalColumn: 3 }),
-	] satisfies Array<PuzzleTileInfo>
+	] satisfies PuzzleTilesArray
 }

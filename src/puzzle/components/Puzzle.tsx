@@ -1,14 +1,12 @@
 import styled from "@emotion/styled"
-import { useState } from "react"
 
 import { clearList } from "../../assets/styles/mixins"
 import { theme } from "../../assets/styles/theme"
-import { tryMove } from "../domain/game"
 import {
 	type BoardState,
 	type ImageInfo,
-	type Level,
 	type PuzzleTileInfo,
+	type PuzzleTilesArray,
 } from "../domain/types"
 import { PuzzleTile } from "./PuzzleTile"
 import { puzzleBoardName } from "./helpers"
@@ -88,51 +86,35 @@ const PuzzleStyled = styled.ul<
 	`
 )
 
-function getTileIndex(tile: PuzzleTileInfo, columns: number) {
-	return tile.currentPosition.row * columns + tile.currentPosition.column
-}
-
-function sortTiles(tiles: PuzzleTileInfo[], columns: number) {
+function sortTiles(tiles: PuzzleTilesArray, columns: number): PuzzleTilesArray {
 	return [...tiles].sort(
 		(a, b) => getTileIndex(a, columns) - getTileIndex(b, columns)
 	)
 }
 
+function getTileIndex(tile: PuzzleTileInfo, columns: number) {
+	return tile.currentPosition.row * columns + tile.currentPosition.column
+}
+
 export function Puzzle({
 	imageInfo,
-	onCompleteLevel,
 	boardState,
-	level,
+	handleTryMove,
+	tiles,
+	columns,
+	rows,
 }: {
 	imageInfo: ImageInfo
-	onCompleteLevel: () => void
-	level: Level
 	boardState: BoardState
+	handleTryMove: (tile: PuzzleTileInfo) => void
+	tiles: PuzzleTilesArray
+	columns: number
+	rows: number
 }) {
-	const { tiles, columns, rows } = level
-	const [tilesSorted, setTilesSorted] = useState<PuzzleTileInfo[]>(
-		sortTiles(tiles, columns)
-	)
+	const sortedTiles = sortTiles(tiles, columns)
+	const elements = sortedTiles.map((tile) => {
+		const handleClick = () => handleTryMove(tile)
 
-	const handleClick = (tile: PuzzleTileInfo) => {
-		if (boardState.isFinished) {
-			return
-		}
-
-		const { isSolved, updatedTiles } = tryMove(tile, tilesSorted)
-
-		if (updatedTiles === null) {
-			return
-		}
-
-		setTilesSorted(sortTiles(tilesSorted, columns))
-
-		if (isSolved) {
-			onCompleteLevel()
-		}
-	}
-
-	const elements = tilesSorted.map((tile) => {
 		return (
 			<PuzzleTile
 				key={tile.key}

@@ -85,13 +85,19 @@ export function PuzzleTile({
 	isFinished,
 }: {
 	tile: PuzzleTileInfo
-	handleClick: (tile: PuzzleTileInfo) => void
+	handleClick: () => void
 	isFinished: boolean
 }) {
 	const { key, currentPosition, originalPosition, isEmpty } = tile
 
 	const tileRef = useRef<HTMLLIElement | null>(null)
-	const onClick = () => handleClick(tile)
+	const onClick = () => {
+		if (isFinished || isEmpty) {
+			return
+		}
+
+		handleClick()
+	}
 
 	useEffect(() => {
 		tileRef.current?.style.setProperty("--row", currentPosition.row.toString())

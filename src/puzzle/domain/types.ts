@@ -1,14 +1,16 @@
 export type Position = {
-	row: number
-	column: number
+	readonly row: number
+	readonly column: number
 }
 
 export type PuzzleTileInfo = {
-	key: TileKey
-	originalPosition: Position
-	currentPosition: Position
-	isEmpty: boolean
+	readonly key: TileKey
+	readonly originalPosition: Position
+	readonly currentPosition: Position
+	readonly isEmpty: boolean
 }
+
+export type PuzzleTilesArray = ReadonlyArray<PuzzleTileInfo>
 
 export type TileKey = `${number}-${number}`
 
@@ -19,7 +21,7 @@ export type PuzzleData = {
 }
 
 export type Level = LevelConfig & {
-	tiles: Array<PuzzleTileInfo>
+	tiles: PuzzleTilesArray
 }
 
 export type LevelConfig = {

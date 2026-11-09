@@ -43,12 +43,17 @@ export function pickRandomItem<Element>(
 	return array[getRandomNumber({ min: 0, max: array.length - 1 })]
 }
 
-export function deleteFromArray<T>(array: T[], element: T) {
+export function replaceItem<T>(array: T[], element: T, newElement?: T) {
 	const index = array.indexOf(element)
 	if (index === -1) {
 		return
 	}
-	array.splice(index, 1)
+
+	if (newElement === undefined) {
+		array.splice(index, 1)
+	} else {
+		array.splice(index, 1, newElement)
+	}
 }
 
 export function getUniqueValue<T>(occupiedSet: Set<T>, getter: () => T): T {

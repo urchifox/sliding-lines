@@ -5,9 +5,15 @@ import { useEffect, useState } from "react"
 
 import { theme } from "../assets/styles/theme"
 import { Puzzle } from "../puzzle/components/Puzzle"
-import { restartLevel } from "../puzzle/domain/level"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
-import type { BoardState, PuzzleData } from "../puzzle/domain/types"
+import { reshuffleTiles } from "../puzzle/domain/tiles"
+import type {
+	BoardState,
+	PuzzleData,
+	PuzzleTileInfo,
+	PuzzleTilesArray,
+} from "../puzzle/domain/types"
+import { handleTryMove } from "../puzzle/flow"
 import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { PageStyled } from "../ui/Page"
@@ -114,6 +120,7 @@ const PuzzleWrapper = styled.div`
 
 export function PuzzlePage() {
 	const [puzzleData, setPuzzleData] = useState<PuzzleData | null>(null)
+	const [tiles, setTiles] = useState<PuzzleTilesArray>([])
 	const [boardVersion, setBoardVersion] = useState(0)
 	const [isFinished, setFinishedState] = useState<boolean>(false)
 	const [isUpdating, setUpdateState] = useState<boolean>(false)
@@ -133,6 +140,7 @@ export function PuzzlePage() {
 			.then((value) => {
 				if (!cancelled) {
 					setPuzzleData(value)
+					setTiles(value.level.tiles)
 				}
 			})
 			.catch(() => {
@@ -156,23 +164,41 @@ export function PuzzlePage() {
 		)
 	}
 
-	const onCompleteLevel = () => {
-		setFinishedState(true)
+	const onTryMove = (tile: PuzzleTileInfo) => {
+		if (boardState.isFinished) {
+			return
+		}
+
+		setTiles(
+			handleTryMove({
+				tile: tile,
+				tiles: tiles,
+				onSolved: () => {
+					setFinishedState(true)
+				},
+			})
+		)
 	}
 
 	const handleRestartClick = () => {
 		if (boardState.isFinished) {
 			return
 		}
-		restartLevel(puzzleData.level)
+
+		setTiles(
+			reshuffleTiles({
+				tiles: tiles,
+				shuffleSteps: puzzleData.level.shuffleSteps,
+			})
+		)
 		setBoardVersion((version) => version + 1)
-		setFinishedState(false)
 	}
 
 	const handleStartClick = () => {
 		if (!boardState.isFinished) {
 			return
 		}
+
 		setUpdateState(true)
 		setTimeout(() => {
 			setPuzzleData(null)
@@ -197,8 +223,10 @@ export function PuzzlePage() {
 				<Puzzle
 					key={boardVersion}
 					imageInfo={puzzleData.imageInfo}
-					onCompleteLevel={onCompleteLevel}
-					level={puzzleData.level}
+					handleTryMove={onTryMove}
+					tiles={tiles}
+					columns={puzzleData.level.columns}
+					rows={puzzleData.level.rows}
 					boardState={boardState}
 				/>
 			</PuzzleWrapper>

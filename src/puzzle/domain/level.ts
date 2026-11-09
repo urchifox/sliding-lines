@@ -1,10 +1,6 @@
-import {
-	deleteFromArray,
-	getRandomNumber,
-	pickRandomItem,
-} from "../../shared/utils"
-import { getCurrentNeighborsOf, swap } from "./game"
-import type { Level, LevelConfig, PuzzleTileInfo, TileKey } from "./types"
+import { getRandomNumber } from "../../shared/utils"
+import { createTiles, shuffleTiles } from "./tiles"
+import type { Level, LevelConfig } from "./types"
 
 const levelExtreme = {
 	rows: {
@@ -27,35 +23,14 @@ export function createLevel(levelNumber: number): Level {
 	const levelConfig = generateConfig(levelNumber)
 
 	const { rows, columns, shuffleSteps } = levelConfig
-	const tiles = createTiles(rows, columns)
+	const emptySlotIndex = getRandomNumber({ min: 0, max: rows * columns - 1 })
+	const tiles = createTiles(rows, columns, emptySlotIndex)
 
-	const emptySlotIndex = getRandomNumber({ min: 0, max: tiles.length - 1 })
-	tiles[emptySlotIndex].isEmpty = true
+	const shuffledTiles = shuffleTiles({ tiles, shuffleSteps })
 
-	const level = { tiles, columns, rows, shuffleSteps }
-
-	shuffleLevel(level)
+	const level = { tiles: shuffledTiles, columns, rows, shuffleSteps }
 
 	return level
-}
-
-function createTiles(rows: number, columns: number): Array<PuzzleTileInfo> {
-	const tiles = []
-	for (let row = 1; row <= rows; row++) {
-		for (let column = 1; column <= columns; column++) {
-			tiles.push({
-				key: createTileKey(row, column),
-				originalPosition: { row, column },
-				currentPosition: { row, column },
-				isEmpty: false,
-			})
-		}
-	}
-	return tiles
-}
-
-function createTileKey(row: number, column: number): TileKey {
-	return `${row}-${column}`
 }
 
 function generateConfig(levelNumber: number): LevelConfig {
@@ -72,41 +47,4 @@ function generateConfig(levelNumber: number): LevelConfig {
 	})
 
 	return config
-}
-
-export function resetLevel(level: Level) {
-	const { tiles } = level
-	tiles.forEach((tile) => {
-		tile.currentPosition = { ...tile.originalPosition }
-	})
-}
-
-export function shuffleLevel(level: Level) {
-	const { tiles, shuffleSteps } = level
-	const emptySlot = tiles.find((tile) => tile.isEmpty)
-	if (emptySlot === undefined) {
-		throw new Error("Empty slot not found")
-	}
-
-	let steps = shuffleSteps
-	let lastTile: PuzzleTileInfo | undefined = undefined
-
-	while (steps > 0) {
-		const neighbors = getCurrentNeighborsOf(emptySlot.currentPosition, tiles)
-
-		if (lastTile !== undefined) {
-			deleteFromArray(neighbors, lastTile)
-		}
-
-		const tile = pickRandomItem(neighbors)
-		swap({ tile1: emptySlot, tile2: tile })
-		lastTile = tile
-
-		steps--
-	}
-}
-
-export function restartLevel(level: Level) {
-	resetLevel(level)
-	shuffleLevel(level)
 }

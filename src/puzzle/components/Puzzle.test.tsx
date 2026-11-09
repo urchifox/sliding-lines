@@ -4,51 +4,71 @@ import { fireEvent, render } from "@testing-library/react"
 import {
 	createAlmostSolvedTiles,
 	expectTilePlacedAtPosition,
-	getAllTilesElements,
 	getTileButton,
 	getTileElement,
 } from "../../test/testHelpers"
-import type { BoardState, Level, PuzzleTileInfo } from "../domain/types"
+import { tryMove } from "../domain/game"
+import type {
+	BoardState,
+	PuzzleTileInfo,
+	PuzzleTilesArray,
+} from "../domain/types"
 import { Puzzle } from "./Puzzle"
 
-function getPuzzleData() {
-	const level = {
-		rows: 3,
-		columns: 3,
-		shuffleSteps: 2,
-		tiles: createAlmostSolvedTiles(),
-	} satisfies Level
+const columns = 3
+const rows = 3
 
-	const emptySlot = level.tiles.find((tile) => tile.isEmpty) as PuzzleTileInfo
+const imageInfo = {
+	imageUrl: "https://example.com/image.jpg",
+	width: 100,
+	height: 100,
+	ratio: 1,
+}
 
-	const imageInfo = {
-		imageUrl: "https://example.com/image.jpg",
-		width: 100,
-		height: 100,
-		ratio: 1,
-	}
+function renderPuzzle(
+	boardState: BoardState,
+	tiles: PuzzleTilesArray = createAlmostSolvedTiles()
+) {
+	const handleTryMove = vi.fn()
+	const renderResult = render(
+		<Puzzle
+			imageInfo={imageInfo}
+			boardState={boardState}
+			handleTryMove={handleTryMove}
+			tiles={tiles}
+			columns={columns}
+			rows={rows}
+		/>
+	)
 
-	const onCompleteLevel = vi.fn()
+	return { renderResult, handleTryMove, tiles }
+}
 
-	return {
-		level,
-		imageInfo,
-		onCompleteLevel,
-		emptySlot,
+function expectTilesUnmoved(tiles: PuzzleTilesArray) {
+	for (const tile of tiles) {
+		expectTilePlacedAtPosition({
+			element: getTileElement(tile.key),
+			tileInfo: tile,
+		})
 	}
 }
 
-function renderPuzzle(boardState: BoardState) {
-	const puzzleData = getPuzzleData()
-	const renderResult = render(
+function renderBoard(
+	renderResult: ReturnType<typeof render>,
+	boardState: BoardState,
+	tiles: PuzzleTilesArray,
+	handleTryMove: (tile: PuzzleTileInfo) => void
+) {
+	renderResult.rerender(
 		<Puzzle
-			imageInfo={puzzleData.imageInfo}
-			onCompleteLevel={puzzleData.onCompleteLevel}
+			imageInfo={imageInfo}
 			boardState={boardState}
-			level={puzzleData.level}
+			handleTryMove={handleTryMove}
+			tiles={tiles}
+			columns={columns}
+			rows={rows}
 		/>
 	)
-	return { renderResult, ...puzzleData }
 }
 
 describe("Puzzle", () => {
@@ -65,180 +85,116 @@ describe("Puzzle", () => {
 	)
 
 	it.each([{ tileIndex: 1 }, { tileIndex: 3 }])(
-		"swaps tile with empty slot",
+		"reports a click on tile $tileIndex",
 		({ tileIndex }) => {
-			const { level, emptySlot } = renderPuzzle({
+			const { tiles, handleTryMove } = renderPuzzle({
 				isFinished: false,
 				isUpdating: false,
 			})
-			const tile = level.tiles[tileIndex]
-			const tileInitialPosition = structuredClone(tile.currentPosition)
-			const emptySlotInitialPosition = structuredClone(
-				emptySlot.currentPosition
-			)
+			const tile = tiles[tileIndex]
 
+			fireEvent.click(getTileButton(tile))
+
+			expect(handleTryMove).toHaveBeenCalledOnce()
+			expect(handleTryMove).toHaveBeenCalledWith(tile)
+		}
+	)
+
+	it.each([{ tileIndex: 1 }, { tileIndex: 3 }])(
+		"keeps the given tile positions after a click",
+		({ tileIndex }) => {
+			const { tiles } = renderPuzzle({
+				isFinished: false,
+				isUpdating: false,
+			})
+			const tile = tiles[tileIndex]
+
+			fireEvent.click(getTileButton(tile))
+
+			for (const item of tiles) {
+				expectTilePlacedAtPosition({
+					element: getTileElement(item.key),
+					tileInfo: item,
+				})
+			}
+		}
+	)
+
+	it.each([{ tileIndex: 1 }, { tileIndex: 3 }])(
+		"renders tiles at the positions it receives",
+		({ tileIndex }) => {
+			const boardState = {
+				isFinished: false,
+				isUpdating: false,
+			} as const
+			const { renderResult, handleTryMove, tiles } = renderPuzzle(boardState)
+			const tile = tiles[tileIndex]
+			const emptySlot = tiles.find((item) => item.isEmpty) as PuzzleTileInfo
 			const tileElement = getTileElement(tile.key)
-			const tileButton = getTileButton(tile)
 			const emptySlotElement = getTileElement(emptySlot.key)
 			const board = tileElement.parentElement as HTMLElement
 			const indexOf = (element: HTMLElement) =>
 				Array.from(board.children).indexOf(element)
 			const tileIndexBefore = indexOf(tileElement)
 			const emptyIndexBefore = indexOf(emptySlotElement)
-			fireEvent.click(tileButton)
+			const updatedTiles = tryMove(tile, tiles)
+			if (updatedTiles === null) {
+				throw new Error("Expected a legal move")
+			}
+
+			renderBoard(renderResult, boardState, updatedTiles, handleTryMove)
 
 			expect(indexOf(tileElement)).toBe(emptyIndexBefore)
 			expect(indexOf(emptySlotElement)).toBe(tileIndexBefore)
-
+			const movedTile = updatedTiles.find(
+				(item) => item.key === tile.key
+			) as PuzzleTileInfo
+			const movedEmptySlot = updatedTiles.find(
+				(item) => item.key === emptySlot.key
+			) as PuzzleTileInfo
 			expectTilePlacedAtPosition({
 				element: tileElement,
-				tileInfo: { ...tile, currentPosition: emptySlotInitialPosition },
+				tileInfo: movedTile,
 			})
 			expectTilePlacedAtPosition({
 				element: emptySlotElement,
-				tileInfo: { ...emptySlot, currentPosition: tileInitialPosition },
+				tileInfo: movedEmptySlot,
 			})
 		}
 	)
 
-	it("ignores clicks on empty slot", () => {
-		const { level, onCompleteLevel, emptySlot } = renderPuzzle({
+	it("does nothing when the empty tile is clicked", () => {
+		const { tiles, handleTryMove } = renderPuzzle({
 			isFinished: false,
 			isUpdating: false,
 		})
-		const emptySlotButton = getTileButton(emptySlot)
-		const tilesElements = getAllTilesElements()
+		const emptySlot = tiles.find((tile) => tile.isEmpty) as PuzzleTileInfo
+		const button = getTileButton(emptySlot) as HTMLButtonElement
 
-		fireEvent.click(emptySlotButton)
+		expect(button.disabled).toBe(true)
+		button.disabled = false
+		fireEvent.click(button)
 
-		expect(tilesElements.length).toBe(level.tiles.length)
-		for (const tile of level.tiles) {
-			expectTilePlacedAtPosition({
-				element: getTileElement(tile.key),
-				tileInfo: tile,
-			})
-		}
-		expect(onCompleteLevel).not.toHaveBeenCalled()
+		expect(handleTryMove).not.toHaveBeenCalled()
+		expectTilesUnmoved(tiles)
 	})
 
 	it.each([
-		{ tileIndex: 2 },
-		{ tileIndex: 4 },
-		{ tileIndex: 6 },
-		{ tileIndex: 8 },
+		{ isFinished: true, isUpdating: false } as const,
+		{ isFinished: true, isUpdating: true } as const,
 	])(
-		"ignores clicks on tiles without empty slot as neighbour",
-		({ tileIndex }) => {
-			const { level, onCompleteLevel } = renderPuzzle({
-				isFinished: false,
-				isUpdating: false,
-			})
-			const tile = level.tiles[tileIndex]
-			const tilesElements = getAllTilesElements()
-			const tileButton = getTileButton(tile)
+		"does nothing when a tile is clicked and isFinished is $isFinished and isUpdating is $isUpdating",
+		(boardState) => {
+			const { tiles, handleTryMove } = renderPuzzle(boardState)
+			const tile = tiles.find((item) => !item.isEmpty) as PuzzleTileInfo
+			const button = getTileButton(tile) as HTMLButtonElement
 
-			fireEvent.click(tileButton)
+			expect(button.disabled).toBe(true)
+			button.disabled = false
+			fireEvent.click(button)
 
-			expect(tilesElements.length).toBe(level.tiles.length)
-			for (const tile of level.tiles) {
-				expectTilePlacedAtPosition({
-					element: getTileElement(tile.key),
-					tileInfo: tile,
-				})
-			}
-			expect(onCompleteLevel).not.toHaveBeenCalled()
+			expect(handleTryMove).not.toHaveBeenCalled()
+			expectTilesUnmoved(tiles)
 		}
 	)
-
-	it.each([{ tileIndex: 1 }, { tileIndex: 3 }])(
-		"ignores clicks on tiles when isFinished is true",
-		({ tileIndex }) => {
-			const { level, onCompleteLevel } = renderPuzzle({
-				isFinished: true,
-				isUpdating: false,
-			})
-			const tile = level.tiles[tileIndex]
-			const tilesElements = getAllTilesElements()
-			const tileButton = getTileButton(tile)
-
-			fireEvent.click(tileButton)
-
-			expect(tilesElements.length).toBe(level.tiles.length)
-			for (const tile of level.tiles) {
-				expectTilePlacedAtPosition({
-					element: getTileElement(tile.key),
-					tileInfo: tile,
-				})
-			}
-			expect(onCompleteLevel).not.toHaveBeenCalled()
-		}
-	)
-
-	it.each([{ tileIndex: 1 }, { tileIndex: 3 }])(
-		"ignores clicks on tiles when isUpdating is true",
-		({ tileIndex }) => {
-			const { level, onCompleteLevel } = renderPuzzle({
-				isFinished: true,
-				isUpdating: true,
-			})
-			const tile = level.tiles[tileIndex]
-			const tilesElements = getAllTilesElements()
-			const tileButton = getTileButton(tile)
-
-			fireEvent.click(tileButton)
-
-			expect(tilesElements.length).toBe(level.tiles.length)
-			for (const tile of level.tiles) {
-				expectTilePlacedAtPosition({
-					element: getTileElement(tile.key),
-					tileInfo: tile,
-				})
-			}
-			expect(onCompleteLevel).not.toHaveBeenCalled()
-		}
-	)
-
-	it("calls onCompleteLevel when all tiles are in the correct position", () => {
-		const { level, onCompleteLevel, emptySlot } = renderPuzzle({
-			isFinished: false,
-			isUpdating: false,
-		})
-		const tile1 = level.tiles[1]
-		const tile2 = level.tiles[2]
-		const tile1Element = getTileElement(tile1.key)
-		const tile1Button = getTileButton(tile1)
-		const tile2Element = getTileElement(tile2.key)
-		const tile2Button = getTileButton(tile2)
-		const emptySlotElement = getTileElement(emptySlot.key)
-
-		fireEvent.click(tile1Button)
-		expect(onCompleteLevel).not.toHaveBeenCalled()
-
-		fireEvent.click(tile2Button)
-		expect(onCompleteLevel).toHaveBeenCalledOnce()
-
-		expectTilePlacedAtPosition({
-			element: emptySlotElement,
-			tileInfo: { ...emptySlot, currentPosition: emptySlot.originalPosition },
-		})
-		expectTilePlacedAtPosition({
-			element: tile1Element,
-			tileInfo: { ...tile1, currentPosition: tile1.originalPosition },
-		})
-		expectTilePlacedAtPosition({
-			element: tile2Element,
-			tileInfo: { ...tile2, currentPosition: tile2.originalPosition },
-		})
-
-		const movedKeys = [tile1.key, tile2.key, emptySlot.key]
-		for (const tile of level.tiles) {
-			if (movedKeys.includes(tile.key)) {
-				continue
-			}
-			expectTilePlacedAtPosition({
-				element: getTileElement(tile.key),
-				tileInfo: tile,
-			})
-		}
-	})
 })
