@@ -193,12 +193,17 @@ function requestNextLevel() {
 	fireEvent.click(getPlayButton())
 }
 
-function advanceLevelTransition() {
-	return act(() => vi.advanceTimersByTimeAsync(1000))
+function useTransitionTimers() {
+	vi.useFakeTimers()
+}
+
+function advanceLevelTransition(milliseconds = 1000) {
+	act(() => {
+		vi.advanceTimersByTime(milliseconds)
+	})
 }
 
 beforeEach(() => {
-	vi.useFakeTimers({ shouldAdvanceTime: true })
 	vi.resetAllMocks()
 })
 
@@ -240,11 +245,16 @@ describe("PuzzlePage", () => {
 				</StrictMode>
 			)
 
-			deferred1.resolve({ ...getMockedPuzzleData(), levelNumber: 0 })
-			await act(() => Promise.resolve())
+			await act(async () => {
+				deferred1.resolve({ ...getMockedPuzzleData(), levelNumber: 0 })
+				await deferred1.promise
+			})
 			expect(getLoadingMessage()).toBeInTheDocument()
-			deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
-			expect(await findLevelName(5)).toBeInTheDocument()
+			await act(async () => {
+				deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
+				await deferred2.promise
+			})
+			expect(getLevelName(5)).toBeInTheDocument()
 		})
 
 		it("ignores promise rejection of cancelled request", async () => {
@@ -259,11 +269,17 @@ describe("PuzzlePage", () => {
 				</StrictMode>
 			)
 
-			deferred1.reject()
-			await act(() => Promise.resolve())
+			const ignoredRejection = deferred1.promise.catch(() => undefined)
+			await act(() => {
+				deferred1.reject()
+				return ignoredRejection
+			})
 			expect(getLoadingMessage()).toBeInTheDocument()
-			deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
-			expect(await findLevelName(5)).toBeInTheDocument()
+			await act(async () => {
+				deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
+				await deferred2.promise
+			})
+			expect(getLevelName(5)).toBeInTheDocument()
 		})
 	})
 
@@ -288,10 +304,11 @@ describe("PuzzlePage", () => {
 	describe("game process", () => {
 		it("ignores click on play button when level is not finished", async () => {
 			await renderPageWithBoard()
+			useTransitionTimers()
 			const playButton = getPlayButton()
 
 			fireEvent.click(playButton)
-			await advanceLevelTransition()
+			advanceLevelTransition()
 
 			expect(mockedRestartLevel).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
@@ -384,12 +401,11 @@ describe("PuzzlePage", () => {
 
 		it("does nothing before transition ends", async () => {
 			await renderPageWithBoard()
+			useTransitionTimers()
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
 			finishLevel()
 			requestNextLevel()
-			act(() => {
-				vi.advanceTimersByTime(999)
-			})
+			advanceLevelTransition(999)
 
 			expectPageChrome({ isFinished: true, isUpdating: true })
 			expect(queryLoadingMessage()).not.toBeInTheDocument()
@@ -398,10 +414,11 @@ describe("PuzzlePage", () => {
 
 		it("loads new level after new level button click", async () => {
 			await renderPageWithBoard()
+			useTransitionTimers()
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
 			finishLevel()
 			requestNextLevel()
-			await advanceLevelTransition()
+			advanceLevelTransition()
 
 			expect(getLoadingMessage()).toBeInTheDocument()
 			expect(queryPuzzleBoard()).not.toBeInTheDocument()
@@ -410,17 +427,22 @@ describe("PuzzlePage", () => {
 
 		it("renders new level after new level button click", async () => {
 			await renderPageWithBoard()
+			useTransitionTimers()
 			const { promise, resolve } = createDeferred<PuzzleData>()
 			mockedCreatePuzzleData.mockReturnValue(promise)
 			finishLevel()
 			requestNextLevel()
-			await advanceLevelTransition()
-			resolve({
-				...getMockedPuzzleData(),
-				levelNumber: 1,
+			advanceLevelTransition()
+			vi.useRealTimers()
+			await act(async () => {
+				resolve({
+					...getMockedPuzzleData(),
+					levelNumber: 1,
+				})
+				await promise
 			})
 
-			await findLevelName(1)
+			expect(getLevelName(1)).toBeInTheDocument()
 			expectPageChrome({ isFinished: false, isUpdating: false }, 1)
 			expect(mockedRestartLevel).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)
@@ -428,12 +450,18 @@ describe("PuzzlePage", () => {
 
 		it("renders error message if new level loading fails", async () => {
 			await renderPageWithBoard()
+			useTransitionTimers()
 			const { promise, reject } = createDeferred<PuzzleData>()
 			mockedCreatePuzzleData.mockReturnValue(promise)
 			finishLevel()
 			requestNextLevel()
-			await advanceLevelTransition()
-			reject()
+			advanceLevelTransition()
+			vi.useRealTimers()
+			const ignoredRejection = promise.catch(() => undefined)
+			await act(() => {
+				reject()
+				return ignoredRejection
+			})
 
 			expect(await findErrorMessage()).toBeInTheDocument()
 			expect(queryLoadingMessage()).not.toBeInTheDocument()
@@ -442,6 +470,7 @@ describe("PuzzlePage", () => {
 
 		it("ignores clicks on any button when new level is loading", async () => {
 			await renderPageWithBoard()
+			useTransitionTimers()
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
 			finishLevel()
 			requestNextLevel()
@@ -452,8 +481,8 @@ describe("PuzzlePage", () => {
 			expect(restartButton).toBeDisabled()
 			expect(getPlayButton()).toBeDisabled()
 
-			await advanceLevelTransition()
-			await advanceLevelTransition()
+			advanceLevelTransition()
+			advanceLevelTransition()
 
 			expect(mockedRestartLevel).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)
