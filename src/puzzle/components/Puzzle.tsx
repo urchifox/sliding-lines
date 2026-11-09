@@ -113,13 +113,11 @@ export function Puzzle({
 }) {
 	const sortedTiles = sortTiles(tiles, columns)
 	const elements = sortedTiles.map((tile) => {
-		const handleClick = () => handleTryMove(tile)
-
 		return (
 			<PuzzleTile
 				key={tile.key}
 				tile={tile}
-				handleClick={handleClick}
+				handleClick={handleTryMove}
 				isFinished={boardState.isFinished}
 			/>
 		)
