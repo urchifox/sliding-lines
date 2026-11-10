@@ -48,6 +48,7 @@ export function saveUserInfo() {
 	const isValid = isUserInfoValid(userInfo)
 	if (!isValid) {
 		console.error("User info is not valid")
+		return
 	}
 	try {
 		localStorage.setItem(LOCAL_STORAGE_USER_INFO_KEY, JSON.stringify(userInfo))
