@@ -185,7 +185,7 @@ export function PuzzlePage() {
 		)
 	}
 
-	const handleRestartClick = () => {
+	const onRestartClick = () => {
 		if (boardState.isFinished) {
 			return
 		}
@@ -200,7 +200,7 @@ export function PuzzlePage() {
 		setBoardVersion((version) => version + 1)
 	}
 
-	const handleStartClick = () => {
+	const onStartClick = () => {
 		if (!boardState.isFinished) {
 			return
 		}
@@ -220,7 +220,7 @@ export function PuzzlePage() {
 			</LevelName>
 			<RestartButton
 				aria-label={restartButtonLabel}
-				onClick={handleRestartClick}
+				onClick={onRestartClick}
 				disabled={boardState.isFinished}
 				{...boardState}
 			/>
@@ -239,7 +239,7 @@ export function PuzzlePage() {
 			<PlayButton
 				{...boardState}
 				disabled={boardState.isUpdating}
-				onClick={handleStartClick}
+				onClick={onStartClick}
 			>
 				{playButtonText}
 			</PlayButton>
