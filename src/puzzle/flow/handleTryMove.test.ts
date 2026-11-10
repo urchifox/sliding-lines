@@ -1,7 +1,7 @@
 import { upgradeLevel } from "../../progress/user"
 import { createTile } from "../../test/testHelpers"
 import { isPuzzleSolved, tryMove } from "../domain/game"
-import { handleTryMove } from "./index"
+import { handleTryMove } from "./handleTryMove"
 
 vi.mock("../../progress/user", () => ({
 	upgradeLevel: vi.fn(),

@@ -4,7 +4,11 @@ import { StrictMode } from "react"
 
 import { getLevelNumber } from "../progress/user"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
-import { getEmptyTile, getTileByKey, reshuffleTiles } from "../puzzle/domain/tiles"
+import {
+	getEmptyTile,
+	getTileByKey,
+	reshuffleTiles,
+} from "../puzzle/domain/tiles"
 import type {
 	BoardState,
 	PuzzleData,

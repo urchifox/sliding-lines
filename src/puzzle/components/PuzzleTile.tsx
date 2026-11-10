@@ -79,10 +79,12 @@ export function PuzzleTile({
 	tile,
 	handleClick,
 	isFinished,
+	tabIndex,
 }: {
 	tile: PuzzleTileInfo
 	handleClick: (tile: PuzzleTileInfo) => void
 	isFinished: boolean
+	tabIndex: number
 }) {
 	const { key, currentPosition, originalPosition, isEmpty } = tile
 
@@ -103,6 +105,8 @@ export function PuzzleTile({
 				type="button"
 				onClick={onClick}
 				disabled={isFinished || isEmpty}
+				tabIndex={tabIndex}
+				data-key={key}
 			>
 				{getTileButtonText(tile)}
 			</PuzzleTileButtonStyled>

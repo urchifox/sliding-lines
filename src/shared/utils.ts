@@ -73,3 +73,15 @@ export function getUniqueValue<T>(occupiedSet: Set<T>, getter: () => T): T {
 
 	return newValue
 }
+
+export function clamp({
+	min,
+	max,
+	value,
+}: {
+	min: number
+	max: number
+	value: number
+}): number {
+	return Math.max(min, Math.min(max, value))
+}

@@ -1,13 +1,17 @@
 import styled from "@emotion/styled"
+import { useState } from "react"
 
 import { clearList } from "../../assets/styles/mixins"
 import { theme } from "../../assets/styles/theme"
+import { getTileByCurrentPosition } from "../domain/tiles"
 import {
 	type BoardState,
 	type ImageInfo,
 	type PuzzleTileInfo,
 	type PuzzleTilesArray,
+	type TileKey,
 } from "../domain/types"
+import { handleRovingTabindex } from "../flow/handleRovingTabindex"
 import { PuzzleTile } from "./PuzzleTile"
 import { puzzleBoardName } from "./helpers"
 
@@ -86,6 +90,14 @@ const PuzzleStyled = styled.ul<
 	`
 )
 
+function getFirstClickableTileKey(tiles: PuzzleTilesArray): TileKey | null {
+	let tile = getTileByCurrentPosition({ row: 1, column: 1 }, tiles)
+	if (tile?.isEmpty) {
+		tile = getTileByCurrentPosition({ row: 1, column: 2 }, tiles)
+	}
+	return tile?.key ?? null
+}
+
 export function Puzzle({
 	imageInfo,
 	boardState,
@@ -101,13 +113,48 @@ export function Puzzle({
 	columns: number
 	rows: number
 }) {
+	const [focusedTileKey, setFocusedTileKey] = useState<TileKey | null>(
+		getFirstClickableTileKey(tiles)
+	)
+
+	const onKeyDown = (event: React.KeyboardEvent<HTMLUListElement>) => {
+		const target = event.target as HTMLButtonElement
+		const arrowKey = event.key
+		if (arrowKey.startsWith("Arrow")) {
+			event.preventDefault()
+		}
+		const tileKey = target.dataset.key as TileKey
+
+		const tileToFocusKey = handleRovingTabindex({
+			tiles,
+			tileKey,
+			arrowKey,
+			columns,
+			rows,
+		})
+		if (tileToFocusKey === null) {
+			return
+		}
+
+		event.currentTarget
+			.querySelector<HTMLButtonElement>(`button[data-key="${tileToFocusKey}"]`)
+			?.focus()
+	}
+
+	const onFocus = (event: React.FocusEvent<HTMLUListElement>) => {
+		const tileKey = event.target.dataset.key as TileKey
+		setFocusedTileKey(tileKey)
+	}
+
 	const elements = tiles.map((tile) => {
+		const tabIndex = tile.key === focusedTileKey ? 0 : -1
 		return (
 			<PuzzleTile
 				key={tile.key}
 				tile={tile}
 				handleClick={handleTryMove}
 				isFinished={boardState.isFinished}
+				tabIndex={tabIndex}
 			/>
 		)
 	})
@@ -119,6 +166,8 @@ export function Puzzle({
 			columns={columns}
 			rows={rows}
 			aria-label={puzzleBoardName}
+			onKeyDown={onKeyDown}
+			onFocus={onFocus}
 		>
 			{elements}
 		</PuzzleStyled>

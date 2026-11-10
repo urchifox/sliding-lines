@@ -8,6 +8,8 @@ exports[`PuzzleTile > renders correctly 1`] = `
   >
     <button
       class="emotion-1"
+      data-key="1-1"
+      tabindex="0"
       type="button"
     >
       Try move tile 1-1 at row 1, column 1

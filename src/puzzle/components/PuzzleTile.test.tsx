@@ -17,7 +17,12 @@ function renderPuzzleTile(props?: {
 	const handleClick = vi.fn()
 
 	const renderResult = render(
-		<PuzzleTile handleClick={handleClick} tile={tile} isFinished={isFinished} />
+		<PuzzleTile
+			handleClick={handleClick}
+			tile={tile}
+			isFinished={isFinished}
+			tabIndex={0}
+		/>
 	)
 	return { renderResult, handleClick, tile }
 }
