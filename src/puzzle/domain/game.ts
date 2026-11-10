@@ -1,3 +1,4 @@
+import { getTileByCurrentPosition } from "./tiles"
 import type { Position, PuzzleTileInfo, PuzzleTilesArray } from "./types"
 
 export function tryMove(tileToMove: PuzzleTileInfo, tiles: PuzzleTilesArray) {
@@ -40,11 +41,7 @@ export function getCurrentNeighborsOf(
 
 	const elements = []
 	for (const neighbor of neighbors) {
-		const neighborElement = tiles.find(
-			(element) =>
-				element.currentPosition.row === neighbor.row &&
-				element.currentPosition.column === neighbor.column
-		)
+		const neighborElement = getTileByCurrentPosition(neighbor, tiles)
 
 		if (neighborElement !== undefined) {
 			elements.push(neighborElement)

@@ -1,13 +1,94 @@
+import { createAlmostSolvedTiles } from "../../test/testHelpers"
 import { createLevel } from "./level"
 import {
 	createTileKey,
 	createTiles,
+	getEmptyTile,
+	getTileByCurrentPosition,
+	getTileByKey,
 	resetTiles,
 	reshuffleTiles,
 	shuffleTiles,
 } from "./tiles"
 
 describe("tiles", () => {
+	describe("getTileByCurrentPosition", () => {
+		it.each([
+			{ position: { row: 1, column: 1 }, key: "1-3" },
+			{ position: { row: 1, column: 2 }, key: "1-1" },
+			{ position: { row: 2, column: 1 }, key: "2-1" },
+		])(
+			"returns the tile currently at row $position.row, column $position.column",
+			({ position, key }) => {
+				const tiles = createAlmostSolvedTiles()
+
+				const tile = getTileByCurrentPosition(position, tiles)
+
+				expect(tile?.key).toBe(key)
+				expect(tile?.currentPosition).toEqual(position)
+			}
+		)
+
+		it("matches the current position when it differs from the original position", () => {
+			const tiles = createAlmostSolvedTiles()
+
+			const tile = getTileByCurrentPosition({ row: 1, column: 1 }, tiles)
+
+			expect(tile?.key).toBe("1-3")
+			expect(tile?.originalPosition).toEqual({ row: 1, column: 3 })
+		})
+
+		it("returns undefined when no tile is at the position", () => {
+			const tiles = createAlmostSolvedTiles()
+
+			expect(
+				getTileByCurrentPosition({ row: 4, column: 1 }, tiles)
+			).toBeUndefined()
+		})
+	})
+
+	describe("getTileByKey", () => {
+		it.each([
+			{ key: "1-3" as const, tileIndex: 0 },
+			{ key: "1-1" as const, tileIndex: 1 },
+			{ key: "3-3" as const, tileIndex: 8 },
+		])("returns the tile with key $key", ({ key, tileIndex }) => {
+			const tiles = createAlmostSolvedTiles()
+
+			expect(getTileByKey(key, tiles)).toBe(tiles[tileIndex])
+		})
+
+		it("returns undefined when no tile has the key", () => {
+			const tiles = createAlmostSolvedTiles()
+
+			expect(getTileByKey("9-9", tiles)).toBeUndefined()
+		})
+	})
+
+	describe("getEmptyTile", () => {
+		it.each([
+			{ rows: 2, columns: 3, emptySlotIndex: 0 },
+			{ rows: 3, columns: 3, emptySlotIndex: 4 },
+			{ rows: 1, columns: 4, emptySlotIndex: 3 },
+		])(
+			"returns the empty tile at index $emptySlotIndex",
+			({ rows, columns, emptySlotIndex }) => {
+				const tiles = createTiles(rows, columns, emptySlotIndex)
+
+				expect(getEmptyTile(tiles)).toBe(tiles[emptySlotIndex])
+			}
+		)
+
+		it("returns undefined when there is no empty tile", () => {
+			const tiles = createAlmostSolvedTiles().map((tile) => ({
+				...tile,
+				isEmpty: false,
+			}))
+
+			expect(getEmptyTile(tiles)).toBeUndefined()
+		})
+	})
+
 	describe("createTiles", () => {
 		it.each([
 			{ rows: 2, columns: 3, emptySlotIndex: 0 },

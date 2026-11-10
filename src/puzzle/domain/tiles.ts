@@ -1,6 +1,11 @@
 import { pickRandomItem, replaceItem } from "../../shared/utils"
 import { getCurrentNeighborsOf, swap } from "./game"
-import type { PuzzleTileInfo, PuzzleTilesArray, TileKey } from "./types"
+import type {
+	Position,
+	PuzzleTileInfo,
+	PuzzleTilesArray,
+	TileKey,
+} from "./types"
 
 export function createTiles(
 	rows: number,
@@ -88,4 +93,23 @@ export function resetTiles(tiles: PuzzleTilesArray) {
 	}))
 
 	return resetedTiles
+}
+
+export function getTileByCurrentPosition(
+	position: Position,
+	tiles: PuzzleTilesArray
+) {
+	return tiles.find(
+		({ currentPosition }) =>
+			currentPosition.row === position.row &&
+			currentPosition.column === position.column
+	)
+}
+
+export function getTileByKey(tileKey: TileKey, tiles: PuzzleTilesArray) {
+	return tiles.find(({ key }) => key === tileKey)
+}
+
+export function getEmptyTile(tiles: PuzzleTilesArray) {
+	return tiles.find(({ isEmpty }) => isEmpty)
 }

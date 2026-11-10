@@ -4,7 +4,7 @@ import { StrictMode } from "react"
 
 import { getLevelNumber } from "../progress/user"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
-import { reshuffleTiles } from "../puzzle/domain/tiles"
+import { getEmptyTile, getTileByKey, reshuffleTiles } from "../puzzle/domain/tiles"
 import type {
 	BoardState,
 	PuzzleData,
@@ -34,9 +34,13 @@ vi.mock("../puzzle/domain/puzzleData", () => ({
 	createPuzzleData: vi.fn(),
 }))
 
-vi.mock("../puzzle/domain/tiles", () => ({
-	reshuffleTiles: vi.fn(({ tiles }: { tiles: readonly unknown[] }) => tiles),
-}))
+vi.mock("../puzzle/domain/tiles", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("../puzzle/domain/tiles")>()
+	return {
+		...actual,
+		reshuffleTiles: vi.fn(({ tiles }: { tiles: readonly unknown[] }) => tiles),
+	}
+})
 
 const mockedCreatePuzzleData = vi.mocked(createPuzzleData)
 const mockedReshuffleTiles = vi.mocked(reshuffleTiles)
@@ -160,9 +164,7 @@ async function renderPageWithBoard() {
 
 function clickTile(key: TileKey) {
 	const tileElement = getTileElement(key)
-	const tile = createAlmostSolvedTiles().find(
-		(item) => item.key === key
-	) as PuzzleTileInfo
+	const tile = getTileByKey(key, createAlmostSolvedTiles()) as PuzzleTileInfo
 	const tileButton = getTileButton(tile)
 	fireEvent.click(tileButton)
 	return { tileElement, tileButton, tile }
@@ -321,7 +323,7 @@ describe("PuzzlePage", () => {
 		it("ignores a click on the empty tile", async () => {
 			await renderPageWithBoard()
 			const tiles = createAlmostSolvedTiles()
-			const emptySlot = tiles.find((tile) => tile.isEmpty) as PuzzleTileInfo
+			const emptySlot = getEmptyTile(tiles) as PuzzleTileInfo
 			const button = getTileButton(emptySlot) as HTMLButtonElement
 
 			button.disabled = false

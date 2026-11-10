@@ -8,6 +8,7 @@ import {
 	getTileElement,
 } from "../../test/testHelpers"
 import { tryMove } from "../domain/game"
+import { getEmptyTile, getTileByKey } from "../domain/tiles"
 import type {
 	BoardState,
 	PuzzleTileInfo,
@@ -129,7 +130,7 @@ describe("Puzzle", () => {
 			} as const
 			const { renderResult, handleTryMove, tiles } = renderPuzzle(boardState)
 			const tile = tiles[tileIndex]
-			const emptySlot = tiles.find((item) => item.isEmpty) as PuzzleTileInfo
+			const emptySlot = getEmptyTile(tiles) as PuzzleTileInfo
 			const tileElement = getTileElement(tile.key)
 			const emptySlotElement = getTileElement(emptySlot.key)
 			const updatedTiles = tryMove(tile, tiles)
@@ -139,11 +140,10 @@ describe("Puzzle", () => {
 
 			renderBoard(renderResult, boardState, updatedTiles, handleTryMove)
 
-			const movedTile = updatedTiles.find(
-				(item) => item.key === tile.key
-			) as PuzzleTileInfo
-			const movedEmptySlot = updatedTiles.find(
-				(item) => item.key === emptySlot.key
+			const movedTile = getTileByKey(tile.key, updatedTiles) as PuzzleTileInfo
+			const movedEmptySlot = getTileByKey(
+				emptySlot.key,
+				updatedTiles
 			) as PuzzleTileInfo
 			expectTilePlacedAtPosition({
 				element: tileElement,
@@ -161,7 +161,7 @@ describe("Puzzle", () => {
 			isFinished: false,
 			isUpdating: false,
 		})
-		const emptySlot = tiles.find((tile) => tile.isEmpty) as PuzzleTileInfo
+		const emptySlot = getEmptyTile(tiles) as PuzzleTileInfo
 		const button = getTileButton(emptySlot) as HTMLButtonElement
 
 		expect(button.disabled).toBe(true)
