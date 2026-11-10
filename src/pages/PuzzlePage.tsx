@@ -13,7 +13,7 @@ import type {
 	PuzzleTileInfo,
 	PuzzleTilesArray,
 } from "../puzzle/domain/types"
-import { handleTryMove } from "../puzzle/flow"
+import { handleTryMove } from "../puzzle/flow/handleTryMove"
 import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { PageStyled } from "../ui/Page"
