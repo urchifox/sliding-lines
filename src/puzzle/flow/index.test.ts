@@ -47,7 +47,7 @@ describe("handleTryMove", () => {
 
 		expect(result).toBe(updatedTiles)
 		expect(mockedTryMove).toHaveBeenCalledWith(tile, tiles)
-		expect(mockedIsPuzzleSolved).toHaveBeenCalledWith(tiles)
+		expect(mockedIsPuzzleSolved).toHaveBeenCalledWith(updatedTiles)
 		expect(onSolved).not.toHaveBeenCalled()
 		expect(mockedUpgradeLevel).not.toHaveBeenCalled()
 	})
@@ -61,7 +61,7 @@ describe("handleTryMove", () => {
 
 		expect(result).toBe(updatedTiles)
 		expect(mockedTryMove).toHaveBeenCalledWith(tile, tiles)
-		expect(mockedIsPuzzleSolved).toHaveBeenCalledWith(tiles)
+		expect(mockedIsPuzzleSolved).toHaveBeenCalledWith(updatedTiles)
 		expect(mockedUpgradeLevel).toHaveBeenCalledOnce()
 		expect(onSolved).toHaveBeenCalledOnce()
 	})
