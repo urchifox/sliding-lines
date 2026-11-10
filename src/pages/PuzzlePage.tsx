@@ -121,13 +121,11 @@ const PuzzleWrapper = styled.div`
 export function PuzzlePage() {
 	const [puzzleData, setPuzzleData] = useState<PuzzleData | null>(null)
 	const [boardVersion, setBoardVersion] = useState(0)
-	const [isFinished, setFinishedState] = useState<boolean>(false)
-	const [isUpdating, setUpdateState] = useState<boolean>(false)
+	const [boardState, setBoardState] = useState<BoardState>({
+		isFinished: false,
+		isUpdating: false,
+	})
 	const [isError, setError] = useState<boolean>(false)
-
-	const boardState: BoardState = isFinished
-		? { isFinished: true as const, isUpdating }
-		: { isFinished: false as const, isUpdating: false as const }
 
 	useEffect(() => {
 		if (puzzleData !== null) {
@@ -172,6 +170,13 @@ export function PuzzlePage() {
 		})
 	}
 
+	const onSolved = () => {
+		setBoardState({
+			isFinished: true,
+			isUpdating: false,
+		})
+	}
+
 	const onTryMove = (tile: PuzzleTileInfo) => {
 		if (boardState.isFinished) {
 			return
@@ -181,6 +186,7 @@ export function PuzzlePage() {
 			handleTryMove({
 				tile: tile,
 				tiles: puzzleData.level.tiles,
+				onSolved: onSolved,
 			})
 		)
 	}
@@ -205,11 +211,17 @@ export function PuzzlePage() {
 			return
 		}
 
-		setUpdateState(true)
+		setBoardState({
+			isFinished: true,
+			isUpdating: true,
+		})
+
 		setTimeout(() => {
 			setPuzzleData(null)
-			setUpdateState(false)
-			setFinishedState(false)
+			setBoardState({
+				isFinished: false,
+				isUpdating: false,
+			})
 		}, 1 * 1000)
 	}
 
