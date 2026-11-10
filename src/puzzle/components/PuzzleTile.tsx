@@ -1,5 +1,4 @@
 import styled from "@emotion/styled"
-import { useEffect, useRef } from "react"
 
 import { theme } from "../../assets/styles/theme"
 import type { PuzzleTileInfo } from "../domain/types"
@@ -26,9 +25,6 @@ const PuzzleTileStyled = styled.li<{
 	--sp-width: calc(var(--ss-width) / var(--ss-columns));
 	--sp-height: calc(var(--ss-height) / var(--ss-rows));
 
-	position: absolute;
-	top: 0;
-	left: 0;
 	grid-row: 1 / 2;
 	grid-column: 1 / 2;
 
@@ -92,20 +88,9 @@ export function PuzzleTile({
 
 	const onClick = () => handleClick(tile)
 
-	const tileRef = useRef<HTMLLIElement | null>(null)
-
-	useEffect(() => {
-		tileRef.current?.style.setProperty("--row", currentPosition.row.toString())
-		tileRef.current?.style.setProperty(
-			"--col",
-			currentPosition.column.toString()
-		)
-	}, [currentPosition.row, currentPosition.column])
-
 	return (
 		<PuzzleTileStyled
 			key={key}
-			ref={tileRef}
 			row={currentPosition.row}
 			col={currentPosition.column}
 			spRow={originalPosition.row}

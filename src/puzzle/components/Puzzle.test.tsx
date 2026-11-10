@@ -132,11 +132,6 @@ describe("Puzzle", () => {
 			const emptySlot = tiles.find((item) => item.isEmpty) as PuzzleTileInfo
 			const tileElement = getTileElement(tile.key)
 			const emptySlotElement = getTileElement(emptySlot.key)
-			const board = tileElement.parentElement as HTMLElement
-			const indexOf = (element: HTMLElement) =>
-				Array.from(board.children).indexOf(element)
-			const tileIndexBefore = indexOf(tileElement)
-			const emptyIndexBefore = indexOf(emptySlotElement)
 			const updatedTiles = tryMove(tile, tiles)
 			if (updatedTiles === null) {
 				throw new Error("Expected a legal move")
@@ -144,8 +139,6 @@ describe("Puzzle", () => {
 
 			renderBoard(renderResult, boardState, updatedTiles, handleTryMove)
 
-			expect(indexOf(tileElement)).toBe(emptyIndexBefore)
-			expect(indexOf(emptySlotElement)).toBe(tileIndexBefore)
 			const movedTile = updatedTiles.find(
 				(item) => item.key === tile.key
 			) as PuzzleTileInfo

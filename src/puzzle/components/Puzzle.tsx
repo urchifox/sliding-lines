@@ -86,16 +86,6 @@ const PuzzleStyled = styled.ul<
 	`
 )
 
-function sortTiles(tiles: PuzzleTilesArray, columns: number): PuzzleTilesArray {
-	return [...tiles].sort(
-		(a, b) => getTileIndex(a, columns) - getTileIndex(b, columns)
-	)
-}
-
-function getTileIndex(tile: PuzzleTileInfo, columns: number) {
-	return tile.currentPosition.row * columns + tile.currentPosition.column
-}
-
 export function Puzzle({
 	imageInfo,
 	boardState,
@@ -111,8 +101,7 @@ export function Puzzle({
 	columns: number
 	rows: number
 }) {
-	const sortedTiles = sortTiles(tiles, columns)
-	const elements = sortedTiles.map((tile) => {
+	const elements = tiles.map((tile) => {
 		return (
 			<PuzzleTile
 				key={tile.key}

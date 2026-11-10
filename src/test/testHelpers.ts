@@ -82,12 +82,10 @@ export function expectTilePlacedAtPosition({
 	element: HTMLElement
 	tileInfo: PuzzleTileInfo
 }) {
-	expect(element.style.getPropertyValue("--row")).toBe(
-		tileInfo.currentPosition.row.toString()
-	)
-	expect(element.style.getPropertyValue("--col")).toBe(
-		tileInfo.currentPosition.column.toString()
-	)
+	expect(element).toHaveStyle({
+		"--row": tileInfo.currentPosition.row.toString(),
+		"--col": tileInfo.currentPosition.column.toString(),
+	})
 	const button = element.querySelector("button")
 	expect(button?.textContent).toBe(getTileButtonText(tileInfo))
 }
