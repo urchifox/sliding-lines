@@ -120,7 +120,6 @@ const PuzzleWrapper = styled.div`
 
 export function PuzzlePage() {
 	const [puzzleData, setPuzzleData] = useState<PuzzleData | null>(null)
-	const [tiles, setTiles] = useState<PuzzleTilesArray>([])
 	const [boardVersion, setBoardVersion] = useState(0)
 	const [isFinished, setFinishedState] = useState<boolean>(false)
 	const [isUpdating, setUpdateState] = useState<boolean>(false)
@@ -140,7 +139,6 @@ export function PuzzlePage() {
 			.then((value) => {
 				if (!cancelled) {
 					setPuzzleData(value)
-					setTiles(value.level.tiles)
 				}
 			})
 			.catch(() => {
@@ -164,18 +162,25 @@ export function PuzzlePage() {
 		)
 	}
 
+	const updateTiles = (tiles: PuzzleTilesArray) => {
+		setPuzzleData({
+			...puzzleData,
+			level: {
+				...puzzleData.level,
+				tiles: tiles,
+			},
+		})
+	}
+
 	const onTryMove = (tile: PuzzleTileInfo) => {
 		if (boardState.isFinished) {
 			return
 		}
 
-		setTiles(
+		updateTiles(
 			handleTryMove({
 				tile: tile,
-				tiles: tiles,
-				onSolved: () => {
-					setFinishedState(true)
-				},
+				tiles: puzzleData.level.tiles,
 			})
 		)
 	}
@@ -185,12 +190,13 @@ export function PuzzlePage() {
 			return
 		}
 
-		setTiles(
+		updateTiles(
 			reshuffleTiles({
-				tiles: tiles,
+				tiles: puzzleData.level.tiles,
 				shuffleSteps: puzzleData.level.shuffleSteps,
 			})
 		)
+
 		setBoardVersion((version) => version + 1)
 	}
 
@@ -224,7 +230,7 @@ export function PuzzlePage() {
 					key={boardVersion}
 					imageInfo={puzzleData.imageInfo}
 					handleTryMove={onTryMove}
-					tiles={tiles}
+					tiles={puzzleData.level.tiles}
 					columns={puzzleData.level.columns}
 					rows={puzzleData.level.rows}
 					boardState={boardState}
