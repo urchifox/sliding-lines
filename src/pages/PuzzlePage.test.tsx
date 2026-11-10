@@ -214,7 +214,6 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-	vi.clearAllTimers()
 	vi.useRealTimers()
 })
 
