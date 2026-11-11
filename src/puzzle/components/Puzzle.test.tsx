@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { fireEvent, render } from "@testing-library/react"
+import { createEvent, fireEvent, render, screen } from "@testing-library/react"
 
 import {
 	createAlmostSolvedTiles,
@@ -193,4 +193,57 @@ describe("Puzzle", () => {
 			expectTilesUnmoved(tiles)
 		}
 	)
+
+	describe("arrow navigation", () => {
+		function pressKey(button: HTMLElement, key: string) {
+			const event = createEvent.keyDown(button, { key })
+			fireEvent(button, event)
+			return event
+		}
+
+		function expectOnlyTabStop(button: HTMLButtonElement) {
+			expect(document.activeElement).toBe(button)
+			expect(button.tabIndex).toBe(0)
+			for (const other of screen.getAllByRole("button")) {
+				if (other !== button) {
+					expect(other.tabIndex).toBe(-1)
+				}
+			}
+		}
+
+		it.each([
+			{
+				key: "ArrowRight",
+				expectedKey: "1-2" as const,
+				preventsDefault: true,
+			},
+			{
+				key: "ArrowLeft",
+				expectedKey: "1-1" as const,
+				preventsDefault: true,
+			},
+			{
+				key: "Enter",
+				expectedKey: "1-1" as const,
+				preventsDefault: false,
+			},
+		])(
+			"sets focus on $expectedKey after $key",
+			({ key, expectedKey, preventsDefault }) => {
+				const { handleTryMove } = renderPuzzle({
+					isFinished: false,
+					isUpdating: false,
+				})
+				const { button: fromButton } = getTileElements("1-1")
+				fromButton.focus()
+
+				const event = pressKey(fromButton, key)
+				const { button: expectedButton } = getTileElements(expectedKey)
+
+				expect(event.defaultPrevented).toBe(preventsDefault)
+				expectOnlyTabStop(expectedButton)
+				expect(handleTryMove).not.toHaveBeenCalled()
+			}
+		)
+	})
 })
