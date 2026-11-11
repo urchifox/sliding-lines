@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { act, fireEvent, render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { StrictMode } from "react"
 
 import { getLevelNumber } from "../progress/user"
@@ -368,6 +369,22 @@ describe("PuzzlePage", () => {
 			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 			expectPageChrome({ isFinished: true, isUpdating: false })
+		})
+
+		it("moves focus to the win heading when the level is finished", async () => {
+			const user = userEvent.setup()
+			await renderPageWithBoard()
+			expect(getWinHeader()).not.toHaveFocus()
+
+			finishLevel()
+
+			const winHeader = getWinHeader()
+			expect(winHeader).toHaveFocus()
+			expect(winHeader.tabIndex).toBe(-1)
+
+			await user.tab()
+
+			expect(getPlayButton()).toHaveFocus()
 		})
 
 		it("ignores restart button click when level is finished", async () => {

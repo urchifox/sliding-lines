@@ -31,6 +31,7 @@ exports[`PuzzlePage > loading > renders correctly with loaded image 1`] = `
     />
     <h1
       class="emotion-3"
+      tabindex="-1"
     >
       You have won!
     </h1>

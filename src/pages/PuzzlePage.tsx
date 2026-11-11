@@ -1,7 +1,7 @@
 import replayIcon from "../assets/images/replay.svg"
 
 import styled from "@emotion/styled"
-import { useEffect, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 
 import { theme } from "../assets/styles/theme"
 import { Puzzle } from "../puzzle/components/Puzzle"
@@ -126,6 +126,7 @@ export function PuzzlePage() {
 		isUpdating: false,
 	})
 	const [isError, setError] = useState<boolean>(false)
+	const winHeaderRef = useRef<HTMLHeadingElement>(null)
 
 	useEffect(() => {
 		if (puzzleData !== null) {
@@ -149,6 +150,14 @@ export function PuzzlePage() {
 			cancelled = true
 		}
 	}, [puzzleData])
+
+	useLayoutEffect(() => {
+		if (!boardState.isFinished) {
+			return
+		}
+
+		winHeaderRef.current?.focus()
+	}, [boardState.isFinished])
 
 	if (puzzleData === null) {
 		return (
@@ -236,7 +245,9 @@ export function PuzzlePage() {
 				disabled={boardState.isFinished}
 				{...boardState}
 			/>
-			<WinHeader {...boardState}>{winHeaderText}</WinHeader>
+			<WinHeader ref={winHeaderRef} tabIndex={-1} {...boardState}>
+				{winHeaderText}
+			</WinHeader>
 			<PuzzleWrapper>
 				<Puzzle
 					key={boardVersion}
