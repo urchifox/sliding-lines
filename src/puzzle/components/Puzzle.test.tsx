@@ -4,8 +4,7 @@ import { fireEvent, render } from "@testing-library/react"
 import {
 	createAlmostSolvedTiles,
 	expectTilePlacedAtPosition,
-	getTileButton,
-	getTileElement,
+	getTileElements,
 } from "../../test/testHelpers"
 import { tryMove } from "../domain/game"
 import { getEmptyTile, getTileByKey } from "../domain/tiles"
@@ -46,10 +45,11 @@ function renderPuzzle(
 }
 
 function expectTilesUnmoved(tiles: PuzzleTilesArray) {
-	for (const tile of tiles) {
+	for (const tileInfo of tiles) {
+		const { tile } = getTileElements(tileInfo.key)
 		expectTilePlacedAtPosition({
-			element: getTileElement(tile.key),
-			tileInfo: tile,
+			element: tile,
+			tileInfo,
 		})
 	}
 }
@@ -93,8 +93,9 @@ describe("Puzzle", () => {
 				isUpdating: false,
 			})
 			const tile = tiles[tileIndex]
+			const { button } = getTileElements(tile.key)
 
-			fireEvent.click(getTileButton(tile))
+			fireEvent.click(button)
 
 			expect(handleTryMove).toHaveBeenCalledOnce()
 			expect(handleTryMove).toHaveBeenCalledWith(tile)
@@ -109,12 +110,14 @@ describe("Puzzle", () => {
 				isUpdating: false,
 			})
 			const tile = tiles[tileIndex]
+			const { button } = getTileElements(tile.key)
 
-			fireEvent.click(getTileButton(tile))
+			fireEvent.click(button)
 
 			for (const item of tiles) {
+				const { tile: element } = getTileElements(item.key)
 				expectTilePlacedAtPosition({
-					element: getTileElement(item.key),
+					element,
 					tileInfo: item,
 				})
 			}
@@ -131,8 +134,8 @@ describe("Puzzle", () => {
 			const { renderResult, handleTryMove, tiles } = renderPuzzle(boardState)
 			const tile = tiles[tileIndex]
 			const emptySlot = getEmptyTile(tiles) as PuzzleTileInfo
-			const tileElement = getTileElement(tile.key)
-			const emptySlotElement = getTileElement(emptySlot.key)
+			const { tile: tileElement } = getTileElements(tile.key)
+			const { tile: emptySlotElement } = getTileElements(emptySlot.key)
 			const updatedTiles = tryMove(tile, tiles)
 			if (updatedTiles === null) {
 				throw new Error("Expected a legal move")
@@ -162,7 +165,7 @@ describe("Puzzle", () => {
 			isUpdating: false,
 		})
 		const emptySlot = getEmptyTile(tiles) as PuzzleTileInfo
-		const button = getTileButton(emptySlot) as HTMLButtonElement
+		const { button } = getTileElements(emptySlot.key)
 
 		expect(button.disabled).toBe(true)
 		button.disabled = false
@@ -180,7 +183,7 @@ describe("Puzzle", () => {
 		(boardState) => {
 			const { tiles, handleTryMove } = renderPuzzle(boardState)
 			const tile = tiles.find((item) => !item.isEmpty) as PuzzleTileInfo
-			const button = getTileButton(tile) as HTMLButtonElement
+			const { button } = getTileElements(tile.key)
 
 			expect(button.disabled).toBe(true)
 			button.disabled = false

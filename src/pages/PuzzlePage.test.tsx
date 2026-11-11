@@ -20,8 +20,7 @@ import {
 	createDeferred,
 	expectTilePlacedAtPosition,
 	getPuzzleBoard,
-	getTileButton,
-	getTileElement,
+	getTileElements,
 	queryPuzzleBoard,
 } from "../test/testHelpers"
 import { PuzzlePage } from "./PuzzlePage"
@@ -167,9 +166,8 @@ async function renderPageWithBoard() {
 }
 
 function clickTile(key: TileKey) {
-	const tileElement = getTileElement(key)
 	const tile = getTileByKey(key, createAlmostSolvedTiles()) as PuzzleTileInfo
-	const tileButton = getTileButton(tile)
+	const { tile: tileElement, button: tileButton } = getTileElements(key)
 	fireEvent.click(tileButton)
 	return { tileElement, tileButton, tile }
 }
@@ -292,7 +290,7 @@ describe("PuzzlePage", () => {
 		it("restarts the puzzle on restart button click", async () => {
 			await renderPageWithBoard()
 			const restartButton = getRestartButton()
-			const tileElement = getTileElement("1-1")
+			const { tile: tileElement } = getTileElements("1-1")
 
 			fireEvent.click(restartButton)
 
@@ -303,7 +301,7 @@ describe("PuzzlePage", () => {
 			})
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 			expectPageChrome({ isFinished: false, isUpdating: false })
-			expect(getTileElement("1-1")).not.toBe(tileElement)
+			expect(getTileElements("1-1").tile).not.toBe(tileElement)
 		})
 	})
 
@@ -327,16 +325,17 @@ describe("PuzzlePage", () => {
 			await renderPageWithBoard()
 			const tiles = createAlmostSolvedTiles()
 			const emptySlot = getEmptyTile(tiles) as PuzzleTileInfo
-			const button = getTileButton(emptySlot) as HTMLButtonElement
+			const { button } = getTileElements(emptySlot.key)
 
 			button.disabled = false
 			fireEvent.click(button)
 
 			expect(getLevelNumber()).toBe(0)
-			for (const tile of tiles) {
+			for (const tileInfo of tiles) {
+				const { tile } = getTileElements(tileInfo.key)
 				expectTilePlacedAtPosition({
-					element: getTileElement(tile.key),
-					tileInfo: tile,
+					element: tile,
+					tileInfo,
 				})
 			}
 		})

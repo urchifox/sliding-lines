@@ -31,14 +31,11 @@ export function createDeferred<T>(): Deferred<T> {
 	return { promise, resolve, reject }
 }
 
-export function getTileElement(key: TileKey) {
+export function getTileElements(key: TileKey) {
 	const label = getTileLabel(key)
-	return screen.getByRole("listitem", { name: label })
-}
-
-export function getTileButton(tileInfo: PuzzleTileInfo) {
-	const text = getTileButtonText(tileInfo)
-	return screen.getByRole("button", { name: text })
+	const tile = screen.getByRole("listitem", { name: label })
+	const button = tile.querySelector("button") as HTMLButtonElement
+	return { tile, button }
 }
 
 export function getAllTilesElements() {
