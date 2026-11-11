@@ -1,6 +1,4 @@
-// @vitest-environment happy-dom
-import { getLevelNumber } from "../../progress/user"
-import { createAlmostSolvedTiles } from "../../test/testHelpers"
+import { createAlmostSolvedTiles, createTile } from "../../test/testHelpers"
 import { getCurrentNeighborsOf, swap, tryMove } from "./game"
 import type { PuzzleTileInfo } from "./types"
 
@@ -55,12 +53,14 @@ describe("game", () => {
 			const tile2CurrentPosition = structuredClone(tile2.currentPosition)
 			const tile2Rest = getTileStaticInfo(tile2)
 
-			swap({ tile1, tile2 })
+			const [newTile1, newTile2] = swap({ tile1, tile2 })
 
-			expect(tile1.currentPosition).toEqual(tile2CurrentPosition)
-			expect(tile2.currentPosition).toEqual(tile1CurrentPosition)
-			expect(getTileStaticInfo(tile1)).toEqual(tile1Rest)
-			expect(getTileStaticInfo(tile2)).toEqual(tile2Rest)
+			expect(tile1.currentPosition).toEqual(tile1CurrentPosition)
+			expect(tile2.currentPosition).toEqual(tile2CurrentPosition)
+			expect(newTile1.currentPosition).toEqual(tile2CurrentPosition)
+			expect(newTile2.currentPosition).toEqual(tile1CurrentPosition)
+			expect(getTileStaticInfo(newTile1)).toEqual(tile1Rest)
+			expect(getTileStaticInfo(newTile2)).toEqual(tile2Rest)
 		})
 
 		it("changes nothing when swaps same tile", () => {
@@ -80,9 +80,28 @@ describe("game", () => {
 			const tilesClone = structuredClone(tiles)
 			const emptySlot = tiles[0]
 
-			const { isSolved, updatedTiles } = tryMove(emptySlot, tiles)
+			const updatedTiles = tryMove(emptySlot, tiles)
 
-			expect(isSolved).toBe(false)
+			expect(updatedTiles).toBeNull()
+			expect(tiles).toEqual(tilesClone)
+		})
+
+		it("rejects an empty tile even when another empty tile is adjacent", () => {
+			const emptySlot = createTile({
+				originalRow: 1,
+				originalColumn: 1,
+				isEmpty: true,
+			})
+			const otherEmpty = createTile({
+				originalRow: 1,
+				originalColumn: 2,
+				isEmpty: true,
+			})
+			const tiles = [emptySlot, otherEmpty]
+			const tilesClone = structuredClone(tiles)
+
+			const updatedTiles = tryMove(emptySlot, tiles)
+
 			expect(updatedTiles).toBeNull()
 			expect(tiles).toEqual(tilesClone)
 		})
@@ -99,64 +118,28 @@ describe("game", () => {
 				const tilesClone = structuredClone(tiles)
 				const tile = tiles[tileIndex]
 
-				const { isSolved, updatedTiles } = tryMove(tile, tiles)
+				const updatedTiles = tryMove(tile, tiles)
 
-				expect(isSolved).toBe(false)
 				expect(updatedTiles).toBeNull()
 				expect(tiles).toEqual(tilesClone)
 			}
 		)
 
-		it("moves tile with  empty tile as neighbour", () => {
+		it("moves tile with empty tile as neighbour", () => {
 			const tiles = createAlmostSolvedTiles()
+			const tilesClone = structuredClone(tiles)
 			const [emptySlot, tile, ...otherTiles] = tiles
-			const otherTilesClone = structuredClone(otherTiles)
 			const emptySlotPosition = structuredClone(emptySlot.currentPosition)
 			const tilePosition = structuredClone(tile.currentPosition)
-			const initialLevel = getLevelNumber()
 
-			const { isSolved, updatedTiles } = tryMove(tile, tiles)
+			const updatedTiles = tryMove(tile, tiles)
 
-			expect(isSolved).toBe(false)
-			expect(getLevelNumber()).toBe(initialLevel)
-			expect(new Set(updatedTiles as Array<PuzzleTileInfo>)).toEqual(
-				new Set([emptySlot, tile])
-			)
-			expect(emptySlot.currentPosition).toEqual(tilePosition)
-			expect(tile.currentPosition).toEqual(emptySlotPosition)
-			expect(emptySlot.isEmpty).toBe(true)
-			expect(tile.isEmpty).toBe(false)
-			expect(otherTiles).toEqual(otherTilesClone)
-		})
-
-		it("completes level when all tiles on original positions", () => {
-			const tiles = createAlmostSolvedTiles()
-			const [emptySlot, tile1, tile2, ...otherTiles] = tiles
-			const otherTilesClone = structuredClone(otherTiles)
-			const initialLevel = getLevelNumber()
-
-			const result1 = tryMove(tile1, tiles)
-			const result2 = tryMove(tile2, tiles)
-
-			expect(result1.isSolved).toBe(false)
-			expect(result2.isSolved).toBe(true)
-			expect(getLevelNumber()).toBe(initialLevel + 1)
-			expect(
-				JSON.parse(localStorage.getItem("user") as string).levelNumber
-			).toBe(initialLevel + 1)
-			expect(new Set(result1.updatedTiles as Array<PuzzleTileInfo>)).toEqual(
-				new Set([emptySlot, tile1])
-			)
-			expect(new Set(result2.updatedTiles as Array<PuzzleTileInfo>)).toEqual(
-				new Set([emptySlot, tile2])
-			)
-			expect(emptySlot.currentPosition).toEqual(emptySlot.originalPosition)
-			expect(tile1.currentPosition).toEqual(tile1.originalPosition)
-			expect(tile2.currentPosition).toEqual(tile2.originalPosition)
-			expect(emptySlot.isEmpty).toBe(true)
-			expect(tile1.isEmpty).toBe(false)
-			expect(tile2.isEmpty).toBe(false)
-			expect(otherTiles).toEqual(otherTilesClone)
+			expect(tiles).toEqual(tilesClone)
+			expect(updatedTiles).toEqual([
+				{ ...emptySlot, currentPosition: tilePosition },
+				{ ...tile, currentPosition: emptySlotPosition },
+				...otherTiles,
+			])
 		})
 	})
 })

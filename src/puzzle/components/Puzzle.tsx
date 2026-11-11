@@ -1,12 +1,23 @@
 import styled from "@emotion/styled"
-import { useRef } from "react"
+import { useState } from "react"
 
 import { clearList } from "../../assets/styles/mixins"
 import { theme } from "../../assets/styles/theme"
-import { tryMove } from "../domain/game"
-import { type BoardState, type ImageInfo, type Level } from "../domain/types"
+import { getTileByCurrentPosition } from "../domain/tiles"
+import {
+	type BoardState,
+	type ImageInfo,
+	type PuzzleTileInfo,
+	type PuzzleTilesArray,
+	type TileKey,
+} from "../domain/types"
+import { handleRovingTabindex } from "../flow/handleRovingTabindex"
 import { PuzzleTile } from "./PuzzleTile"
-import { getTileButtonText, puzzleBoardName } from "./helpers"
+import { getTileElementId, puzzleBoardName } from "./helpers"
+
+const PuzzleRowStyled = styled.li`
+	position: absolute;
+`
 
 const PuzzleStyled = styled.ul<
 	{
@@ -55,8 +66,6 @@ const PuzzleStyled = styled.ul<
 		grid-template-rows: 1fr;
 		grid-template-columns: 1fr;
 
-		overflow: hidden;
-
 		animation: ${isUpdating ? "disappear" : "appear"} var(--reveal-duration) ease both;
 
 		transition:
@@ -85,50 +94,94 @@ const PuzzleStyled = styled.ul<
 	`
 )
 
+function getOwnedTileIds(tiles: PuzzleTilesArray, row: number) {
+	return tiles
+		.filter((tile) => tile.currentPosition.row === row)
+		.sort(
+			(left, right) =>
+				left.currentPosition.column - right.currentPosition.column
+		)
+		.map((tile) => getTileElementId(tile.key))
+		.join(" ")
+}
+
+function getFirstClickableTileKey(tiles: PuzzleTilesArray): TileKey | null {
+	let tile = getTileByCurrentPosition({ row: 1, column: 1 }, tiles)
+	if (tile?.isEmpty) {
+		tile = getTileByCurrentPosition({ row: 1, column: 2 }, tiles)
+	}
+	return tile?.key ?? null
+}
+
 export function Puzzle({
 	imageInfo,
-	onCompleteLevel,
 	boardState,
-	level,
+	handleTryMove,
+	tiles,
+	columns,
+	rows,
 }: {
 	imageInfo: ImageInfo
-	onCompleteLevel: () => void
-	level: Level
 	boardState: BoardState
+	handleTryMove: (tile: PuzzleTileInfo) => void
+	tiles: PuzzleTilesArray
+	columns: number
+	rows: number
 }) {
-	const { tiles, columns, rows } = level
-	const puzzleRef = useRef<Record<string, HTMLElement | null>>({})
+	const [focusedTileKey, setFocusedTileKey] = useState<TileKey | null>(
+		getFirstClickableTileKey(tiles)
+	)
 
-	const elements = tiles.map((tile) => {
-		const handleClick = () => {
-			if (boardState.isFinished) {
-				return
-			}
+	const onKeyDown = (event: React.KeyboardEvent<HTMLUListElement>) => {
+		const target = event.target as HTMLButtonElement
+		const arrowKey = event.key
+		if (arrowKey.startsWith("Arrow")) {
+			event.preventDefault()
+		}
+		const tileKey = target.dataset.key as TileKey
 
-			const { isSolved, updatedTiles } = tryMove(tile, tiles)
-			updatedTiles?.forEach(({ currentPosition, key }) => {
-				const changedElement = puzzleRef.current[key]
-				const { row, column } = currentPosition
-				changedElement?.style.setProperty("--row", row.toString())
-				changedElement?.style.setProperty("--col", column.toString())
-				const button = changedElement?.querySelector("button")
-				if (button !== null && button !== undefined) {
-					button.textContent = getTileButtonText(currentPosition)
-				}
-			})
-
-			if (isSolved) {
-				onCompleteLevel()
-			}
+		const tileToFocusKey = handleRovingTabindex({
+			tiles,
+			tileKey,
+			arrowKey,
+			columns,
+			rows,
+		})
+		if (tileToFocusKey === null) {
+			return
 		}
 
+		event.currentTarget
+			.querySelector<HTMLButtonElement>(`button[data-key="${tileToFocusKey}"]`)
+			?.focus()
+	}
+
+	const onFocus = (event: React.FocusEvent<HTMLUListElement>) => {
+		const tileKey = event.target.dataset.key as TileKey
+		setFocusedTileKey(tileKey)
+	}
+
+	const tileElements = tiles.map((tile) => {
+		const tabIndex = tile.key === focusedTileKey ? 0 : -1
 		return (
 			<PuzzleTile
 				key={tile.key}
 				tile={tile}
-				handleClick={handleClick}
-				puzzleRef={puzzleRef}
+				handleClick={handleTryMove}
 				isFinished={boardState.isFinished}
+				tabIndex={tabIndex}
+			/>
+		)
+	})
+
+	const rowElements = Array.from({ length: rows }, (_, index) => {
+		const row = index + 1
+		return (
+			<PuzzleRowStyled
+				key={row}
+				role="row"
+				aria-rowindex={row}
+				aria-owns={getOwnedTileIds(tiles, row)}
 			/>
 		)
 	})
@@ -140,8 +193,14 @@ export function Puzzle({
 			columns={columns}
 			rows={rows}
 			aria-label={puzzleBoardName}
+			onKeyDown={onKeyDown}
+			onFocus={onFocus}
+			role="grid"
+			aria-rowcount={rows}
+			aria-colcount={columns}
 		>
-			{elements}
+			{rowElements}
+			{tileElements}
 		</PuzzleStyled>
 	)
 }

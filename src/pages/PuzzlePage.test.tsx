@@ -1,10 +1,15 @@
 // @vitest-environment happy-dom
 import { act, fireEvent, render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { StrictMode } from "react"
 
 import { getLevelNumber } from "../progress/user"
-import { restartLevel } from "../puzzle/domain/level"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
+import {
+	getEmptyTile,
+	getTileByKey,
+	reshuffleTiles,
+} from "../puzzle/domain/tiles"
 import type {
 	BoardState,
 	PuzzleData,
@@ -14,10 +19,9 @@ import type {
 import {
 	createAlmostSolvedTiles,
 	createDeferred,
-	expectTileBeingMovedAt,
+	expectTilePlacedAtPosition,
 	getPuzzleBoard,
-	getTileButton,
-	getTileElement,
+	getTileElements,
 	queryPuzzleBoard,
 } from "../test/testHelpers"
 import { PuzzlePage } from "./PuzzlePage"
@@ -34,12 +38,16 @@ vi.mock("../puzzle/domain/puzzleData", () => ({
 	createPuzzleData: vi.fn(),
 }))
 
-vi.mock("../puzzle/domain/level", () => ({
-	restartLevel: vi.fn(),
-}))
+vi.mock("../puzzle/domain/tiles", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("../puzzle/domain/tiles")>()
+	return {
+		...actual,
+		reshuffleTiles: vi.fn(({ tiles }: { tiles: readonly unknown[] }) => tiles),
+	}
+})
 
 const mockedCreatePuzzleData = vi.mocked(createPuzzleData)
-const mockedRestartLevel = vi.mocked(restartLevel)
+const mockedReshuffleTiles = vi.mocked(reshuffleTiles)
 
 function getLoadingMessage() {
 	return screen.getByText(loadingText)
@@ -159,38 +167,52 @@ async function renderPageWithBoard() {
 }
 
 function clickTile(key: TileKey) {
-	const tileElement = getTileElement(key)
-	const tile = createAlmostSolvedTiles().find(
-		(item) => item.key === key
-	) as PuzzleTileInfo
-	const tileButton = getTileButton(tile.currentPosition)
+	const tile = getTileByKey(key, createAlmostSolvedTiles()) as PuzzleTileInfo
+	const { tile: tileElement, button: tileButton } = getTileElements(key)
 	fireEvent.click(tileButton)
-	return { tileElement, tileButton }
+	return { tileElement, tileButton, tile }
 }
 
 function finishLevel() {
-	const { tileElement: tileElement1, tileButton: tileButton1 } =
-		clickTile("1-1")
-	const { tileElement: tileElement2, tileButton: tileButton2 } =
-		clickTile("1-2")
-	return { tileElement1, tileButton1, tileElement2, tileButton2 }
+	const {
+		tileElement: tileElement1,
+		tileButton: tileButton1,
+		tile: tile1,
+	} = clickTile("1-1")
+	const {
+		tileElement: tileElement2,
+		tileButton: tileButton2,
+		tile: tile2,
+	} = clickTile("1-2")
+	return {
+		tileElement1,
+		tileButton1,
+		tile1,
+		tileElement2,
+		tileButton2,
+		tile2,
+	}
 }
 
 function requestNextLevel() {
 	fireEvent.click(getPlayButton())
 }
 
-function advanceLevelTransition() {
-	return act(() => vi.advanceTimersByTimeAsync(1000))
+function useTransitionTimers() {
+	vi.useFakeTimers()
+}
+
+function advanceLevelTransition(milliseconds = 1000) {
+	act(() => {
+		vi.advanceTimersByTime(milliseconds)
+	})
 }
 
 beforeEach(() => {
-	vi.useFakeTimers({ shouldAdvanceTime: true })
 	vi.resetAllMocks()
 })
 
 afterEach(() => {
-	vi.clearAllTimers()
 	vi.useRealTimers()
 })
 
@@ -227,11 +249,16 @@ describe("PuzzlePage", () => {
 				</StrictMode>
 			)
 
-			deferred1.resolve({ ...getMockedPuzzleData(), levelNumber: 0 })
-			await act(() => Promise.resolve())
+			await act(async () => {
+				deferred1.resolve({ ...getMockedPuzzleData(), levelNumber: 0 })
+				await deferred1.promise
+			})
 			expect(getLoadingMessage()).toBeInTheDocument()
-			deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
-			expect(await findLevelName(5)).toBeInTheDocument()
+			await act(async () => {
+				deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
+				await deferred2.promise
+			})
+			expect(getLevelName(5)).toBeInTheDocument()
 		})
 
 		it("ignores promise rejection of cancelled request", async () => {
@@ -246,11 +273,17 @@ describe("PuzzlePage", () => {
 				</StrictMode>
 			)
 
-			deferred1.reject()
-			await act(() => Promise.resolve())
+			const ignoredRejection = deferred1.promise.catch(() => undefined)
+			await act(() => {
+				deferred1.reject()
+				return ignoredRejection
+			})
 			expect(getLoadingMessage()).toBeInTheDocument()
-			deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
-			expect(await findLevelName(5)).toBeInTheDocument()
+			await act(async () => {
+				deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
+				await deferred2.promise
+			})
+			expect(getLevelName(5)).toBeInTheDocument()
 		})
 	})
 
@@ -258,43 +291,64 @@ describe("PuzzlePage", () => {
 		it("restarts the puzzle on restart button click", async () => {
 			await renderPageWithBoard()
 			const restartButton = getRestartButton()
-			const tileElement = getTileElement("1-1")
+			const { tile: tileElement } = getTileElements("1-1")
 
 			fireEvent.click(restartButton)
 
-			expect(mockedRestartLevel).toHaveBeenCalledOnce()
-			expect(mockedRestartLevel).toHaveBeenCalledWith(
-				getMockedPuzzleData().level
-			)
+			expect(mockedReshuffleTiles).toHaveBeenCalledOnce()
+			expect(mockedReshuffleTiles).toHaveBeenCalledWith({
+				tiles: getMockedPuzzleData().level.tiles,
+				shuffleSteps: getMockedPuzzleData().level.shuffleSteps,
+			})
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 			expectPageChrome({ isFinished: false, isUpdating: false })
-			expect(getTileElement("1-1")).not.toBe(tileElement)
+			expect(getTileElements("1-1").tile).not.toBe(tileElement)
 		})
 	})
 
 	describe("game process", () => {
 		it("ignores click on play button when level is not finished", async () => {
 			await renderPageWithBoard()
+			useTransitionTimers()
 			const playButton = getPlayButton()
 
 			fireEvent.click(playButton)
-			await advanceLevelTransition()
+			advanceLevelTransition()
 
-			expect(mockedRestartLevel).not.toHaveBeenCalled()
+			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 			expect(getLevelName(0)).toBeInTheDocument()
 			expect(getRestartButton()).toBeInTheDocument()
 			expectPageChrome({ isFinished: false, isUpdating: false })
 		})
 
+		it("ignores a click on the empty tile", async () => {
+			await renderPageWithBoard()
+			const tiles = createAlmostSolvedTiles()
+			const emptySlot = getEmptyTile(tiles) as PuzzleTileInfo
+			const { button } = getTileElements(emptySlot.key)
+
+			button.disabled = false
+			fireEvent.click(button)
+
+			expect(getLevelNumber()).toBe(0)
+			for (const tileInfo of tiles) {
+				const { tile } = getTileElements(tileInfo.key)
+				expectTilePlacedAtPosition({
+					element: tile,
+					tileInfo,
+				})
+			}
+		})
+
 		it("continues level when level is not finished", async () => {
 			await renderPageWithBoard()
 
-			const { tileElement } = clickTile("1-1")
+			const { tileElement, tile } = clickTile("1-1")
 
-			expectTileBeingMovedAt({
+			expectTilePlacedAtPosition({
 				element: tileElement,
-				currentPosition: { row: 1, column: 1 },
+				tileInfo: { ...tile, currentPosition: { row: 1, column: 1 } },
 			})
 			expectPageChrome({ isFinished: false, isUpdating: false })
 		})
@@ -312,9 +366,25 @@ describe("PuzzlePage", () => {
 			await renderPageWithBoard()
 			finishLevel()
 
-			expect(mockedRestartLevel).not.toHaveBeenCalled()
+			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 			expectPageChrome({ isFinished: true, isUpdating: false })
+		})
+
+		it("moves focus to the win heading when the level is finished", async () => {
+			const user = userEvent.setup()
+			await renderPageWithBoard()
+			expect(getWinHeader()).not.toHaveFocus()
+
+			finishLevel()
+
+			const winHeader = getWinHeader()
+			expect(winHeader).toHaveFocus()
+			expect(winHeader.tabIndex).toBe(-1)
+
+			await user.tab()
+
+			expect(getPlayButton()).toHaveFocus()
 		})
 
 		it("ignores restart button click when level is finished", async () => {
@@ -324,36 +394,77 @@ describe("PuzzlePage", () => {
 			const restartButton = getRestartButton()
 			fireEvent.click(restartButton)
 
-			expect(mockedRestartLevel).not.toHaveBeenCalled()
+			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
 		})
 
 		it("ignores tile clicks when level is finished", async () => {
 			await renderPageWithBoard()
-			const { tileElement1, tileButton1, tileElement2, tileButton2 } =
-				finishLevel()
-			expectTileBeingMovedAt({
+			const {
+				tileElement1,
+				tileButton1,
+				tile1,
+				tileElement2,
+				tileButton2,
+				tile2,
+			} = finishLevel()
+			expectTilePlacedAtPosition({
 				element: tileElement1,
-				currentPosition: { row: 1, column: 1 },
+				tileInfo: { ...tile1, currentPosition: { row: 1, column: 1 } },
 			})
-			expectTileBeingMovedAt({
+			expectTilePlacedAtPosition({
 				element: tileElement2,
-				currentPosition: { row: 1, column: 2 },
+				tileInfo: { ...tile2, currentPosition: { row: 1, column: 2 } },
 			})
 
-			fireEvent.click(tileButton2)
-			fireEvent.click(tileButton1)
-			expectTileBeingMovedAt({
+			const finishedTileButton1 = tileButton1 as HTMLButtonElement
+			const finishedTileButton2 = tileButton2 as HTMLButtonElement
+			finishedTileButton1.disabled = false
+			finishedTileButton2.disabled = false
+			fireEvent.click(finishedTileButton2)
+			fireEvent.click(finishedTileButton1)
+			expectTilePlacedAtPosition({
 				element: tileElement1,
-				currentPosition: { row: 1, column: 1 },
+				tileInfo: { ...tile1, currentPosition: { row: 1, column: 1 } },
 			})
-			expectTileBeingMovedAt({
+			expectTilePlacedAtPosition({
 				element: tileElement2,
-				currentPosition: { row: 1, column: 2 },
+				tileInfo: { ...tile2, currentPosition: { row: 1, column: 2 } },
 			})
 		})
 	})
 
 	describe("new level loading", () => {
+		it("ignores tile clicks while the next level is updating", async () => {
+			await renderPageWithBoard()
+			const {
+				tileButton1,
+				tile1,
+				tileElement1,
+				tileButton2,
+				tile2,
+				tileElement2,
+			} = finishLevel()
+			requestNextLevel()
+
+			const updatingTileButton1 = tileButton1 as HTMLButtonElement
+			const updatingTileButton2 = tileButton2 as HTMLButtonElement
+			updatingTileButton1.disabled = false
+			updatingTileButton2.disabled = false
+			fireEvent.click(updatingTileButton1)
+			fireEvent.click(updatingTileButton2)
+
+			expectPageChrome({ isFinished: true, isUpdating: true })
+			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
+			expectTilePlacedAtPosition({
+				element: tileElement1,
+				tileInfo: { ...tile1, currentPosition: { row: 1, column: 1 } },
+			})
+			expectTilePlacedAtPosition({
+				element: tileElement2,
+				tileInfo: { ...tile2, currentPosition: { row: 1, column: 2 } },
+			})
+		})
+
 		it("updates after new level button click", async () => {
 			await renderPageWithBoard()
 			finishLevel()
@@ -365,12 +476,11 @@ describe("PuzzlePage", () => {
 
 		it("does nothing before transition ends", async () => {
 			await renderPageWithBoard()
+			useTransitionTimers()
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
 			finishLevel()
 			requestNextLevel()
-			act(() => {
-				vi.advanceTimersByTime(999)
-			})
+			advanceLevelTransition(999)
 
 			expectPageChrome({ isFinished: true, isUpdating: true })
 			expect(queryLoadingMessage()).not.toBeInTheDocument()
@@ -379,10 +489,11 @@ describe("PuzzlePage", () => {
 
 		it("loads new level after new level button click", async () => {
 			await renderPageWithBoard()
+			useTransitionTimers()
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
 			finishLevel()
 			requestNextLevel()
-			await advanceLevelTransition()
+			advanceLevelTransition()
 
 			expect(getLoadingMessage()).toBeInTheDocument()
 			expect(queryPuzzleBoard()).not.toBeInTheDocument()
@@ -391,30 +502,41 @@ describe("PuzzlePage", () => {
 
 		it("renders new level after new level button click", async () => {
 			await renderPageWithBoard()
+			useTransitionTimers()
 			const { promise, resolve } = createDeferred<PuzzleData>()
 			mockedCreatePuzzleData.mockReturnValue(promise)
 			finishLevel()
 			requestNextLevel()
-			await advanceLevelTransition()
-			resolve({
-				...getMockedPuzzleData(),
-				levelNumber: 1,
+			advanceLevelTransition()
+			vi.useRealTimers()
+			await act(async () => {
+				resolve({
+					...getMockedPuzzleData(),
+					levelNumber: 1,
+				})
+				await promise
 			})
 
-			await findLevelName(1)
+			expect(getLevelName(1)).toBeInTheDocument()
 			expectPageChrome({ isFinished: false, isUpdating: false }, 1)
-			expect(mockedRestartLevel).not.toHaveBeenCalled()
+			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)
 		})
 
 		it("renders error message if new level loading fails", async () => {
 			await renderPageWithBoard()
+			useTransitionTimers()
 			const { promise, reject } = createDeferred<PuzzleData>()
 			mockedCreatePuzzleData.mockReturnValue(promise)
 			finishLevel()
 			requestNextLevel()
-			await advanceLevelTransition()
-			reject()
+			advanceLevelTransition()
+			vi.useRealTimers()
+			const ignoredRejection = promise.catch(() => undefined)
+			await act(() => {
+				reject()
+				return ignoredRejection
+			})
 
 			expect(await findErrorMessage()).toBeInTheDocument()
 			expect(queryLoadingMessage()).not.toBeInTheDocument()
@@ -423,6 +545,7 @@ describe("PuzzlePage", () => {
 
 		it("ignores clicks on any button when new level is loading", async () => {
 			await renderPageWithBoard()
+			useTransitionTimers()
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
 			finishLevel()
 			requestNextLevel()
@@ -433,10 +556,10 @@ describe("PuzzlePage", () => {
 			expect(restartButton).toBeDisabled()
 			expect(getPlayButton()).toBeDisabled()
 
-			await advanceLevelTransition()
-			await advanceLevelTransition()
+			advanceLevelTransition()
+			advanceLevelTransition()
 
-			expect(mockedRestartLevel).not.toHaveBeenCalled()
+			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)
 		})
 	})

@@ -1,39 +1,35 @@
-import { upgradeLevel } from "../../progress/user"
-import type { Position, PuzzleTileInfo } from "./types"
+import { getTileByCurrentPosition } from "./tiles"
+import type { Position, PuzzleTileInfo, PuzzleTilesArray } from "./types"
 
-export function tryMove(
-	tile: PuzzleTileInfo,
-	tiles: Array<PuzzleTileInfo>
-): {
-	isSolved: boolean
-	updatedTiles: Array<PuzzleTileInfo> | null
-} {
-	const neighbors = getCurrentNeighborsOf(tile.currentPosition, tiles)
+export function tryMove(tileToMove: PuzzleTileInfo, tiles: PuzzleTilesArray) {
+	if (tileToMove.isEmpty || isPuzzleSolved(tiles)) {
+		return null
+	}
+
+	const neighbors = getCurrentNeighborsOf(tileToMove.currentPosition, tiles)
 	const emptySlot = neighbors.find((element) => element.isEmpty)
 
 	if (emptySlot === undefined) {
-		return {
-			isSolved: false,
-			updatedTiles: null,
+		return null
+	}
+
+	const [newEmptySlot, newTile] = swap({ tile1: emptySlot, tile2: tileToMove })
+	const updatedTiles = tiles.map((tile) => {
+		if (tile.key === newEmptySlot.key) {
+			return newEmptySlot
 		}
-	}
+		if (tile.key === newTile.key) {
+			return newTile
+		}
+		return tile
+	})
 
-	swap({ tile1: emptySlot, tile2: tile })
-
-	const isSolved = isPuzzleSolved(tiles)
-	if (isSolved) {
-		upgradeLevel()
-	}
-
-	return {
-		isSolved,
-		updatedTiles: [emptySlot, tile],
-	}
+	return updatedTiles
 }
 
 export function getCurrentNeighborsOf(
 	position: Position,
-	tiles: Array<PuzzleTileInfo>
+	tiles: PuzzleTilesArray
 ) {
 	const { row, column } = position
 	const neighbors = [
@@ -45,11 +41,7 @@ export function getCurrentNeighborsOf(
 
 	const elements = []
 	for (const neighbor of neighbors) {
-		const neighborElement = tiles.find(
-			(element) =>
-				element.currentPosition.row === neighbor.row &&
-				element.currentPosition.column === neighbor.column
-		)
+		const neighborElement = getTileByCurrentPosition(neighbor, tiles)
 
 		if (neighborElement !== undefined) {
 			elements.push(neighborElement)
@@ -66,14 +58,16 @@ export function swap({
 	tile1: PuzzleTileInfo
 	tile2: PuzzleTileInfo
 }) {
-	const tilePosition = tile2.currentPosition
-	const emptyPosition = tile1.currentPosition
+	const tile1Position = { ...tile1.currentPosition }
+	const tile2Position = { ...tile2.currentPosition }
 
-	tile2.currentPosition = emptyPosition
-	tile1.currentPosition = tilePosition
+	return [
+		{ ...tile1, currentPosition: tile2Position },
+		{ ...tile2, currentPosition: tile1Position },
+	]
 }
 
-function isPuzzleSolved(tiles: Array<PuzzleTileInfo>) {
+export function isPuzzleSolved(tiles: PuzzleTilesArray) {
 	return tiles.every(
 		({ currentPosition, originalPosition }) =>
 			currentPosition.row === originalPosition.row &&

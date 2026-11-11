@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 
 import { theme } from "../../assets/styles/theme"
 import type { PuzzleTileInfo } from "../domain/types"
-import { getTileButtonText, getTileLabel } from "./helpers"
+import { getTileButtonText, getTileElementId, getTileLabel } from "./helpers"
 
 const PuzzleTileStyled = styled.li<{
 	isEmpty?: boolean
@@ -25,9 +25,6 @@ const PuzzleTileStyled = styled.li<{
 	--sp-width: calc(var(--ss-width) / var(--ss-columns));
 	--sp-height: calc(var(--ss-height) / var(--ss-rows));
 
-	position: absolute;
-	top: 0;
-	left: 0;
 	grid-row: 1 / 2;
 	grid-column: 1 / 2;
 
@@ -54,6 +51,10 @@ const PuzzleTileStyled = styled.li<{
 	transition:
 		transform 0.3s ease,
 		border-color var(--reveal-duration) var(--reveal-delay) ease;
+
+	&:has(:focus-visible) {
+		z-index: 1;
+	}
 `
 )
 
@@ -62,11 +63,11 @@ const PuzzleTileButtonStyled = styled.button(
 	width: 100%;
 	height: 100%;
 	border: none;
+	padding: 0;
 	background: none;
 	cursor: pointer;
 	font-size: 0;
 	color: transparent;
-	opacity: 0;
 
 	&:disabled {
 		cursor: auto;
@@ -77,22 +78,22 @@ const PuzzleTileButtonStyled = styled.button(
 export function PuzzleTile({
 	tile,
 	handleClick,
-	puzzleRef,
 	isFinished,
+	tabIndex,
 }: {
 	tile: PuzzleTileInfo
-	handleClick: () => void
-	puzzleRef: React.RefObject<Record<string, HTMLElement | null>>
+	handleClick: (tile: PuzzleTileInfo) => void
 	isFinished: boolean
+	tabIndex: number
 }) {
 	const { key, currentPosition, originalPosition, isEmpty } = tile
+
+	const onClick = () => handleClick(tile)
 
 	return (
 		<PuzzleTileStyled
 			key={key}
-			ref={(el) => {
-				puzzleRef.current[key] = el
-			}}
+			id={getTileElementId(key)}
 			row={currentPosition.row}
 			col={currentPosition.column}
 			spRow={originalPosition.row}
@@ -100,13 +101,18 @@ export function PuzzleTile({
 			isEmpty={isEmpty}
 			isFinished={isFinished}
 			aria-label={getTileLabel(key)}
+			role="gridcell"
+			aria-rowindex={currentPosition.row}
+			aria-colindex={currentPosition.column}
 		>
 			<PuzzleTileButtonStyled
 				type="button"
-				onClick={handleClick}
+				onClick={onClick}
 				disabled={isFinished || isEmpty}
+				tabIndex={tabIndex}
+				data-key={key}
 			>
-				{getTileButtonText(currentPosition)}
+				{getTileButtonText(tile)}
 			</PuzzleTileButtonStyled>
 		</PuzzleTileStyled>
 	)

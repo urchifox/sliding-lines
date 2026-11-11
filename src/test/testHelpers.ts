@@ -6,7 +6,11 @@ import {
 	puzzleBoardName,
 	tileLabelMatcher,
 } from "../puzzle/components/helpers"
-import type { Position, PuzzleTileInfo, TileKey } from "../puzzle/domain/types"
+import type {
+	PuzzleTileInfo,
+	PuzzleTilesArray,
+	TileKey,
+} from "../puzzle/domain/types"
 
 export type Deferred<T> = {
 	promise: Promise<T>
@@ -27,26 +31,23 @@ export function createDeferred<T>(): Deferred<T> {
 	return { promise, resolve, reject }
 }
 
-export function getTileElement(key: TileKey) {
+export function getTileElements(key: TileKey) {
 	const label = getTileLabel(key)
-	return screen.getByRole("listitem", { name: label })
-}
-
-export function getTileButton(currentPosition: Position) {
-	const text = getTileButtonText(currentPosition)
-	return screen.getByRole("button", { name: text })
+	const tile = screen.getByRole("gridcell", { name: label })
+	const button = tile.querySelector("button") as HTMLButtonElement
+	return { tile, button }
 }
 
 export function getAllTilesElements() {
-	return screen.getAllByRole("listitem", { name: tileLabelMatcher })
+	return screen.getAllByRole("gridcell", { name: tileLabelMatcher })
 }
 
 export function getPuzzleBoard() {
-	return screen.getByRole("list", { name: puzzleBoardName })
+	return screen.getByRole("grid", { name: puzzleBoardName })
 }
 
 export function queryPuzzleBoard() {
-	return screen.queryByRole("list", { name: puzzleBoardName })
+	return screen.queryByRole("grid", { name: puzzleBoardName })
 }
 
 export function createTile(props: {
@@ -71,34 +72,19 @@ export function createTile(props: {
 	}
 }
 
-export function expectTileBeingMovedAt({
+export function expectTilePlacedAtPosition({
 	element,
-	currentPosition,
+	tileInfo,
 }: {
 	element: HTMLElement
-	currentPosition: Position
+	tileInfo: PuzzleTileInfo
 }) {
-	expect(element.style.getPropertyValue("--row")).toBe(
-		currentPosition.row.toString()
-	)
-	expect(element.style.getPropertyValue("--col")).toBe(
-		currentPosition.column.toString()
-	)
+	expect(element).toHaveStyle({
+		"--row": tileInfo.currentPosition.row.toString(),
+		"--col": tileInfo.currentPosition.column.toString(),
+	})
 	const button = element.querySelector("button")
-	expect(button?.textContent).toBe(getTileButtonText(currentPosition))
-}
-
-export function expectTileNotBeingMoved({
-	element,
-	currentPosition,
-}: {
-	element: HTMLElement
-	currentPosition: Position
-}) {
-	expect(element.style.getPropertyValue("--row")).toBe("")
-	expect(element.style.getPropertyValue("--col")).toBe("")
-	const button = getTileButton(currentPosition)
-	expect(button.textContent).toBe(getTileButtonText(currentPosition))
+	expect(button?.textContent).toBe(getTileButtonText(tileInfo))
 }
 
 export function createAlmostSolvedTiles() {
@@ -128,5 +114,5 @@ export function createAlmostSolvedTiles() {
 		createTile({ originalRow: 3, originalColumn: 1 }),
 		createTile({ originalRow: 3, originalColumn: 2 }),
 		createTile({ originalRow: 3, originalColumn: 3 }),
-	] satisfies Array<PuzzleTileInfo>
+	] satisfies PuzzleTilesArray
 }

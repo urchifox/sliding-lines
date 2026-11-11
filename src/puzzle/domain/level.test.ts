@@ -1,4 +1,4 @@
-import { createLevel, resetLevel, restartLevel, shuffleLevel } from "./level"
+import { createLevel } from "./level"
 
 describe("Level", () => {
 	describe("createLevel", () => {
@@ -114,96 +114,5 @@ describe("Level", () => {
 				levelForZeroWithoutTiles
 			)
 		})
-	})
-
-	it("resets the level to the original state", () => {
-		const level = createLevel(0)
-		const { columns, rows, shuffleSteps, tiles } = level
-		const initialTIlesCount = tiles.length
-		const tilesBeforeReset = structuredClone(tiles)
-
-		resetLevel(level)
-
-		expect(tiles).not.toEqual(tilesBeforeReset)
-		expect(
-			tiles.every(
-				(tile) =>
-					tile.currentPosition.row === tile.originalPosition.row &&
-					tile.currentPosition.column === tile.originalPosition.column
-			)
-		).toBe(true)
-		expect(level.columns).toBe(columns)
-		expect(level.rows).toBe(rows)
-		expect(level.shuffleSteps).toBe(shuffleSteps)
-		expect(tiles.length).toBe(initialTIlesCount)
-	})
-
-	it("shuffles the level", () => {
-		const random = vi.spyOn(Math, "random")
-		random.mockReturnValue(0)
-		const level = createLevel(0)
-		resetLevel(level)
-		const { tiles } = level
-		const tilesBeforeShuffle = structuredClone(tiles)
-		random.mockReturnValue(0.5)
-
-		shuffleLevel(level)
-
-		expect(tiles).not.toEqual(tilesBeforeShuffle)
-		expect(
-			level.tiles.some(
-				(tile) =>
-					tile.currentPosition.row !== tile.originalPosition.row ||
-					tile.currentPosition.column !== tile.originalPosition.column
-			)
-		).toBe(true)
-	})
-
-	it("restarts the level", () => {
-		const random = vi.spyOn(Math, "random")
-		random.mockReturnValue(0)
-		const level = createLevel(0)
-		const { tiles } = level
-		const tilesBeforeRestart = structuredClone(tiles)
-		random.mockReturnValue(0.5)
-
-		restartLevel(level)
-
-		expect(tiles).not.toEqual(tilesBeforeRestart)
-		expect(
-			level.tiles.some(
-				(tile) =>
-					tile.currentPosition.row !== tile.originalPosition.row ||
-					tile.currentPosition.column !== tile.originalPosition.column
-			)
-		).toBe(true)
-	})
-
-	it("does not shuffle a solved level back to solved in two steps", () => {
-		const level = createLevel(0)
-		level.shuffleSteps = 2
-
-		for (let attempt = 0; attempt < 100; attempt++) {
-			resetLevel(level)
-			shuffleLevel(level)
-
-			const isSolved = level.tiles.every(
-				(tile) =>
-					tile.currentPosition.row === tile.originalPosition.row &&
-					tile.currentPosition.column === tile.originalPosition.column
-			)
-			expect(isSolved).toBe(false)
-		}
-	})
-
-	it("throws an error if no empty slot while shuffling", () => {
-		const level = createLevel(0)
-		const emptySlot = level.tiles.find((tile) => tile.isEmpty)
-		if (emptySlot === undefined) {
-			throw new Error("Empty slot not found")
-		}
-		emptySlot.isEmpty = false
-
-		expect(() => shuffleLevel(level)).toThrow("Empty slot not found")
 	})
 })

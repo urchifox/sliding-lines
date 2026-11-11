@@ -3,14 +3,20 @@
 exports[`PuzzleTile > renders correctly 1`] = `
 <div>
   <li
+    aria-colindex="1"
     aria-label="Tile 1-1"
+    aria-rowindex="1"
     class="emotion-0"
+    id="tile-1-1"
+    role="gridcell"
   >
     <button
       class="emotion-1"
+      data-key="1-1"
+      tabindex="0"
       type="button"
     >
-      Try move tile in 1 row and 1 column
+      Try move tile 1-1 at row 1, column 1
     </button>
   </li>
 </div>

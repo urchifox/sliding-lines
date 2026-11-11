@@ -1,8 +1,8 @@
 import {
-	deleteFromArray,
 	getRandomNumber,
 	getUniqueValue,
 	pickRandomItem,
+	replaceItem,
 } from "./utils"
 
 describe("utils", () => {
@@ -138,27 +138,48 @@ describe("utils", () => {
 		})
 	})
 
-	describe("deleteFromArray", () => {
+	describe("replaceItem", () => {
+		it.each([
+			{ array: [1, 3], element: 1, newElement: 9, expected: [9, 3] },
+			{
+				array: [10, 20, 30],
+				element: 20,
+				newElement: 25,
+				expected: [10, 25, 30],
+			},
+			{ array: [3, 2, 1], element: 1, newElement: 4, expected: [3, 2, 4] },
+		])(
+			"replaces the element in the array",
+			({ array, element, newElement, expected }) => {
+				replaceItem(array, element, newElement)
+
+				expect(array).toEqual(expected)
+			}
+		)
+
 		it.each([
 			{ array: [1, 3], element: 1, expected: [3] },
 			{ array: [10, 20, 30], element: 20, expected: [10, 30] },
 			{ array: [3, 2, 1], element: 1, expected: [3, 2] },
-		])("deletes the element from the array", ({ array, element, expected }) => {
-			deleteFromArray(array, element)
+		])(
+			"removes the element when a replacement is omitted",
+			({ array, element, expected }) => {
+				replaceItem(array, element)
 
-			expect(array).toEqual(expected)
-		})
+				expect(array).toEqual(expected)
+			}
+		)
 
 		it("does nothing if the element is not in the array", () => {
 			const array = [1, 3]
-			deleteFromArray(array, 2)
+			replaceItem(array, 2, 9)
 
 			expect(array).toEqual([1, 3])
 		})
 
-		it("does nothing for empty array", () => {
+		it("does nothing for an empty array", () => {
 			const array: number[] = []
-			deleteFromArray(array, 1)
+			replaceItem(array, 1)
 
 			expect(array).toEqual([])
 		})

@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { useState } from "react"
 
 import { AppRoute } from "../AppRoute"
+import { theme } from "../assets/styles/theme"
 import { ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { Lines } from "../ui/Lines"
@@ -11,6 +12,7 @@ import { TextStyled } from "../ui/Text"
 import { playButtonText } from "./StartPageHelpers"
 
 const StartPageStyled = styled(PageStyled)`
+	--color-focus: ${theme.color.interactive.active};
 	grid-template-rows: repeat(3, auto);
 `
 
