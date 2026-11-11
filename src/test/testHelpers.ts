@@ -33,21 +33,21 @@ export function createDeferred<T>(): Deferred<T> {
 
 export function getTileElements(key: TileKey) {
 	const label = getTileLabel(key)
-	const tile = screen.getByRole("listitem", { name: label })
+	const tile = screen.getByRole("gridcell", { name: label })
 	const button = tile.querySelector("button") as HTMLButtonElement
 	return { tile, button }
 }
 
 export function getAllTilesElements() {
-	return screen.getAllByRole("listitem", { name: tileLabelMatcher })
+	return screen.getAllByRole("gridcell", { name: tileLabelMatcher })
 }
 
 export function getPuzzleBoard() {
-	return screen.getByRole("list", { name: puzzleBoardName })
+	return screen.getByRole("grid", { name: puzzleBoardName })
 }
 
 export function queryPuzzleBoard() {
-	return screen.queryByRole("list", { name: puzzleBoardName })
+	return screen.queryByRole("grid", { name: puzzleBoardName })
 }
 
 export function createTile(props: {

@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 
 import { theme } from "../../assets/styles/theme"
 import type { PuzzleTileInfo } from "../domain/types"
-import { getTileButtonText, getTileLabel } from "./helpers"
+import { getTileButtonText, getTileElementId, getTileLabel } from "./helpers"
 
 const PuzzleTileStyled = styled.li<{
 	isEmpty?: boolean
@@ -93,6 +93,7 @@ export function PuzzleTile({
 	return (
 		<PuzzleTileStyled
 			key={key}
+			id={getTileElementId(key)}
 			row={currentPosition.row}
 			col={currentPosition.column}
 			spRow={originalPosition.row}
@@ -100,6 +101,9 @@ export function PuzzleTile({
 			isEmpty={isEmpty}
 			isFinished={isFinished}
 			aria-label={getTileLabel(key)}
+			role="gridcell"
+			aria-rowindex={currentPosition.row}
+			aria-colindex={currentPosition.column}
 		>
 			<PuzzleTileButtonStyled
 				type="button"

@@ -13,7 +13,11 @@ import {
 } from "../domain/types"
 import { handleRovingTabindex } from "../flow/handleRovingTabindex"
 import { PuzzleTile } from "./PuzzleTile"
-import { puzzleBoardName } from "./helpers"
+import { getTileElementId, puzzleBoardName } from "./helpers"
+
+const PuzzleRowStyled = styled.li`
+	position: absolute;
+`
 
 const PuzzleStyled = styled.ul<
 	{
@@ -90,6 +94,17 @@ const PuzzleStyled = styled.ul<
 	`
 )
 
+function getOwnedTileIds(tiles: PuzzleTilesArray, row: number) {
+	return tiles
+		.filter((tile) => tile.currentPosition.row === row)
+		.sort(
+			(left, right) =>
+				left.currentPosition.column - right.currentPosition.column
+		)
+		.map((tile) => getTileElementId(tile.key))
+		.join(" ")
+}
+
 function getFirstClickableTileKey(tiles: PuzzleTilesArray): TileKey | null {
 	let tile = getTileByCurrentPosition({ row: 1, column: 1 }, tiles)
 	if (tile?.isEmpty) {
@@ -146,7 +161,7 @@ export function Puzzle({
 		setFocusedTileKey(tileKey)
 	}
 
-	const elements = tiles.map((tile) => {
+	const tileElements = tiles.map((tile) => {
 		const tabIndex = tile.key === focusedTileKey ? 0 : -1
 		return (
 			<PuzzleTile
@@ -155,6 +170,18 @@ export function Puzzle({
 				handleClick={handleTryMove}
 				isFinished={boardState.isFinished}
 				tabIndex={tabIndex}
+			/>
+		)
+	})
+
+	const rowElements = Array.from({ length: rows }, (_, index) => {
+		const row = index + 1
+		return (
+			<PuzzleRowStyled
+				key={row}
+				role="row"
+				aria-rowindex={row}
+				aria-owns={getOwnedTileIds(tiles, row)}
 			/>
 		)
 	})
@@ -168,8 +195,12 @@ export function Puzzle({
 			aria-label={puzzleBoardName}
 			onKeyDown={onKeyDown}
 			onFocus={onFocus}
+			role="grid"
+			aria-rowcount={rows}
+			aria-colcount={columns}
 		>
-			{elements}
+			{rowElements}
+			{tileElements}
 		</PuzzleStyled>
 	)
 }

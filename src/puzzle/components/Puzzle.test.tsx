@@ -4,6 +4,7 @@ import { createEvent, fireEvent, render, screen } from "@testing-library/react"
 import {
 	createAlmostSolvedTiles,
 	expectTilePlacedAtPosition,
+	getAllTilesElements,
 	getTileElements,
 } from "../../test/testHelpers"
 import { tryMove } from "../domain/game"
@@ -14,6 +15,7 @@ import type {
 	PuzzleTilesArray,
 } from "../domain/types"
 import { Puzzle } from "./Puzzle"
+import { getTileElementId } from "./helpers"
 
 const columns = 3
 const rows = 3
@@ -193,6 +195,37 @@ describe("Puzzle", () => {
 			expectTilesUnmoved(tiles)
 		}
 	)
+
+	it("points each row at its tiles without reordering the tiles", () => {
+		const boardState = {
+			isFinished: false,
+			isUpdating: false,
+		} as const
+		const { renderResult, handleTryMove, tiles } = renderPuzzle(boardState)
+		const tileOrder = () => getAllTilesElements().map((element) => element.id)
+		const ownedTileIds = () =>
+			screen.getAllByRole("row").map((row) => row.getAttribute("aria-owns"))
+
+		expect(tileOrder()).toEqual(tiles.map((tile) => getTileElementId(tile.key)))
+		expect(ownedTileIds()).toEqual([
+			"tile-1-3 tile-1-1 tile-1-2",
+			"tile-2-1 tile-2-2 tile-2-3",
+			"tile-3-1 tile-3-2 tile-3-3",
+		])
+
+		const updatedTiles = tryMove(tiles[1], tiles)
+		if (updatedTiles === null) {
+			throw new Error("Expected a legal move")
+		}
+		renderBoard(renderResult, boardState, updatedTiles, handleTryMove)
+
+		expect(tileOrder()).toEqual(tiles.map((tile) => getTileElementId(tile.key)))
+		expect(ownedTileIds()).toEqual([
+			"tile-1-1 tile-1-3 tile-1-2",
+			"tile-2-1 tile-2-2 tile-2-3",
+			"tile-3-1 tile-3-2 tile-3-3",
+		])
+	})
 
 	describe("arrow navigation", () => {
 		function pressKey(button: HTMLElement, key: string) {

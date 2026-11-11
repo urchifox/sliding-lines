@@ -10,4 +10,8 @@ export function getTileLabel(key: TileKey): string {
 	return `${tileLabelPrefix}${key}`
 }
 
+export function getTileElementId(key: TileKey): string {
+	return `tile-${key}`
+}
+
 export const puzzleBoardName = "Puzzle board"
