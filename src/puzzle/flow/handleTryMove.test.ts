@@ -1,4 +1,5 @@
-import { upgradeLevel } from "../../progress/user"
+import { store } from "../../store"
+import { upgradeLevel } from "../../store/progressSlice"
 import { createTile } from "../../test/testHelpers"
 import { isPuzzleSolved, tryMove } from "../domain/game"
 import { handleTryMove } from "./handleTryMove"
@@ -14,7 +15,7 @@ vi.mock("../domain/game", () => ({
 
 const mockedTryMove = vi.mocked(tryMove)
 const mockedIsPuzzleSolved = vi.mocked(isPuzzleSolved)
-const mockedUpgradeLevel = vi.mocked(upgradeLevel)
+const dispatchSpy = vi.spyOn(store, "dispatch")
 
 const tile = createTile({ originalRow: 1, originalColumn: 1 })
 const tiles = [tile]
@@ -22,6 +23,11 @@ const updatedTiles = [tile]
 
 beforeEach(() => {
 	vi.resetAllMocks()
+	dispatchSpy.mockClear()
+})
+
+afterAll(() => {
+	dispatchSpy.mockRestore()
 })
 
 describe("handleTryMove", () => {
@@ -34,7 +40,7 @@ describe("handleTryMove", () => {
 		expect(result).toBe(tiles)
 		expect(mockedTryMove).toHaveBeenCalledWith(tile, tiles)
 		expect(mockedIsPuzzleSolved).not.toHaveBeenCalled()
-		expect(mockedUpgradeLevel).not.toHaveBeenCalled()
+		expect(dispatchSpy).not.toHaveBeenCalledWith(upgradeLevel())
 		expect(onSolved).not.toHaveBeenCalled()
 	})
 
@@ -49,7 +55,7 @@ describe("handleTryMove", () => {
 		expect(mockedTryMove).toHaveBeenCalledWith(tile, tiles)
 		expect(mockedIsPuzzleSolved).toHaveBeenCalledWith(updatedTiles)
 		expect(onSolved).not.toHaveBeenCalled()
-		expect(mockedUpgradeLevel).not.toHaveBeenCalled()
+		expect(dispatchSpy).not.toHaveBeenCalledWith(upgradeLevel())
 	})
 
 	it("upgrades the level when the move solves the puzzle", () => {
@@ -62,7 +68,7 @@ describe("handleTryMove", () => {
 		expect(result).toBe(updatedTiles)
 		expect(mockedTryMove).toHaveBeenCalledWith(tile, tiles)
 		expect(mockedIsPuzzleSolved).toHaveBeenCalledWith(updatedTiles)
-		expect(mockedUpgradeLevel).toHaveBeenCalledOnce()
+		expect(dispatchSpy).not.toHaveBeenCalledWith(upgradeLevel())
 		expect(onSolved).toHaveBeenCalledOnce()
 	})
 
@@ -74,6 +80,6 @@ describe("handleTryMove", () => {
 		mockedIsPuzzleSolved.mockReturnValue(true)
 		expect(handleTryMove({ tile, tiles })).toBe(updatedTiles)
 
-		expect(mockedUpgradeLevel).toHaveBeenCalledOnce()
+		expect(dispatchSpy).not.toHaveBeenCalledWith(upgradeLevel())
 	})
 })

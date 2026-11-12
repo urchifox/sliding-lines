@@ -2,7 +2,6 @@
 import { act, fireEvent, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
-import { getLevelNumber } from "../progress/user"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
 import {
 	getEmptyTile,
@@ -15,6 +14,7 @@ import type {
 	PuzzleTileInfo,
 	TileKey,
 } from "../puzzle/domain/types"
+import { selectLevelNumber } from "../store/selectors"
 import {
 	createAlmostSolvedTiles,
 	createDeferred,
@@ -329,7 +329,7 @@ describe("PuzzlePage", () => {
 			button.disabled = false
 			fireEvent.click(button)
 
-			expect(getLevelNumber()).toBe(0)
+			expect(selectLevelNumber()).toBe(0)
 			for (const tileInfo of tiles) {
 				const { tile } = getTileElements(tileInfo.key)
 				expectTilePlacedAtPosition({
@@ -357,7 +357,7 @@ describe("PuzzlePage", () => {
 			await renderPageWithBoard()
 			finishLevel()
 
-			expect(getLevelNumber()).toBe(1)
+			expect(selectLevelNumber()).toBe(1)
 		})
 
 		it("renders correctly when finished", async () => {

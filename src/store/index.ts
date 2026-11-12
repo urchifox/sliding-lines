@@ -11,6 +11,7 @@ import {
 } from "redux-persist"
 import storage from "redux-persist/lib/storage"
 
+import { progressReducer } from "./progressSlice"
 import { puzzleReducer } from "./puzzleSlice"
 
 const persistConfig = {
@@ -20,6 +21,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
 	puzzle: puzzleReducer,
+	progress: progressReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

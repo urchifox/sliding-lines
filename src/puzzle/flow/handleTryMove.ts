@@ -1,4 +1,5 @@
-import { upgradeLevel } from "../../progress/user"
+import { store } from "../../store"
+import { upgradeLevel } from "../../store/progressSlice"
 import { isPuzzleSolved, tryMove } from "../domain/game"
 import type { PuzzleTileInfo, PuzzleTilesArray } from "../domain/types"
 
@@ -17,7 +18,7 @@ export function handleTryMove({
 	}
 
 	if (isPuzzleSolved(updatedTiles)) {
-		upgradeLevel()
+		store.dispatch(upgradeLevel())
 		onSolved?.()
 	}
 

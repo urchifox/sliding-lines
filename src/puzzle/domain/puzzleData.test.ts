@@ -1,10 +1,10 @@
-import { getLevelNumber } from "../../progress/user"
+import { selectLevelNumber } from "../../store/selectors"
 import { getImageInfo } from "./images"
 import { createLevel } from "./level"
 import { createPuzzleData } from "./puzzleData"
 
-vi.mock("../../progress/user", () => ({
-	getLevelNumber: vi.fn(),
+vi.mock("../../store/selectors", () => ({
+	selectLevelNumber: vi.fn(),
 }))
 
 vi.mock("./images", () => ({
@@ -16,7 +16,7 @@ vi.mock("./level", () => ({
 }))
 
 describe("createPuzzleData", () => {
-	const mockedGetLevelNumber = vi.mocked(getLevelNumber)
+	const mockedSelectLevelNumber = vi.mocked(selectLevelNumber)
 	const mockedGetImageInfo = vi.mocked(getImageInfo)
 	const mockedCreateLevel = vi.mocked(createLevel)
 
@@ -25,7 +25,7 @@ describe("createPuzzleData", () => {
 	})
 
 	it("creates a puzzle with full info for current level", async () => {
-		mockedGetLevelNumber.mockReturnValue(5)
+		mockedSelectLevelNumber.mockReturnValue(5)
 		const mockedImageInfo = {
 			imageUrl: "test-image.jpg",
 			width: 100,
