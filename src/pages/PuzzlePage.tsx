@@ -4,16 +4,17 @@ import styled from "@emotion/styled"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 
 import { theme } from "../assets/styles/theme"
+import { useAppDispatch, useAppSelector } from "../hooks"
 import { Puzzle } from "../puzzle/components/Puzzle"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
 import { reshuffleTiles } from "../puzzle/domain/tiles"
-import type {
-	BoardState,
-	PuzzleData,
-	PuzzleTileInfo,
-	PuzzleTilesArray,
-} from "../puzzle/domain/types"
+import type { BoardState, PuzzleTileInfo } from "../puzzle/domain/types"
 import { handleTryMove } from "../puzzle/flow/handleTryMove"
+import {
+	resetPuzzleData,
+	setPuzzleData,
+	updateTiles,
+} from "../store/puzzleSlice"
 import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { PageStyled } from "../ui/Page"
@@ -119,7 +120,9 @@ const PuzzleWrapper = styled.div`
 `
 
 export function PuzzlePage() {
-	const [puzzleData, setPuzzleData] = useState<PuzzleData | null>(null)
+	const puzzleData = useAppSelector((state) => state.puzzle)
+	const dispatch = useAppDispatch()
+
 	const [boardVersion, setBoardVersion] = useState(0)
 	const [boardState, setBoardState] = useState<BoardState>({
 		isFinished: false,
@@ -137,7 +140,7 @@ export function PuzzlePage() {
 		createPuzzleData()
 			.then((value) => {
 				if (!cancelled) {
-					setPuzzleData(value)
+					dispatch(setPuzzleData(value))
 				}
 			})
 			.catch(() => {
@@ -149,7 +152,7 @@ export function PuzzlePage() {
 		return () => {
 			cancelled = true
 		}
-	}, [puzzleData])
+	}, [dispatch, puzzleData])
 
 	useLayoutEffect(() => {
 		if (!boardState.isFinished) {
@@ -169,16 +172,6 @@ export function PuzzlePage() {
 		)
 	}
 
-	const updateTiles = (tiles: PuzzleTilesArray) => {
-		setPuzzleData({
-			...puzzleData,
-			level: {
-				...puzzleData.level,
-				tiles: tiles,
-			},
-		})
-	}
-
 	const onSolved = () => {
 		setBoardState({
 			isFinished: true,
@@ -191,12 +184,14 @@ export function PuzzlePage() {
 			return
 		}
 
-		updateTiles(
-			handleTryMove({
-				tile: tile,
-				tiles: puzzleData.level.tiles,
-				onSolved: onSolved,
-			})
+		dispatch(
+			updateTiles(
+				handleTryMove({
+					tile: tile,
+					tiles: puzzleData.level.tiles,
+					onSolved: onSolved,
+				})
+			)
 		)
 	}
 
@@ -205,11 +200,13 @@ export function PuzzlePage() {
 			return
 		}
 
-		updateTiles(
-			reshuffleTiles({
-				tiles: puzzleData.level.tiles,
-				shuffleSteps: puzzleData.level.shuffleSteps,
-			})
+		dispatch(
+			updateTiles(
+				reshuffleTiles({
+					tiles: puzzleData.level.tiles,
+					shuffleSteps: puzzleData.level.shuffleSteps,
+				})
+			)
 		)
 
 		setBoardVersion((version) => version + 1)
@@ -226,7 +223,7 @@ export function PuzzlePage() {
 		})
 
 		setTimeout(() => {
-			setPuzzleData(null)
+			dispatch(resetPuzzleData())
 			setBoardState({
 				isFinished: false,
 				isUpdating: false,

@@ -1,4 +1,7 @@
-import { screen } from "@testing-library/react"
+import { configureStore } from "@reduxjs/toolkit"
+import { render, screen } from "@testing-library/react"
+import { type ReactElement, StrictMode } from "react"
+import { Provider } from "react-redux"
 
 import {
 	getTileButtonText,
@@ -11,6 +14,7 @@ import type {
 	PuzzleTilesArray,
 	TileKey,
 } from "../puzzle/domain/types"
+import { puzzleReducer } from "../store/puzzleSlice"
 
 export type Deferred<T> = {
 	promise: Promise<T>
@@ -115,4 +119,22 @@ export function createAlmostSolvedTiles() {
 		createTile({ originalRow: 3, originalColumn: 2 }),
 		createTile({ originalRow: 3, originalColumn: 3 }),
 	] satisfies PuzzleTilesArray
+}
+
+export function renderWithStore({
+	ui,
+	isStrictMode,
+}: {
+	ui: ReactElement
+	isStrictMode?: boolean
+}) {
+	const store = configureStore({
+		reducer: {
+			puzzle: puzzleReducer,
+		},
+	})
+
+	const content = <Provider store={store}>{ui}</Provider>
+
+	return render(isStrictMode ? <StrictMode>{content}</StrictMode> : content)
 }

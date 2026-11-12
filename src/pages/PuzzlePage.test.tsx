@@ -1,7 +1,6 @@
 // @vitest-environment happy-dom
-import { act, fireEvent, render, screen } from "@testing-library/react"
+import { act, fireEvent, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { StrictMode } from "react"
 
 import { getLevelNumber } from "../progress/user"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
@@ -23,6 +22,7 @@ import {
 	getPuzzleBoard,
 	getTileElements,
 	queryPuzzleBoard,
+	renderWithStore,
 } from "../test/testHelpers"
 import { PuzzlePage } from "./PuzzlePage"
 import {
@@ -146,22 +146,28 @@ function expectPageChrome(state: BoardState, levelNumber = 0) {
 	}
 }
 
+function renderPageWithStore({
+	isStrictMode,
+}: { isStrictMode?: boolean } = {}) {
+	return renderWithStore({ ui: <PuzzlePage />, isStrictMode })
+}
+
 function renderPageWithLoading() {
 	mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
-	const renderResult = render(<PuzzlePage />)
+	const renderResult = renderPageWithStore()
 	return renderResult
 }
 
 async function renderPageWithError() {
 	mockedCreatePuzzleData.mockRejectedValue(new Error(""))
-	const renderResult = render(<PuzzlePage />)
+	const renderResult = renderPageWithStore()
 	await findErrorMessage()
 	return renderResult
 }
 
 async function renderPageWithBoard() {
 	mockedCreatePuzzleData.mockResolvedValue(getMockedPuzzleData())
-	const renderResult = render(<PuzzlePage />)
+	const renderResult = renderPageWithStore()
 	await findLevelName(0)
 	return renderResult
 }
@@ -243,11 +249,7 @@ describe("PuzzlePage", () => {
 			mockedCreatePuzzleData
 				.mockReturnValueOnce(deferred1.promise)
 				.mockReturnValueOnce(deferred2.promise)
-			render(
-				<StrictMode>
-					<PuzzlePage />
-				</StrictMode>
-			)
+			renderPageWithStore({ isStrictMode: true })
 
 			await act(async () => {
 				deferred1.resolve({ ...getMockedPuzzleData(), levelNumber: 0 })
@@ -267,11 +269,7 @@ describe("PuzzlePage", () => {
 			mockedCreatePuzzleData
 				.mockReturnValueOnce(deferred1.promise)
 				.mockReturnValueOnce(deferred2.promise)
-			render(
-				<StrictMode>
-					<PuzzlePage />
-				</StrictMode>
-			)
+			renderPageWithStore({ isStrictMode: true })
 
 			const ignoredRejection = deferred1.promise.catch(() => undefined)
 			await act(() => {
