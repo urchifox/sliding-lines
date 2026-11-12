@@ -15,7 +15,6 @@ export type PuzzleTilesArray = ReadonlyArray<PuzzleTileInfo>
 export type TileKey = `${number}-${number}`
 
 export type PuzzleData = {
-	levelNumber: number
 	level: Level
 	imageInfo: ImageInfo
 }

@@ -81,9 +81,8 @@ function getLevelName(levelNumber: number) {
 	return screen.getByText(getLevelNameText(levelNumber))
 }
 
-function getMockedPuzzleData(): PuzzleData {
+function getMockedPuzzleData(imageUrl = "test-image.jpg"): PuzzleData {
 	return {
-		levelNumber: 0,
 		level: {
 			rows: 3,
 			columns: 3,
@@ -91,7 +90,7 @@ function getMockedPuzzleData(): PuzzleData {
 			tiles: createAlmostSolvedTiles(),
 		},
 		imageInfo: {
-			imageUrl: "test-image.jpg",
+			imageUrl,
 			width: 300,
 			height: 200,
 			ratio: 1.5,
@@ -244,6 +243,8 @@ describe("PuzzlePage", () => {
 		})
 
 		it("ignores promise resolution of cancelled request", async () => {
+			const cancelledImageUrl = "cancelled.jpg"
+			const activeImageUrl = "active.jpg"
 			const deferred1 = createDeferred<PuzzleData>()
 			const deferred2 = createDeferred<PuzzleData>()
 			mockedCreatePuzzleData
@@ -252,18 +253,21 @@ describe("PuzzlePage", () => {
 			renderPageWithStore({ isStrictMode: true })
 
 			await act(async () => {
-				deferred1.resolve({ ...getMockedPuzzleData(), levelNumber: 0 })
+				deferred1.resolve(getMockedPuzzleData(cancelledImageUrl))
 				await deferred1.promise
 			})
 			expect(getLoadingMessage()).toBeInTheDocument()
 			await act(async () => {
-				deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
+				deferred2.resolve(getMockedPuzzleData(activeImageUrl))
 				await deferred2.promise
 			})
-			expect(getLevelName(5)).toBeInTheDocument()
+			expect(getPuzzleBoard()).toHaveStyle({
+				"--image": `url(${activeImageUrl})`,
+			})
 		})
 
 		it("ignores promise rejection of cancelled request", async () => {
+			const activeImageUrl = "active.jpg"
 			const deferred1 = createDeferred<PuzzleData>()
 			const deferred2 = createDeferred<PuzzleData>()
 			mockedCreatePuzzleData
@@ -278,10 +282,12 @@ describe("PuzzlePage", () => {
 			})
 			expect(getLoadingMessage()).toBeInTheDocument()
 			await act(async () => {
-				deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
+				deferred2.resolve(getMockedPuzzleData(activeImageUrl))
 				await deferred2.promise
 			})
-			expect(getLevelName(5)).toBeInTheDocument()
+			expect(getPuzzleBoard()).toHaveStyle({
+				"--image": `url(${activeImageUrl})`,
+			})
 		})
 	})
 
@@ -508,10 +514,7 @@ describe("PuzzlePage", () => {
 			advanceLevelTransition()
 			vi.useRealTimers()
 			await act(async () => {
-				resolve({
-					...getMockedPuzzleData(),
-					levelNumber: 1,
-				})
+				resolve(getMockedPuzzleData())
 				await promise
 			})
 

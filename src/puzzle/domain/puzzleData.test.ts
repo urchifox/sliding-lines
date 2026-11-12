@@ -40,7 +40,6 @@ describe("createPuzzleData", () => {
 
 		expect(mockedCreateLevel).toHaveBeenCalledWith(5)
 		expect(mockedGetImageInfo).toHaveBeenCalledWith(5)
-		expect(puzzle.levelNumber).toBe(5)
 		expect(puzzle.imageInfo).toEqual(mockedImageInfo)
 		expect(puzzle.level).toEqual(mockedLevel)
 	})

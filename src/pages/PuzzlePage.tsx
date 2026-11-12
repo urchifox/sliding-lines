@@ -120,6 +120,7 @@ const PuzzleWrapper = styled.div`
 `
 
 export function PuzzlePage() {
+	const levelNumber = useAppSelector((state) => state.progress.levelNumber)
 	const puzzleData = useAppSelector((state) => state.puzzle)
 	const dispatch = useAppDispatch()
 
@@ -231,10 +232,14 @@ export function PuzzlePage() {
 		}, 1 * 1000)
 	}
 
+	const currentLevelNumber = boardState.isFinished
+		? levelNumber - 1
+		: levelNumber
+
 	return (
 		<PuzzlePageStyled>
 			<LevelName {...boardState}>
-				{getLevelNameText(puzzleData.levelNumber)}
+				{getLevelNameText(currentLevelNumber)}
 			</LevelName>
 			<RestartButton
 				aria-label={restartButtonLabel}
