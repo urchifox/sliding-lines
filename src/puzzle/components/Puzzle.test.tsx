@@ -4,6 +4,7 @@ import { createEvent, fireEvent, render, screen } from "@testing-library/react"
 import {
 	createAlmostSolvedTiles,
 	expectTilePlacedAtPosition,
+	expectTilesUnmoved,
 	getAllTilesElements,
 	getTileElements,
 } from "../../test/testHelpers"
@@ -44,16 +45,6 @@ function renderPuzzle(
 	)
 
 	return { renderResult, handleTryMove, tiles }
-}
-
-function expectTilesUnmoved(tiles: PuzzleTilesArray) {
-	for (const tileInfo of tiles) {
-		const { tile } = getTileElements(tileInfo.key)
-		expectTilePlacedAtPosition({
-			element: tile,
-			tileInfo,
-		})
-	}
 }
 
 function renderBoard(

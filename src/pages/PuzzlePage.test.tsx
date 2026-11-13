@@ -17,7 +17,9 @@ import { selectLevelNumber } from "../store/selectors"
 import {
 	createAlmostSolvedTiles,
 	createDeferred,
+	createTestPuzzleData,
 	expectTilePlacedAtPosition,
+	expectTilesUnmoved,
 	getPuzzleBoard,
 	getTileElements,
 	queryPuzzleBoard,
@@ -70,23 +72,6 @@ function findLevelName(levelNumber: number) {
 
 function getLevelName(levelNumber: number) {
 	return screen.getByText(getLevelNameText(levelNumber))
-}
-
-function getMockedPuzzleData(imageUrl = "test-image.jpg"): PuzzleData {
-	return {
-		level: {
-			rows: 3,
-			columns: 3,
-			shuffleSteps: 1,
-			tiles: createAlmostSolvedTiles(),
-		},
-		imageInfo: {
-			imageUrl,
-			width: 300,
-			height: 200,
-			ratio: 1.5,
-		},
-	}
 }
 
 function expectPageChrome(state: BoardState, levelNumber = 0) {
@@ -156,7 +141,7 @@ async function renderPageWithError() {
 }
 
 async function renderPageWithBoard() {
-	mockedCreatePuzzleData.mockResolvedValue(getMockedPuzzleData())
+	mockedCreatePuzzleData.mockResolvedValue(createTestPuzzleData())
 	const renderResult = renderPageWithStore()
 	await findLevelName(0)
 	return renderResult
@@ -248,12 +233,12 @@ describe("PuzzlePage", () => {
 			renderPageWithStore({ isStrictMode: true })
 
 			await act(async () => {
-				deferred1.resolve(getMockedPuzzleData(cancelledImageUrl))
+				deferred1.resolve(createTestPuzzleData(cancelledImageUrl))
 				await deferred1.promise
 			})
 			expect(getLoadingMessage()).toBeInTheDocument()
 			await act(async () => {
-				deferred2.resolve(getMockedPuzzleData(activeImageUrl))
+				deferred2.resolve(createTestPuzzleData(activeImageUrl))
 				await deferred2.promise
 			})
 			expect(getPuzzleBoard()).toHaveStyle({
@@ -277,7 +262,7 @@ describe("PuzzlePage", () => {
 			})
 			expect(getLoadingMessage()).toBeInTheDocument()
 			await act(async () => {
-				deferred2.resolve(getMockedPuzzleData(activeImageUrl))
+				deferred2.resolve(createTestPuzzleData(activeImageUrl))
 				await deferred2.promise
 			})
 			expect(getPuzzleBoard()).toHaveStyle({
@@ -327,13 +312,7 @@ describe("PuzzlePage", () => {
 			fireEvent.click(button)
 
 			expect(selectLevelNumber()).toBe(0)
-			for (const tileInfo of tiles) {
-				const { tile } = getTileElements(tileInfo.key)
-				expectTilePlacedAtPosition({
-					element: tile,
-					tileInfo,
-				})
-			}
+			expectTilesUnmoved(tiles)
 		})
 
 		it("continues level when level is not finished", async () => {
@@ -505,7 +484,7 @@ describe("PuzzlePage", () => {
 			advanceLevelTransition()
 			vi.useRealTimers()
 			await act(async () => {
-				resolve(getMockedPuzzleData())
+				resolve(createTestPuzzleData())
 				await promise
 			})
 
