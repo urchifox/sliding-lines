@@ -8,13 +8,11 @@ import { useAppDispatch, useAppSelector } from "../hooks"
 import { Puzzle } from "../puzzle/components/Puzzle"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
 import type { BoardState } from "../puzzle/domain/types"
-import { store } from "../store"
 import {
 	resetPuzzleDataAction,
 	reshuffleTilesAction,
 	setPuzzleDataAction,
 } from "../store/puzzleSlice"
-import { selectPuzzleIsSolved } from "../store/selectors"
 import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { PageStyled } from "../ui/Page"
@@ -125,12 +123,10 @@ export function PuzzlePage() {
 	const dispatch = useAppDispatch()
 
 	const [boardVersion, setBoardVersion] = useState(0)
-	const [boardState, setBoardState] = useState<BoardState>({
-		isFinished: puzzleData?.isSolved ?? false,
-		isUpdating: false,
-	})
+	const [isUpdating, setIsUpdating] = useState(false)
 	const [isError, setError] = useState<boolean>(false)
 	const winHeaderRef = useRef<HTMLHeadingElement>(null)
+	const isFinished = puzzleData?.isSolved ?? false
 
 	useEffect(() => {
 		if (puzzleData !== null) {
@@ -156,12 +152,12 @@ export function PuzzlePage() {
 	}, [dispatch, puzzleData])
 
 	useLayoutEffect(() => {
-		if (!boardState.isFinished) {
+		if (!isFinished) {
 			return
 		}
 
 		winHeaderRef.current?.focus()
-	}, [boardState.isFinished])
+	}, [isFinished])
 
 	if (puzzleData === null) {
 		return (
@@ -173,17 +169,8 @@ export function PuzzlePage() {
 		)
 	}
 
-	store.subscribe(() => {
-		if (selectPuzzleIsSolved()) {
-			setBoardState({
-				isFinished: true,
-				isUpdating: false,
-			})
-		}
-	})
-
 	const onRestartClick = () => {
-		if (boardState.isFinished) {
+		if (isFinished) {
 			return
 		}
 
@@ -192,25 +179,22 @@ export function PuzzlePage() {
 	}
 
 	const onStartClick = () => {
-		if (!boardState.isFinished) {
+		if (!isFinished) {
 			return
 		}
 
-		setBoardState({
-			isFinished: true,
-			isUpdating: true,
-		})
+		setIsUpdating(true)
 
 		setTimeout(() => {
 			dispatch(resetPuzzleDataAction())
-			setBoardState({
-				isFinished: false,
-				isUpdating: false,
-			})
+			setIsUpdating(false)
 		}, 1 * 1000)
 	}
 
 	const currentLevelNumber = puzzleData.isSolved ? levelNumber - 1 : levelNumber
+	const boardState: BoardState = isFinished
+		? { isFinished, isUpdating }
+		: { isFinished, isUpdating: false }
 
 	return (
 		<PuzzlePageStyled>
@@ -220,7 +204,7 @@ export function PuzzlePage() {
 			<RestartButton
 				aria-label={restartButtonLabel}
 				onClick={onRestartClick}
-				disabled={boardState.isFinished}
+				disabled={isFinished}
 				{...boardState}
 			/>
 			<WinHeader ref={winHeaderRef} tabIndex={-1} {...boardState}>
