@@ -2,18 +2,17 @@
 import { act, fireEvent, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
+import * as tilesDomain from "../puzzle/domain/tiles"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
-import {
-	getEmptyTile,
-	getTileByKey,
-	reshuffleTiles,
-} from "../puzzle/domain/tiles"
+import { getEmptyTile, getTileByKey } from "../puzzle/domain/tiles"
 import type {
 	BoardState,
 	PuzzleData,
 	PuzzleTileInfo,
 	TileKey,
 } from "../puzzle/domain/types"
+import { store } from "../store"
+import { reshuffleTilesAction } from "../store/puzzleSlice"
 import { selectLevelNumber } from "../store/selectors"
 import {
 	createAlmostSolvedTiles,
@@ -38,16 +37,8 @@ vi.mock("../puzzle/domain/puzzleData", () => ({
 	createPuzzleData: vi.fn(),
 }))
 
-vi.mock("../puzzle/domain/tiles", async (importOriginal) => {
-	const actual = await importOriginal<typeof import("../puzzle/domain/tiles")>()
-	return {
-		...actual,
-		reshuffleTiles: vi.fn(({ tiles }: { tiles: readonly unknown[] }) => tiles),
-	}
-})
-
 const mockedCreatePuzzleData = vi.mocked(createPuzzleData)
-const mockedReshuffleTiles = vi.mocked(reshuffleTiles)
+let dispatchSpy = vi.spyOn(store, "dispatch")
 
 function getLoadingMessage() {
 	return screen.getByText(loadingText)
@@ -215,6 +206,10 @@ function advanceLevelTransition(milliseconds = 1000) {
 
 beforeEach(() => {
 	vi.resetAllMocks()
+	dispatchSpy = vi.spyOn(store, "dispatch")
+	vi.spyOn(tilesDomain, "reshuffleTiles").mockImplementation(({ tiles }) => [
+		...tiles,
+	])
 })
 
 afterEach(() => {
@@ -299,11 +294,7 @@ describe("PuzzlePage", () => {
 
 			fireEvent.click(restartButton)
 
-			expect(mockedReshuffleTiles).toHaveBeenCalledOnce()
-			expect(mockedReshuffleTiles).toHaveBeenCalledWith({
-				tiles: getMockedPuzzleData().level.tiles,
-				shuffleSteps: getMockedPuzzleData().level.shuffleSteps,
-			})
+			expect(dispatchSpy).toHaveBeenCalledWith(reshuffleTilesAction())
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 			expectPageChrome({ isFinished: false, isUpdating: false })
 			expect(getTileElements("1-1").tile).not.toBe(tileElement)
@@ -319,7 +310,7 @@ describe("PuzzlePage", () => {
 			fireEvent.click(playButton)
 			advanceLevelTransition()
 
-			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
+			expect(vi.mocked(tilesDomain.reshuffleTiles)).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 			expect(getLevelName(0)).toBeInTheDocument()
 			expect(getRestartButton()).toBeInTheDocument()
@@ -370,7 +361,7 @@ describe("PuzzlePage", () => {
 			await renderPageWithBoard()
 			finishLevel()
 
-			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
+			expect(vi.mocked(tilesDomain.reshuffleTiles)).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 			expectPageChrome({ isFinished: true, isUpdating: false })
 		})
@@ -398,7 +389,7 @@ describe("PuzzlePage", () => {
 			const restartButton = getRestartButton()
 			fireEvent.click(restartButton)
 
-			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
+			expect(vi.mocked(tilesDomain.reshuffleTiles)).not.toHaveBeenCalled()
 		})
 
 		it("ignores tile clicks when level is finished", async () => {
@@ -520,7 +511,7 @@ describe("PuzzlePage", () => {
 
 			expect(getLevelName(1)).toBeInTheDocument()
 			expectPageChrome({ isFinished: false, isUpdating: false }, 1)
-			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
+			expect(vi.mocked(tilesDomain.reshuffleTiles)).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)
 		})
 
@@ -560,7 +551,7 @@ describe("PuzzlePage", () => {
 			advanceLevelTransition()
 			advanceLevelTransition()
 
-			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
+			expect(vi.mocked(tilesDomain.reshuffleTiles)).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)
 		})
 	})

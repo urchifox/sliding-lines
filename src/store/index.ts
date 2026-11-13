@@ -11,6 +11,7 @@ import {
 } from "redux-persist"
 import storage from "redux-persist/lib/storage"
 
+import { listenerMiddleware } from "./listenerMiddleware"
 import { progressReducer } from "./progressSlice"
 import { puzzleReducer } from "./puzzleSlice"
 
@@ -33,7 +34,7 @@ export const store = configureStore({
 			serializableCheck: {
 				ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
 			},
-		}),
+		}).prepend(listenerMiddleware.middleware),
 })
 
 export const persistor = persistStore(store)

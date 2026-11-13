@@ -5,7 +5,7 @@ import { cleanup } from "@testing-library/react"
 
 import { store } from "../store"
 import { resetProgress } from "../store/progressSlice"
-import { resetPuzzleData } from "../store/puzzleSlice"
+import { resetPuzzleDataAction } from "../store/puzzleSlice"
 
 expect.extend(matchers)
 
@@ -16,7 +16,7 @@ afterEach(() => {
 		return
 	}
 
-	store.dispatch(resetPuzzleData())
+	store.dispatch(resetPuzzleDataAction())
 	store.dispatch(resetProgress())
 
 	cleanup()
