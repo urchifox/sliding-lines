@@ -1,7 +1,9 @@
 // @vitest-environment happy-dom
-import { fireEvent, render } from "@testing-library/react"
+import { fireEvent } from "@testing-library/react"
 
-import { createTile } from "../../test/testHelpers"
+import { store } from "../../store"
+import { processMoveAction } from "../../store/puzzleSlice"
+import { createTile, renderWithStore } from "../../test/testHelpers"
 import type { PuzzleTileInfo } from "../domain/types"
 import { PuzzleTile } from "./PuzzleTile"
 import { getTileButtonText, getTileLabel, tileLabelMatcher } from "./helpers"
@@ -14,18 +16,19 @@ function renderPuzzleTile(props?: {
 		tile = createTile({ originalRow: 1, originalColumn: 1 }),
 		isFinished = false,
 	} = props ?? {}
-	const handleClick = vi.fn()
+	const dispatchSpy = vi.spyOn(store, "dispatch")
 
-	const renderResult = render(
-		<PuzzleTile
-			handleClick={handleClick}
-			tile={tile}
-			isFinished={isFinished}
-			tabIndex={0}
-		/>
-	)
-	return { renderResult, handleClick, tile }
+	const renderResult = renderWithStore({
+		ui: <PuzzleTile tile={tile} isFinished={isFinished} tabIndex={0} />,
+	})
+	dispatchSpy.mockClear()
+
+	return { renderResult, dispatchSpy, tile }
 }
+
+afterEach(() => {
+	vi.restoreAllMocks()
+})
 
 describe("PuzzleTile", () => {
 	it("renders correctly", () => {
@@ -47,12 +50,13 @@ describe("PuzzleTile", () => {
 	})
 
 	it("sets click listener", () => {
-		const { renderResult, handleClick } = renderPuzzleTile()
+		const { renderResult, dispatchSpy, tile } = renderPuzzleTile()
 
 		const button = renderResult.getByRole("button")
 		fireEvent.click(button)
 
-		expect(handleClick).toHaveBeenCalledOnce()
+		expect(dispatchSpy).toHaveBeenCalledOnce()
+		expect(dispatchSpy).toHaveBeenCalledWith(processMoveAction(tile))
 	})
 
 	it("does nothing when an empty tile is clicked", () => {
@@ -61,18 +65,18 @@ describe("PuzzleTile", () => {
 			originalColumn: 1,
 			isEmpty: true,
 		})
-		const { renderResult, handleClick } = renderPuzzleTile({ tile })
+		const { renderResult, dispatchSpy } = renderPuzzleTile({ tile })
 		const button = renderResult.getByRole("button") as HTMLButtonElement
 
 		expect(button).toBeDisabled()
 		button.disabled = false
 		fireEvent.click(button)
 
-		expect(handleClick).not.toHaveBeenCalled()
+		expect(dispatchSpy).not.toHaveBeenCalled()
 	})
 
 	it("does nothing when a tile is clicked and the puzzle is finished", () => {
-		const { renderResult, handleClick } = renderPuzzleTile({
+		const { renderResult, dispatchSpy } = renderPuzzleTile({
 			isFinished: true,
 		})
 		const button = renderResult.getByRole("button") as HTMLButtonElement
@@ -81,6 +85,6 @@ describe("PuzzleTile", () => {
 		button.disabled = false
 		fireEvent.click(button)
 
-		expect(handleClick).not.toHaveBeenCalled()
+		expect(dispatchSpy).not.toHaveBeenCalled()
 	})
 })

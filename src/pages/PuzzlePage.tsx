@@ -7,10 +7,9 @@ import { theme } from "../assets/styles/theme"
 import { useAppDispatch, useAppSelector } from "../hooks"
 import { Puzzle } from "../puzzle/components/Puzzle"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
-import type { BoardState, PuzzleTileInfo } from "../puzzle/domain/types"
+import type { BoardState } from "../puzzle/domain/types"
 import { store } from "../store"
 import {
-	processMoveAction,
 	resetPuzzleDataAction,
 	reshuffleTilesAction,
 	setPuzzleDataAction,
@@ -183,14 +182,6 @@ export function PuzzlePage() {
 		}
 	})
 
-	const onTryMove = (tile: PuzzleTileInfo) => {
-		if (boardState.isFinished) {
-			return
-		}
-
-		dispatch(processMoveAction(tile))
-	}
-
 	const onRestartClick = () => {
 		if (boardState.isFinished) {
 			return
@@ -239,7 +230,6 @@ export function PuzzlePage() {
 				<Puzzle
 					key={boardVersion}
 					imageInfo={puzzleData.imageInfo}
-					handleTryMove={onTryMove}
 					tiles={puzzleData.level.tiles}
 					columns={puzzleData.level.columns}
 					rows={puzzleData.level.rows}

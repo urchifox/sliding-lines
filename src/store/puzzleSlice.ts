@@ -1,6 +1,6 @@
 import { type PayloadAction, createSlice } from "@reduxjs/toolkit"
 
-import { tryMove } from "../puzzle/domain/game"
+import { isPuzzleSolved, tryMove } from "../puzzle/domain/game"
 import { reshuffleTiles } from "../puzzle/domain/tiles"
 import type { PuzzleData, PuzzleTileInfo } from "../puzzle/domain/types"
 
@@ -32,7 +32,7 @@ const puzzleSlice = createSlice({
 			state: PuzzleState,
 			action: PayloadAction<PuzzleTileInfo>
 		) => {
-			if (state === null) {
+			if (state === null || state.isSolved) {
 				return
 			}
 
@@ -41,15 +41,11 @@ const puzzleSlice = createSlice({
 				return
 			}
 
-			state.level.tiles = updatedTiles
-		},
-
-		markPuzzleAsSolved: (state: PuzzleState) => {
-			if (state === null) {
-				return
+			if (isPuzzleSolved(updatedTiles)) {
+				state.isSolved = true
 			}
 
-			state.isSolved = true
+			state.level.tiles = updatedTiles
 		},
 	},
 })
@@ -60,5 +56,4 @@ export const {
 	resetPuzzleData: resetPuzzleDataAction,
 	reshuffleTiles: reshuffleTilesAction,
 	processMove: processMoveAction,
-	markPuzzleAsSolved: markPuzzleAsSolvedAction,
 } = puzzleSlice.actions

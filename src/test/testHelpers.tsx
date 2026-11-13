@@ -162,3 +162,19 @@ export function renderWithStore({
 
 	return render(isStrictMode ? <StrictMode>{content}</StrictMode> : content)
 }
+
+export function rerenderWithStore({
+	ui,
+	isStrictMode,
+	renderResult,
+}: {
+	ui: ReactElement
+	isStrictMode?: boolean
+	renderResult: ReturnType<typeof render>
+}) {
+	const content = <Provider store={store}>{ui}</Provider>
+
+	return renderResult.rerender(
+		isStrictMode ? <StrictMode>{content}</StrictMode> : content
+	)
+}

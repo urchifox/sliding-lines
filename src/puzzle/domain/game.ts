@@ -2,7 +2,7 @@ import { getTileByCurrentPosition } from "./tiles"
 import type { Position, PuzzleTileInfo, PuzzleTilesArray } from "./types"
 
 export function tryMove(tileToMove: PuzzleTileInfo, tiles: PuzzleTilesArray) {
-	if (tileToMove.isEmpty || isPuzzleSolved(tiles)) {
+	if (tileToMove.isEmpty) {
 		return null
 	}
 

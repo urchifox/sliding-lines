@@ -1,12 +1,16 @@
 // @vitest-environment happy-dom
 import { createEvent, fireEvent, render, screen } from "@testing-library/react"
 
+import { store } from "../../store"
+import { processMoveAction } from "../../store/puzzleSlice"
 import {
 	createAlmostSolvedTiles,
 	expectTilePlacedAtPosition,
 	expectTilesUnmoved,
 	getAllTilesElements,
 	getTileElements,
+	renderWithStore,
+	rerenderWithStore,
 } from "../../test/testHelpers"
 import { tryMove } from "../domain/game"
 import { getEmptyTile, getTileByKey } from "../domain/tiles"
@@ -32,37 +36,43 @@ function renderPuzzle(
 	boardState: BoardState,
 	tiles: PuzzleTilesArray = createAlmostSolvedTiles()
 ) {
-	const handleTryMove = vi.fn()
-	const renderResult = render(
-		<Puzzle
-			imageInfo={imageInfo}
-			boardState={boardState}
-			handleTryMove={handleTryMove}
-			tiles={tiles}
-			columns={columns}
-			rows={rows}
-		/>
-	)
-
-	return { renderResult, handleTryMove, tiles }
+	const dispatchSpy = vi.spyOn(store, "dispatch")
+	const renderResult = renderWithStore({
+		ui: (
+			<Puzzle
+				imageInfo={imageInfo}
+				boardState={boardState}
+				tiles={tiles}
+				columns={columns}
+				rows={rows}
+			/>
+		),
+	})
+	dispatchSpy.mockClear()
+	return { renderResult, dispatchSpy, tiles }
 }
 
-function renderBoard(
+afterEach(() => {
+	vi.restoreAllMocks()
+})
+
+function rerenderPuzzle(
 	renderResult: ReturnType<typeof render>,
 	boardState: BoardState,
-	tiles: PuzzleTilesArray,
-	handleTryMove: (tile: PuzzleTileInfo) => void
+	tiles: PuzzleTilesArray
 ) {
-	renderResult.rerender(
-		<Puzzle
-			imageInfo={imageInfo}
-			boardState={boardState}
-			handleTryMove={handleTryMove}
-			tiles={tiles}
-			columns={columns}
-			rows={rows}
-		/>
-	)
+	rerenderWithStore({
+		ui: (
+			<Puzzle
+				imageInfo={imageInfo}
+				boardState={boardState}
+				tiles={tiles}
+				columns={columns}
+				rows={rows}
+			/>
+		),
+		renderResult,
+	})
 }
 
 describe("Puzzle", () => {
@@ -81,7 +91,7 @@ describe("Puzzle", () => {
 	it.each([{ tileIndex: 1 }, { tileIndex: 3 }])(
 		"reports a click on tile $tileIndex",
 		({ tileIndex }) => {
-			const { tiles, handleTryMove } = renderPuzzle({
+			const { dispatchSpy, tiles } = renderPuzzle({
 				isFinished: false,
 				isUpdating: false,
 			})
@@ -90,8 +100,8 @@ describe("Puzzle", () => {
 
 			fireEvent.click(button)
 
-			expect(handleTryMove).toHaveBeenCalledOnce()
-			expect(handleTryMove).toHaveBeenCalledWith(tile)
+			expect(dispatchSpy).toHaveBeenCalledOnce()
+			expect(dispatchSpy).toHaveBeenCalledWith(processMoveAction(tile))
 		}
 	)
 
@@ -124,7 +134,7 @@ describe("Puzzle", () => {
 				isFinished: false,
 				isUpdating: false,
 			} as const
-			const { renderResult, handleTryMove, tiles } = renderPuzzle(boardState)
+			const { renderResult, tiles } = renderPuzzle(boardState)
 			const tile = tiles[tileIndex]
 			const emptySlot = getEmptyTile(tiles) as PuzzleTileInfo
 			const { tile: tileElement } = getTileElements(tile.key)
@@ -134,7 +144,7 @@ describe("Puzzle", () => {
 				throw new Error("Expected a legal move")
 			}
 
-			renderBoard(renderResult, boardState, updatedTiles, handleTryMove)
+			rerenderPuzzle(renderResult, boardState, updatedTiles)
 
 			const movedTile = getTileByKey(tile.key, updatedTiles) as PuzzleTileInfo
 			const movedEmptySlot = getTileByKey(
@@ -153,7 +163,7 @@ describe("Puzzle", () => {
 	)
 
 	it("does nothing when the empty tile is clicked", () => {
-		const { tiles, handleTryMove } = renderPuzzle({
+		const { dispatchSpy, tiles } = renderPuzzle({
 			isFinished: false,
 			isUpdating: false,
 		})
@@ -164,7 +174,7 @@ describe("Puzzle", () => {
 		button.disabled = false
 		fireEvent.click(button)
 
-		expect(handleTryMove).not.toHaveBeenCalled()
+		expect(dispatchSpy).not.toHaveBeenCalled()
 		expectTilesUnmoved(tiles)
 	})
 
@@ -174,7 +184,7 @@ describe("Puzzle", () => {
 	])(
 		"does nothing when a tile is clicked and isFinished is $isFinished and isUpdating is $isUpdating",
 		(boardState) => {
-			const { tiles, handleTryMove } = renderPuzzle(boardState)
+			const { dispatchSpy, tiles } = renderPuzzle(boardState)
 			const tile = tiles.find((item) => !item.isEmpty) as PuzzleTileInfo
 			const { button } = getTileElements(tile.key)
 
@@ -182,7 +192,7 @@ describe("Puzzle", () => {
 			button.disabled = false
 			fireEvent.click(button)
 
-			expect(handleTryMove).not.toHaveBeenCalled()
+			expect(dispatchSpy).not.toHaveBeenCalled()
 			expectTilesUnmoved(tiles)
 		}
 	)
@@ -192,7 +202,7 @@ describe("Puzzle", () => {
 			isFinished: false,
 			isUpdating: false,
 		} as const
-		const { renderResult, handleTryMove, tiles } = renderPuzzle(boardState)
+		const { renderResult, tiles } = renderPuzzle(boardState)
 		const tileOrder = () => getAllTilesElements().map((element) => element.id)
 		const ownedTileIds = () =>
 			screen.getAllByRole("row").map((row) => row.getAttribute("aria-owns"))
@@ -208,7 +218,7 @@ describe("Puzzle", () => {
 		if (updatedTiles === null) {
 			throw new Error("Expected a legal move")
 		}
-		renderBoard(renderResult, boardState, updatedTiles, handleTryMove)
+		rerenderPuzzle(renderResult, boardState, updatedTiles)
 
 		expect(tileOrder()).toEqual(tiles.map((tile) => getTileElementId(tile.key)))
 		expect(ownedTileIds()).toEqual([
@@ -254,7 +264,7 @@ describe("Puzzle", () => {
 		])(
 			"sets focus on $expectedKey after $key",
 			({ key, expectedKey, preventsDefault }) => {
-				const { handleTryMove } = renderPuzzle({
+				const { dispatchSpy } = renderPuzzle({
 					isFinished: false,
 					isUpdating: false,
 				})
@@ -266,7 +276,7 @@ describe("Puzzle", () => {
 
 				expect(event.defaultPrevented).toBe(preventsDefault)
 				expectOnlyTabStop(expectedButton)
-				expect(handleTryMove).not.toHaveBeenCalled()
+				expect(dispatchSpy).not.toHaveBeenCalled()
 			}
 		)
 	})
