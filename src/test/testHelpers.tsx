@@ -129,10 +129,19 @@ export function createAlmostSolvedTiles() {
 }
 
 export function createTestPuzzleData(
-	imageUrl = "test-image.jpg",
-	tiles: PuzzleTilesArray = createAlmostSolvedTiles()
+	props: {
+		levelNumber?: number
+		imageUrl?: string
+		tiles?: PuzzleTilesArray
+	} = {}
 ): PuzzleData {
+	const {
+		levelNumber = 0,
+		imageUrl = "test-image.jpg",
+		tiles = createAlmostSolvedTiles(),
+	} = props
 	return {
+		levelNumber,
 		level: {
 			rows: 3,
 			columns: 3,

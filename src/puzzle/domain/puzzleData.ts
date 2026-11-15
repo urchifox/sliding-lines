@@ -8,5 +8,5 @@ export async function createPuzzleData(
 	const level = createLevel(levelNumber)
 	const imageInfo = await getImageInfo(levelNumber)
 
-	return { level, imageInfo }
+	return { levelNumber, level, imageInfo }
 }

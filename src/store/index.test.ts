@@ -29,7 +29,7 @@ async function waitUntilBootstrapped() {
 describe("store", () => {
 	it("saves progress and puzzle data and restores them", async () => {
 		await waitUntilBootstrapped()
-		const puzzleData = createTestPuzzleData()
+		const puzzleData = createTestPuzzleData({ levelNumber: 2 })
 		store.dispatch(setPuzzleDataAction(puzzleData))
 		store.dispatch(upgradeLevel())
 		await persistor.flush()
@@ -57,5 +57,6 @@ describe("store", () => {
 		expect(selectLevelNumber()).toBe(1)
 		expect(selectPuzzleIsSolved()).toBe(false)
 		expect(selectPuzzleTiles()).toEqual(puzzleData.level.tiles)
+		expect(store.getState().puzzle?.levelNumber).toBe(2)
 	})
 })

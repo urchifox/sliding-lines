@@ -220,6 +220,16 @@ describe("PuzzlePage", () => {
 			expectPageChrome({ isFinished: false, isUpdating: false })
 		})
 
+		it("renders level name from loaded puzzle data", async () => {
+			mockedCreatePuzzleData.mockResolvedValue(
+				createTestPuzzleData({ levelNumber: 3 })
+			)
+			renderPageWithStore()
+
+			expect(await findLevelName(3)).toBeInTheDocument()
+			expect(selectLevelNumber()).toBe(0)
+		})
+
 		it("ignores promise resolution of cancelled request", async () => {
 			const cancelledImageUrl = "cancelled.jpg"
 			const activeImageUrl = "active.jpg"
@@ -231,12 +241,12 @@ describe("PuzzlePage", () => {
 			renderPageWithStore({ isStrictMode: true })
 
 			await act(async () => {
-				deferred1.resolve(createTestPuzzleData(cancelledImageUrl))
+				deferred1.resolve(createTestPuzzleData({ imageUrl: cancelledImageUrl }))
 				await deferred1.promise
 			})
 			expect(getLoadingMessage()).toBeInTheDocument()
 			await act(async () => {
-				deferred2.resolve(createTestPuzzleData(activeImageUrl))
+				deferred2.resolve(createTestPuzzleData({ imageUrl: activeImageUrl }))
 				await deferred2.promise
 			})
 			expect(getPuzzleBoard()).toHaveStyle({
@@ -260,7 +270,7 @@ describe("PuzzlePage", () => {
 			})
 			expect(getLoadingMessage()).toBeInTheDocument()
 			await act(async () => {
-				deferred2.resolve(createTestPuzzleData(activeImageUrl))
+				deferred2.resolve(createTestPuzzleData({ imageUrl: activeImageUrl }))
 				await deferred2.promise
 			})
 			expect(getPuzzleBoard()).toHaveStyle({
@@ -332,6 +342,14 @@ describe("PuzzlePage", () => {
 			finishLevel()
 
 			expect(selectLevelNumber()).toBe(1)
+		})
+
+		it("keeps finished level name after level number is updated", async () => {
+			await renderPageWithBoard()
+			finishLevel()
+
+			expect(getLevelName(0)).toBeInTheDocument()
+			expect(screen.queryByText(getLevelNameText(1))).not.toBeInTheDocument()
 		})
 
 		it("renders correctly when finished", async () => {
@@ -482,7 +500,7 @@ describe("PuzzlePage", () => {
 			await advanceLevelTransition()
 			vi.useRealTimers()
 			await act(async () => {
-				resolve(createTestPuzzleData())
+				resolve(createTestPuzzleData({ levelNumber: selectLevelNumber() }))
 				await promise
 			})
 
