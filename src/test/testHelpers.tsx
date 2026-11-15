@@ -1,6 +1,4 @@
-import { render, screen } from "@testing-library/react"
-import { type ReactElement, StrictMode } from "react"
-import { Provider } from "react-redux"
+import { screen } from "@testing-library/react"
 
 import {
 	getTileButtonText,
@@ -14,7 +12,6 @@ import type {
 	PuzzleTilesArray,
 	TileKey,
 } from "../puzzle/domain/types"
-import { store } from "../store"
 
 export type Deferred<T> = {
 	promise: Promise<T>
@@ -149,32 +146,4 @@ export function createTestPuzzleData(
 			ratio: 1.5,
 		},
 	}
-}
-
-export function renderWithStore({
-	ui,
-	isStrictMode,
-}: {
-	ui: ReactElement
-	isStrictMode?: boolean
-}) {
-	const content = <Provider store={store}>{ui}</Provider>
-
-	return render(isStrictMode ? <StrictMode>{content}</StrictMode> : content)
-}
-
-export function rerenderWithStore({
-	ui,
-	isStrictMode,
-	renderResult,
-}: {
-	ui: ReactElement
-	isStrictMode?: boolean
-	renderResult: ReturnType<typeof render>
-}) {
-	const content = <Provider store={store}>{ui}</Provider>
-
-	return renderResult.rerender(
-		isStrictMode ? <StrictMode>{content}</StrictMode> : content
-	)
 }

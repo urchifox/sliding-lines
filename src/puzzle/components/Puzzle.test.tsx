@@ -3,14 +3,13 @@ import { createEvent, fireEvent, render, screen } from "@testing-library/react"
 
 import { store } from "../../store"
 import { processMoveAction } from "../../store/puzzleSlice"
+import { renderWithStore, rerenderWithStore } from "../../test/storeTestHelpers"
 import {
 	createAlmostSolvedTiles,
 	expectTilePlacedAtPosition,
 	expectTilesUnmoved,
 	getAllTilesElements,
 	getTileElements,
-	renderWithStore,
-	rerenderWithStore,
 } from "../../test/testHelpers"
 import { tryMove } from "../domain/game"
 import { getEmptyTile, getTileByKey } from "../domain/tiles"

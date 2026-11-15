@@ -6,7 +6,7 @@ import { App } from "./App"
 import { loadingText } from "./pages/PuzzlePageHelpers"
 import { playButtonText } from "./pages/StartPageHelpers"
 import { createPuzzleData } from "./puzzle/domain/puzzleData"
-import { renderWithStore } from "./test/testHelpers"
+import { renderWithStore } from "./test/storeTestHelpers"
 
 vi.mock("./puzzle/domain/puzzleData", () => ({
 	createPuzzleData: vi.fn(),

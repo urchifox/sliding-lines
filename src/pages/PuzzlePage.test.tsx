@@ -14,6 +14,7 @@ import type {
 import { store } from "../store"
 import { reshuffleTilesAction } from "../store/puzzleSlice"
 import { selectLevelNumber } from "../store/selectors"
+import { renderWithStore } from "../test/storeTestHelpers"
 import {
 	createAlmostSolvedTiles,
 	createDeferred,
@@ -23,7 +24,6 @@ import {
 	getPuzzleBoard,
 	getTileElements,
 	queryPuzzleBoard,
-	renderWithStore,
 } from "../test/testHelpers"
 import { PuzzlePage } from "./PuzzlePage"
 import {
