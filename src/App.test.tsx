@@ -21,15 +21,21 @@ describe("App", () => {
 		vi.useRealTimers()
 	})
 
-	it("navigates from the start page to the puzzle page", () => {
-		vi.useFakeTimers()
+	it("navigates from the start page to the puzzle page", async () => {
+		vi.useFakeTimers({
+			toFake: [
+				"setTimeout",
+				"clearTimeout",
+				"setInterval",
+				"clearInterval",
+				"Date",
+			],
+		})
 		vi.mocked(createPuzzleData).mockReturnValue(new Promise(() => {}))
 		renderAppWithStore()
 
 		fireEvent.click(screen.getByRole("button", { name: playButtonText }))
-		act(() => {
-			vi.advanceTimersByTime(1000)
-		})
+		await act(() => vi.advanceTimersByTimeAsync(1000))
 
 		expect(screen.getByText(loadingText)).toBeInTheDocument()
 		expect(createPuzzleData).toHaveBeenCalledOnce()

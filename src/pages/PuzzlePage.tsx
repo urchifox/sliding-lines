@@ -6,12 +6,11 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { theme } from "../assets/styles/theme"
 import { useAppDispatch, useAppSelector } from "../hooks"
 import { Puzzle } from "../puzzle/components/Puzzle"
-import { createPuzzleData } from "../puzzle/domain/puzzleData"
 import type { BoardState } from "../puzzle/domain/types"
 import {
+	loadPuzzleData,
 	resetPuzzleDataAction,
 	reshuffleTilesAction,
-	setPuzzleDataAction,
 } from "../store/puzzleSlice"
 import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
@@ -133,21 +132,22 @@ export function PuzzlePage() {
 			return
 		}
 
-		let cancelled = false
-		createPuzzleData()
-			.then((value) => {
-				if (!cancelled) {
-					dispatch(setPuzzleDataAction(value))
-				}
-			})
-			.catch(() => {
-				if (!cancelled) {
-					setError(true)
-				}
-			})
+		const request = dispatch(loadPuzzleData())
+		request.unwrap().catch((error: unknown) => {
+			if (
+				typeof error === "object" &&
+				error !== null &&
+				"name" in error &&
+				error.name === "AbortError"
+			) {
+				return
+			}
+
+			setError(true)
+		})
 
 		return () => {
-			cancelled = true
+			request.abort()
 		}
 	}, [dispatch, puzzleData])
 

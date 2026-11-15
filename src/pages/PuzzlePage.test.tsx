@@ -183,10 +183,8 @@ function useTransitionTimers() {
 	vi.useFakeTimers()
 }
 
-function advanceLevelTransition(milliseconds = 1000) {
-	act(() => {
-		vi.advanceTimersByTime(milliseconds)
-	})
+async function advanceLevelTransition(milliseconds = 1000) {
+	await act(() => vi.advanceTimersByTimeAsync(milliseconds))
 }
 
 beforeEach(() => {
@@ -293,7 +291,7 @@ describe("PuzzlePage", () => {
 			const playButton = getPlayButton()
 
 			fireEvent.click(playButton)
-			advanceLevelTransition()
+			await advanceLevelTransition()
 
 			expect(vi.mocked(tilesDomain.reshuffleTiles)).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
@@ -454,7 +452,7 @@ describe("PuzzlePage", () => {
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
 			finishLevel()
 			requestNextLevel()
-			advanceLevelTransition(999)
+			await advanceLevelTransition(999)
 
 			expectPageChrome({ isFinished: true, isUpdating: true })
 			expect(queryLoadingMessage()).not.toBeInTheDocument()
@@ -467,7 +465,7 @@ describe("PuzzlePage", () => {
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
 			finishLevel()
 			requestNextLevel()
-			advanceLevelTransition()
+			await advanceLevelTransition()
 
 			expect(getLoadingMessage()).toBeInTheDocument()
 			expect(queryPuzzleBoard()).not.toBeInTheDocument()
@@ -481,7 +479,7 @@ describe("PuzzlePage", () => {
 			mockedCreatePuzzleData.mockReturnValue(promise)
 			finishLevel()
 			requestNextLevel()
-			advanceLevelTransition()
+			await advanceLevelTransition()
 			vi.useRealTimers()
 			await act(async () => {
 				resolve(createTestPuzzleData())
@@ -501,7 +499,7 @@ describe("PuzzlePage", () => {
 			mockedCreatePuzzleData.mockReturnValue(promise)
 			finishLevel()
 			requestNextLevel()
-			advanceLevelTransition()
+			await advanceLevelTransition()
 			vi.useRealTimers()
 			const ignoredRejection = promise.catch(() => undefined)
 			await act(() => {
@@ -527,8 +525,8 @@ describe("PuzzlePage", () => {
 			expect(restartButton).toBeDisabled()
 			expect(getPlayButton()).toBeDisabled()
 
-			advanceLevelTransition()
-			advanceLevelTransition()
+			await advanceLevelTransition()
+			await advanceLevelTransition()
 
 			expect(vi.mocked(tilesDomain.reshuffleTiles)).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)

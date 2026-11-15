@@ -1,11 +1,28 @@
-import { type PayloadAction, createSlice } from "@reduxjs/toolkit"
+import {
+	type PayloadAction,
+	createAsyncThunk,
+	createSlice,
+} from "@reduxjs/toolkit"
 
+import type { RootState } from "."
 import { isPuzzleSolved, tryMove } from "../puzzle/domain/game"
+import { createPuzzleData } from "../puzzle/domain/puzzleData"
 import { reshuffleTiles } from "../puzzle/domain/tiles"
 import type { PuzzleData, PuzzleTileInfo } from "../puzzle/domain/types"
 
 type PuzzleState = (PuzzleData & { isSolved: boolean }) | null
 const initialState = null as PuzzleState
+
+export const loadPuzzleData = createAsyncThunk<
+	PuzzleData,
+	void,
+	{ state: RootState }
+>("puzzle/loadPuzzleData", async (_, { getState }) => {
+	const { selectLevelNumber } = await import("./selectors")
+	const levelNumber = selectLevelNumber(getState())
+	const puzzleData = await createPuzzleData(levelNumber)
+	return puzzleData
+})
 
 const puzzleSlice = createSlice({
 	name: "puzzle",
@@ -47,6 +64,14 @@ const puzzleSlice = createSlice({
 
 			state.level.tiles = updatedTiles
 		},
+	},
+	extraReducers: (builder) => {
+		builder.addCase(
+			loadPuzzleData.fulfilled,
+			(_, action: PayloadAction<PuzzleData>) => {
+				return { ...action.payload, isSolved: false }
+			}
+		)
 	},
 })
 
