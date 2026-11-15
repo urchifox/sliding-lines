@@ -12,8 +12,8 @@ import {
 import storage from "redux-persist/lib/storage"
 
 import { listenerMiddleware } from "./listenerMiddleware"
-import { progressReducer } from "./progressSlice"
-import { puzzleReducer } from "./puzzleSlice"
+import { progressReducer, resetProgress } from "./progressSlice"
+import { puzzleReducer, resetPuzzleDataAction } from "./puzzleSlice"
 
 const persistConfig = {
 	key: "root",
@@ -38,6 +38,11 @@ export const store = configureStore({
 })
 
 export const persistor = persistStore(store)
+
+export function resetStore() {
+	store.dispatch(resetPuzzleDataAction())
+	store.dispatch(resetProgress())
+}
 
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
