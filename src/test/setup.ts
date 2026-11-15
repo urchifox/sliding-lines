@@ -12,9 +12,8 @@ afterEach(async () => {
 		return
 	}
 
+	cleanup()
+
 	const { resetStore } = await import("../store")
 	resetStore()
-
-	cleanup()
-	localStorage.clear()
 })
