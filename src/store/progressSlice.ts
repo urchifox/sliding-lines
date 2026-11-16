@@ -22,5 +22,6 @@ const progressSlice = createSlice({
 })
 
 export const progressReducer = progressSlice.reducer
-export const { upgradeLevelselectsCompletedCount, resetProgress } = progressSlice.actions
+export const { upgradeLevelselectsCompletedCount, resetProgress } =
+	progressSlice.actions
 export const { selectLevelsCompletedCount } = progressSlice.selectors
