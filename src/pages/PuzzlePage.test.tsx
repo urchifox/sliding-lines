@@ -1,25 +1,26 @@
 // @vitest-environment happy-dom
-import { act, fireEvent, render, screen } from "@testing-library/react"
+import { act, fireEvent, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { StrictMode } from "react"
 
-import { getLevelNumber } from "../progress/user"
+import * as tilesDomain from "../puzzle/domain/tiles"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
-import {
-	getEmptyTile,
-	getTileByKey,
-	reshuffleTiles,
-} from "../puzzle/domain/tiles"
+import { getEmptyTile, getTileByKey } from "../puzzle/domain/tiles"
 import type {
 	BoardState,
 	PuzzleData,
 	PuzzleTileInfo,
 	TileKey,
 } from "../puzzle/domain/types"
+import { store } from "../store"
+import { selectLevelsCompletedCount } from "../store/progressSlice"
+import { selectPuzzleTiles } from "../store/puzzleSlice"
+import { renderWithStore } from "../test/storeTestHelpers"
 import {
 	createAlmostSolvedTiles,
 	createDeferred,
+	createTestPuzzleData,
 	expectTilePlacedAtPosition,
+	expectTilesUnmoved,
 	getPuzzleBoard,
 	getTileElements,
 	queryPuzzleBoard,
@@ -38,16 +39,7 @@ vi.mock("../puzzle/domain/puzzleData", () => ({
 	createPuzzleData: vi.fn(),
 }))
 
-vi.mock("../puzzle/domain/tiles", async (importOriginal) => {
-	const actual = await importOriginal<typeof import("../puzzle/domain/tiles")>()
-	return {
-		...actual,
-		reshuffleTiles: vi.fn(({ tiles }: { tiles: readonly unknown[] }) => tiles),
-	}
-})
-
 const mockedCreatePuzzleData = vi.mocked(createPuzzleData)
-const mockedReshuffleTiles = vi.mocked(reshuffleTiles)
 
 function getLoadingMessage() {
 	return screen.getByText(loadingText)
@@ -79,24 +71,6 @@ function findLevelName(levelNumber: number) {
 
 function getLevelName(levelNumber: number) {
 	return screen.getByText(getLevelNameText(levelNumber))
-}
-
-function getMockedPuzzleData(): PuzzleData {
-	return {
-		levelNumber: 0,
-		level: {
-			rows: 3,
-			columns: 3,
-			shuffleSteps: 1,
-			tiles: createAlmostSolvedTiles(),
-		},
-		imageInfo: {
-			imageUrl: "test-image.jpg",
-			width: 300,
-			height: 200,
-			ratio: 1.5,
-		},
-	}
 }
 
 function expectPageChrome(state: BoardState, levelNumber = 0) {
@@ -146,22 +120,28 @@ function expectPageChrome(state: BoardState, levelNumber = 0) {
 	}
 }
 
+function renderPageWithStore({
+	isStrictMode,
+}: { isStrictMode?: boolean } = {}) {
+	return renderWithStore({ ui: <PuzzlePage />, isStrictMode })
+}
+
 function renderPageWithLoading() {
 	mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
-	const renderResult = render(<PuzzlePage />)
+	const renderResult = renderPageWithStore()
 	return renderResult
 }
 
 async function renderPageWithError() {
 	mockedCreatePuzzleData.mockRejectedValue(new Error(""))
-	const renderResult = render(<PuzzlePage />)
+	const renderResult = renderPageWithStore()
 	await findErrorMessage()
 	return renderResult
 }
 
 async function renderPageWithBoard() {
-	mockedCreatePuzzleData.mockResolvedValue(getMockedPuzzleData())
-	const renderResult = render(<PuzzlePage />)
+	mockedCreatePuzzleData.mockResolvedValue(createTestPuzzleData())
+	const renderResult = renderPageWithStore()
 	await findLevelName(0)
 	return renderResult
 }
@@ -202,14 +182,15 @@ function useTransitionTimers() {
 	vi.useFakeTimers()
 }
 
-function advanceLevelTransition(milliseconds = 1000) {
-	act(() => {
-		vi.advanceTimersByTime(milliseconds)
-	})
+async function advanceLevelTransition(milliseconds = 1000) {
+	await act(() => vi.advanceTimersByTimeAsync(milliseconds))
 }
 
 beforeEach(() => {
 	vi.resetAllMocks()
+	vi.spyOn(tilesDomain, "reshuffleTiles").mockImplementation(({ tiles }) => [
+		...tiles,
+	])
 })
 
 afterEach(() => {
@@ -237,41 +218,48 @@ describe("PuzzlePage", () => {
 			expectPageChrome({ isFinished: false, isUpdating: false })
 		})
 
+		it("renders level name from loaded puzzle data", async () => {
+			mockedCreatePuzzleData.mockResolvedValue(
+				createTestPuzzleData({ levelNumber: 3 })
+			)
+			renderPageWithStore()
+
+			expect(await findLevelName(3)).toBeInTheDocument()
+			expect(selectLevelsCompletedCount(store.getState())).toBe(0)
+		})
+
 		it("ignores promise resolution of cancelled request", async () => {
+			const cancelledImageUrl = "cancelled.jpg"
+			const activeImageUrl = "active.jpg"
 			const deferred1 = createDeferred<PuzzleData>()
 			const deferred2 = createDeferred<PuzzleData>()
 			mockedCreatePuzzleData
 				.mockReturnValueOnce(deferred1.promise)
 				.mockReturnValueOnce(deferred2.promise)
-			render(
-				<StrictMode>
-					<PuzzlePage />
-				</StrictMode>
-			)
+			renderPageWithStore({ isStrictMode: true })
 
 			await act(async () => {
-				deferred1.resolve({ ...getMockedPuzzleData(), levelNumber: 0 })
+				deferred1.resolve(createTestPuzzleData({ imageUrl: cancelledImageUrl }))
 				await deferred1.promise
 			})
 			expect(getLoadingMessage()).toBeInTheDocument()
 			await act(async () => {
-				deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
+				deferred2.resolve(createTestPuzzleData({ imageUrl: activeImageUrl }))
 				await deferred2.promise
 			})
-			expect(getLevelName(5)).toBeInTheDocument()
+			expect(getPuzzleBoard()).toHaveStyle({
+				"--image": `url(${activeImageUrl})`,
+			})
 		})
 
 		it("ignores promise rejection of cancelled request", async () => {
+			const activeImageUrl = "active.jpg"
 			const deferred1 = createDeferred<PuzzleData>()
 			const deferred2 = createDeferred<PuzzleData>()
 			mockedCreatePuzzleData
 				.mockReturnValueOnce(deferred1.promise)
 				.mockReturnValueOnce(deferred2.promise)
-			render(
-				<StrictMode>
-					<PuzzlePage />
-				</StrictMode>
-			)
+			renderPageWithStore({ isStrictMode: true })
 
 			const ignoredRejection = deferred1.promise.catch(() => undefined)
 			await act(() => {
@@ -280,10 +268,12 @@ describe("PuzzlePage", () => {
 			})
 			expect(getLoadingMessage()).toBeInTheDocument()
 			await act(async () => {
-				deferred2.resolve({ ...getMockedPuzzleData(), levelNumber: 5 })
+				deferred2.resolve(createTestPuzzleData({ imageUrl: activeImageUrl }))
 				await deferred2.promise
 			})
-			expect(getLevelName(5)).toBeInTheDocument()
+			expect(getPuzzleBoard()).toHaveStyle({
+				"--image": `url(${activeImageUrl})`,
+			})
 		})
 	})
 
@@ -292,14 +282,13 @@ describe("PuzzlePage", () => {
 			await renderPageWithBoard()
 			const restartButton = getRestartButton()
 			const { tile: tileElement } = getTileElements("1-1")
+			const reshuffledTiles = [...selectPuzzleTiles(store.getState())]
+			vi.mocked(tilesDomain.reshuffleTiles).mockReturnValueOnce(reshuffledTiles)
 
 			fireEvent.click(restartButton)
 
-			expect(mockedReshuffleTiles).toHaveBeenCalledOnce()
-			expect(mockedReshuffleTiles).toHaveBeenCalledWith({
-				tiles: getMockedPuzzleData().level.tiles,
-				shuffleSteps: getMockedPuzzleData().level.shuffleSteps,
-			})
+			expect(vi.mocked(tilesDomain.reshuffleTiles)).toHaveBeenCalledOnce()
+			expect(selectPuzzleTiles(store.getState())).toBe(reshuffledTiles)
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 			expectPageChrome({ isFinished: false, isUpdating: false })
 			expect(getTileElements("1-1").tile).not.toBe(tileElement)
@@ -313,9 +302,9 @@ describe("PuzzlePage", () => {
 			const playButton = getPlayButton()
 
 			fireEvent.click(playButton)
-			advanceLevelTransition()
+			await advanceLevelTransition()
 
-			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
+			expect(vi.mocked(tilesDomain.reshuffleTiles)).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 			expect(getLevelName(0)).toBeInTheDocument()
 			expect(getRestartButton()).toBeInTheDocument()
@@ -331,14 +320,8 @@ describe("PuzzlePage", () => {
 			button.disabled = false
 			fireEvent.click(button)
 
-			expect(getLevelNumber()).toBe(0)
-			for (const tileInfo of tiles) {
-				const { tile } = getTileElements(tileInfo.key)
-				expectTilePlacedAtPosition({
-					element: tile,
-					tileInfo,
-				})
-			}
+			expect(selectLevelsCompletedCount(store.getState())).toBe(0)
+			expectTilesUnmoved(tiles)
 		})
 
 		it("continues level when level is not finished", async () => {
@@ -359,14 +342,22 @@ describe("PuzzlePage", () => {
 			await renderPageWithBoard()
 			finishLevel()
 
-			expect(getLevelNumber()).toBe(1)
+			expect(selectLevelsCompletedCount(store.getState())).toBe(1)
+		})
+
+		it("keeps finished level name after level number is updated", async () => {
+			await renderPageWithBoard()
+			finishLevel()
+
+			expect(getLevelName(0)).toBeInTheDocument()
+			expect(screen.queryByText(getLevelNameText(1))).not.toBeInTheDocument()
 		})
 
 		it("renders correctly when finished", async () => {
 			await renderPageWithBoard()
 			finishLevel()
 
-			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
+			expect(vi.mocked(tilesDomain.reshuffleTiles)).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 			expectPageChrome({ isFinished: true, isUpdating: false })
 		})
@@ -394,7 +385,7 @@ describe("PuzzlePage", () => {
 			const restartButton = getRestartButton()
 			fireEvent.click(restartButton)
 
-			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
+			expect(vi.mocked(tilesDomain.reshuffleTiles)).not.toHaveBeenCalled()
 		})
 
 		it("ignores tile clicks when level is finished", async () => {
@@ -480,7 +471,7 @@ describe("PuzzlePage", () => {
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
 			finishLevel()
 			requestNextLevel()
-			advanceLevelTransition(999)
+			await advanceLevelTransition(999)
 
 			expectPageChrome({ isFinished: true, isUpdating: true })
 			expect(queryLoadingMessage()).not.toBeInTheDocument()
@@ -493,7 +484,7 @@ describe("PuzzlePage", () => {
 			mockedCreatePuzzleData.mockReturnValue(new Promise(() => {}))
 			finishLevel()
 			requestNextLevel()
-			advanceLevelTransition()
+			await advanceLevelTransition()
 
 			expect(getLoadingMessage()).toBeInTheDocument()
 			expect(queryPuzzleBoard()).not.toBeInTheDocument()
@@ -507,19 +498,20 @@ describe("PuzzlePage", () => {
 			mockedCreatePuzzleData.mockReturnValue(promise)
 			finishLevel()
 			requestNextLevel()
-			advanceLevelTransition()
+			await advanceLevelTransition()
 			vi.useRealTimers()
 			await act(async () => {
-				resolve({
-					...getMockedPuzzleData(),
-					levelNumber: 1,
-				})
+				resolve(
+					createTestPuzzleData({
+						levelNumber: selectLevelsCompletedCount(store.getState()),
+					})
+				)
 				await promise
 			})
 
 			expect(getLevelName(1)).toBeInTheDocument()
 			expectPageChrome({ isFinished: false, isUpdating: false }, 1)
-			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
+			expect(vi.mocked(tilesDomain.reshuffleTiles)).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)
 		})
 
@@ -530,7 +522,7 @@ describe("PuzzlePage", () => {
 			mockedCreatePuzzleData.mockReturnValue(promise)
 			finishLevel()
 			requestNextLevel()
-			advanceLevelTransition()
+			await advanceLevelTransition()
 			vi.useRealTimers()
 			const ignoredRejection = promise.catch(() => undefined)
 			await act(() => {
@@ -556,10 +548,10 @@ describe("PuzzlePage", () => {
 			expect(restartButton).toBeDisabled()
 			expect(getPlayButton()).toBeDisabled()
 
-			advanceLevelTransition()
-			advanceLevelTransition()
+			await advanceLevelTransition()
+			await advanceLevelTransition()
 
-			expect(mockedReshuffleTiles).not.toHaveBeenCalled()
+			expect(vi.mocked(tilesDomain.reshuffleTiles)).not.toHaveBeenCalled()
 			expect(mockedCreatePuzzleData).toHaveBeenCalledTimes(2)
 		})
 	})

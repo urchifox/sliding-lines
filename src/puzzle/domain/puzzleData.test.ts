@@ -1,11 +1,6 @@
-import { getLevelNumber } from "../../progress/user"
 import { getImageInfo } from "./images"
 import { createLevel } from "./level"
 import { createPuzzleData } from "./puzzleData"
-
-vi.mock("../../progress/user", () => ({
-	getLevelNumber: vi.fn(),
-}))
 
 vi.mock("./images", () => ({
 	getImageInfo: vi.fn(),
@@ -16,7 +11,6 @@ vi.mock("./level", () => ({
 }))
 
 describe("createPuzzleData", () => {
-	const mockedGetLevelNumber = vi.mocked(getLevelNumber)
 	const mockedGetImageInfo = vi.mocked(getImageInfo)
 	const mockedCreateLevel = vi.mocked(createLevel)
 
@@ -25,7 +19,6 @@ describe("createPuzzleData", () => {
 	})
 
 	it("creates a puzzle with full info for current level", async () => {
-		mockedGetLevelNumber.mockReturnValue(5)
 		const mockedImageInfo = {
 			imageUrl: "test-image.jpg",
 			width: 100,
@@ -36,7 +29,7 @@ describe("createPuzzleData", () => {
 		const mockedLevel = { rows: 3, columns: 3, shuffleSteps: 1, tiles: [] }
 		mockedCreateLevel.mockReturnValue(mockedLevel)
 
-		const puzzle = await createPuzzleData()
+		const puzzle = await createPuzzleData(5)
 
 		expect(mockedCreateLevel).toHaveBeenCalledWith(5)
 		expect(mockedGetImageInfo).toHaveBeenCalledWith(5)

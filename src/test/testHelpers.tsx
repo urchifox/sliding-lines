@@ -7,6 +7,7 @@ import {
 	tileLabelMatcher,
 } from "../puzzle/components/helpers"
 import type {
+	PuzzleData,
 	PuzzleTileInfo,
 	PuzzleTilesArray,
 	TileKey,
@@ -87,6 +88,16 @@ export function expectTilePlacedAtPosition({
 	expect(button?.textContent).toBe(getTileButtonText(tileInfo))
 }
 
+export function expectTilesUnmoved(tiles: PuzzleTilesArray) {
+	for (const tileInfo of tiles) {
+		const { tile } = getTileElements(tileInfo.key)
+		expectTilePlacedAtPosition({
+			element: tile,
+			tileInfo,
+		})
+	}
+}
+
 export function createAlmostSolvedTiles() {
 	return [
 		createTile({
@@ -115,4 +126,33 @@ export function createAlmostSolvedTiles() {
 		createTile({ originalRow: 3, originalColumn: 2 }),
 		createTile({ originalRow: 3, originalColumn: 3 }),
 	] satisfies PuzzleTilesArray
+}
+
+export function createTestPuzzleData(
+	props: {
+		levelNumber?: number
+		imageUrl?: string
+		tiles?: PuzzleTilesArray
+	} = {}
+): PuzzleData {
+	const {
+		levelNumber = 0,
+		imageUrl = "test-image.jpg",
+		tiles = createAlmostSolvedTiles(),
+	} = props
+	return {
+		levelNumber,
+		level: {
+			rows: 3,
+			columns: 3,
+			shuffleSteps: 1,
+			tiles,
+		},
+		imageInfo: {
+			imageUrl,
+			width: 300,
+			height: 200,
+			ratio: 1.5,
+		},
+	}
 }

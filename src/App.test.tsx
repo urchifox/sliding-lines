@@ -1,30 +1,41 @@
 // @vitest-environment happy-dom
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, screen } from "@testing-library/react"
 import { act } from "react"
 
 import { App } from "./App"
 import { loadingText } from "./pages/PuzzlePageHelpers"
 import { playButtonText } from "./pages/StartPageHelpers"
 import { createPuzzleData } from "./puzzle/domain/puzzleData"
+import { renderWithStore } from "./test/storeTestHelpers"
 
 vi.mock("./puzzle/domain/puzzleData", () => ({
 	createPuzzleData: vi.fn(),
 }))
+
+function renderAppWithStore({ isStrictMode }: { isStrictMode?: boolean } = {}) {
+	return renderWithStore({ ui: <App />, isStrictMode })
+}
 
 describe("App", () => {
 	afterEach(() => {
 		vi.useRealTimers()
 	})
 
-	it("navigates from the start page to the puzzle page", () => {
-		vi.useFakeTimers()
+	it("navigates from the start page to the puzzle page", async () => {
+		vi.useFakeTimers({
+			toFake: [
+				"setTimeout",
+				"clearTimeout",
+				"setInterval",
+				"clearInterval",
+				"Date",
+			],
+		})
 		vi.mocked(createPuzzleData).mockReturnValue(new Promise(() => {}))
-		render(<App />)
+		renderAppWithStore()
 
 		fireEvent.click(screen.getByRole("button", { name: playButtonText }))
-		act(() => {
-			vi.advanceTimersByTime(1000)
-		})
+		await act(() => vi.advanceTimersByTimeAsync(1000))
 
 		expect(screen.getByText(loadingText)).toBeInTheDocument()
 		expect(createPuzzleData).toHaveBeenCalledOnce()

@@ -1,6 +1,8 @@
 import styled from "@emotion/styled"
 
 import { theme } from "../../assets/styles/theme"
+import { useAppDispatch } from "../../hooks"
+import { processMoveAction } from "../../store/puzzleSlice"
 import type { PuzzleTileInfo } from "../domain/types"
 import { getTileButtonText, getTileElementId, getTileLabel } from "./helpers"
 
@@ -77,18 +79,16 @@ const PuzzleTileButtonStyled = styled.button(
 
 export function PuzzleTile({
 	tile,
-	handleClick,
 	isFinished,
 	tabIndex,
 }: {
 	tile: PuzzleTileInfo
-	handleClick: (tile: PuzzleTileInfo) => void
 	isFinished: boolean
 	tabIndex: number
 }) {
 	const { key, currentPosition, originalPosition, isEmpty } = tile
-
-	const onClick = () => handleClick(tile)
+	const dispatch = useAppDispatch()
+	const onClick = () => dispatch(processMoveAction(tile))
 
 	return (
 		<PuzzleTileStyled

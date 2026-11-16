@@ -7,7 +7,6 @@ import { getTileByCurrentPosition } from "../domain/tiles"
 import {
 	type BoardState,
 	type ImageInfo,
-	type PuzzleTileInfo,
 	type PuzzleTilesArray,
 	type TileKey,
 } from "../domain/types"
@@ -116,14 +115,12 @@ function getFirstClickableTileKey(tiles: PuzzleTilesArray): TileKey | null {
 export function Puzzle({
 	imageInfo,
 	boardState,
-	handleTryMove,
 	tiles,
 	columns,
 	rows,
 }: {
 	imageInfo: ImageInfo
 	boardState: BoardState
-	handleTryMove: (tile: PuzzleTileInfo) => void
 	tiles: PuzzleTilesArray
 	columns: number
 	rows: number
@@ -167,7 +164,6 @@ export function Puzzle({
 			<PuzzleTile
 				key={tile.key}
 				tile={tile}
-				handleClick={handleTryMove}
 				isFinished={boardState.isFinished}
 				tabIndex={tabIndex}
 			/>

@@ -4,16 +4,15 @@ import styled from "@emotion/styled"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 
 import { theme } from "../assets/styles/theme"
+import { useAppDispatch, useAppSelector } from "../hooks"
 import { Puzzle } from "../puzzle/components/Puzzle"
-import { createPuzzleData } from "../puzzle/domain/puzzleData"
-import { reshuffleTiles } from "../puzzle/domain/tiles"
-import type {
-	BoardState,
-	PuzzleData,
-	PuzzleTileInfo,
-	PuzzleTilesArray,
-} from "../puzzle/domain/types"
-import { handleTryMove } from "../puzzle/flow/handleTryMove"
+import type { BoardState } from "../puzzle/domain/types"
+import {
+	loadPuzzleData,
+	resetPuzzleDataAction,
+	reshuffleTilesAction,
+	selectPuzzleData,
+} from "../store/puzzleSlice"
 import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { PageStyled } from "../ui/Page"
@@ -119,45 +118,46 @@ const PuzzleWrapper = styled.div`
 `
 
 export function PuzzlePage() {
-	const [puzzleData, setPuzzleData] = useState<PuzzleData | null>(null)
+	const puzzleData = useAppSelector(selectPuzzleData)
+	const dispatch = useAppDispatch()
+
 	const [boardVersion, setBoardVersion] = useState(0)
-	const [boardState, setBoardState] = useState<BoardState>({
-		isFinished: false,
-		isUpdating: false,
-	})
+	const [isUpdating, setIsUpdating] = useState(false)
 	const [isError, setError] = useState<boolean>(false)
 	const winHeaderRef = useRef<HTMLHeadingElement>(null)
+	const isFinished = puzzleData?.isSolved ?? false
 
 	useEffect(() => {
 		if (puzzleData !== null) {
 			return
 		}
 
-		let cancelled = false
-		createPuzzleData()
-			.then((value) => {
-				if (!cancelled) {
-					setPuzzleData(value)
-				}
-			})
-			.catch(() => {
-				if (!cancelled) {
-					setError(true)
-				}
-			})
+		const request = dispatch(loadPuzzleData())
+		request.unwrap().catch((error: unknown) => {
+			if (
+				typeof error === "object" &&
+				error !== null &&
+				"name" in error &&
+				error.name === "AbortError"
+			) {
+				return
+			}
+
+			setError(true)
+		})
 
 		return () => {
-			cancelled = true
+			request.abort()
 		}
-	}, [puzzleData])
+	}, [dispatch, puzzleData])
 
 	useLayoutEffect(() => {
-		if (!boardState.isFinished) {
+		if (!isFinished) {
 			return
 		}
 
 		winHeaderRef.current?.focus()
-	}, [boardState.isFinished])
+	}, [isFinished])
 
 	if (puzzleData === null) {
 		return (
@@ -169,70 +169,31 @@ export function PuzzlePage() {
 		)
 	}
 
-	const updateTiles = (tiles: PuzzleTilesArray) => {
-		setPuzzleData({
-			...puzzleData,
-			level: {
-				...puzzleData.level,
-				tiles: tiles,
-			},
-		})
-	}
-
-	const onSolved = () => {
-		setBoardState({
-			isFinished: true,
-			isUpdating: false,
-		})
-	}
-
-	const onTryMove = (tile: PuzzleTileInfo) => {
-		if (boardState.isFinished) {
-			return
-		}
-
-		updateTiles(
-			handleTryMove({
-				tile: tile,
-				tiles: puzzleData.level.tiles,
-				onSolved: onSolved,
-			})
-		)
-	}
-
 	const onRestartClick = () => {
-		if (boardState.isFinished) {
+		if (isFinished) {
 			return
 		}
 
-		updateTiles(
-			reshuffleTiles({
-				tiles: puzzleData.level.tiles,
-				shuffleSteps: puzzleData.level.shuffleSteps,
-			})
-		)
-
+		dispatch(reshuffleTilesAction())
 		setBoardVersion((version) => version + 1)
 	}
 
 	const onStartClick = () => {
-		if (!boardState.isFinished) {
+		if (!isFinished) {
 			return
 		}
 
-		setBoardState({
-			isFinished: true,
-			isUpdating: true,
-		})
+		setIsUpdating(true)
 
 		setTimeout(() => {
-			setPuzzleData(null)
-			setBoardState({
-				isFinished: false,
-				isUpdating: false,
-			})
+			dispatch(resetPuzzleDataAction())
+			setIsUpdating(false)
 		}, 1 * 1000)
 	}
+
+	const boardState: BoardState = isFinished
+		? { isFinished, isUpdating }
+		: { isFinished, isUpdating: false }
 
 	return (
 		<PuzzlePageStyled>
@@ -242,7 +203,7 @@ export function PuzzlePage() {
 			<RestartButton
 				aria-label={restartButtonLabel}
 				onClick={onRestartClick}
-				disabled={boardState.isFinished}
+				disabled={isFinished}
 				{...boardState}
 			/>
 			<WinHeader ref={winHeaderRef} tabIndex={-1} {...boardState}>
@@ -252,7 +213,6 @@ export function PuzzlePage() {
 				<Puzzle
 					key={boardVersion}
 					imageInfo={puzzleData.imageInfo}
-					handleTryMove={onTryMove}
 					tiles={puzzleData.level.tiles}
 					columns={puzzleData.level.columns}
 					rows={puzzleData.level.rows}
