@@ -13,7 +13,7 @@ import type {
 } from "../puzzle/domain/types"
 import { store } from "../store"
 import { selectLevelsCompletedCount } from "../store/progressSlice"
-import { reshuffleTilesAction } from "../store/puzzleSlice"
+import { selectPuzzleTiles } from "../store/puzzleSlice"
 import { renderWithStore } from "../test/storeTestHelpers"
 import {
 	createAlmostSolvedTiles,
@@ -40,7 +40,6 @@ vi.mock("../puzzle/domain/puzzleData", () => ({
 }))
 
 const mockedCreatePuzzleData = vi.mocked(createPuzzleData)
-let dispatchSpy = vi.spyOn(store, "dispatch")
 
 function getLoadingMessage() {
 	return screen.getByText(loadingText)
@@ -189,7 +188,6 @@ async function advanceLevelTransition(milliseconds = 1000) {
 
 beforeEach(() => {
 	vi.resetAllMocks()
-	dispatchSpy = vi.spyOn(store, "dispatch")
 	vi.spyOn(tilesDomain, "reshuffleTiles").mockImplementation(({ tiles }) => [
 		...tiles,
 	])
@@ -284,10 +282,15 @@ describe("PuzzlePage", () => {
 			await renderPageWithBoard()
 			const restartButton = getRestartButton()
 			const { tile: tileElement } = getTileElements("1-1")
+			const reshuffledTiles = [...selectPuzzleTiles(store.getState())]
+			vi.mocked(tilesDomain.reshuffleTiles).mockReturnValueOnce(
+				reshuffledTiles
+			)
 
 			fireEvent.click(restartButton)
 
-			expect(dispatchSpy).toHaveBeenCalledWith(reshuffleTilesAction())
+			expect(vi.mocked(tilesDomain.reshuffleTiles)).toHaveBeenCalledOnce()
+			expect(selectPuzzleTiles(store.getState())).toBe(reshuffledTiles)
 			expect(mockedCreatePuzzleData).toHaveBeenCalledOnce()
 			expectPageChrome({ isFinished: false, isUpdating: false })
 			expect(getTileElements("1-1").tile).not.toBe(tileElement)

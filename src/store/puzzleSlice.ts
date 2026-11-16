@@ -1,4 +1,5 @@
 import {
+	type Dispatch,
 	type PayloadAction,
 	createAsyncThunk,
 	createSlice,
@@ -8,7 +9,11 @@ import type { RootState } from "."
 import { isPuzzleSolved, tryMove } from "../puzzle/domain/game"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
 import { reshuffleTiles } from "../puzzle/domain/tiles"
-import type { PuzzleData, PuzzleTileInfo } from "../puzzle/domain/types"
+import type {
+	PuzzleData,
+	PuzzleTileInfo,
+	PuzzleTilesArray,
+} from "../puzzle/domain/types"
 import { selectLevelsCompletedCount } from "./progressSlice"
 
 type PuzzleState = (PuzzleData & { isSolved: boolean }) | null
@@ -34,15 +39,15 @@ const puzzleSlice = createSlice({
 
 		resetPuzzleData: () => initialState,
 
-		reshuffleTiles: (state: PuzzleState) => {
+		setPuzzleTiles: (
+			state: PuzzleState,
+			action: PayloadAction<PuzzleTilesArray>
+		) => {
 			if (state === null) {
 				return
 			}
 
-			state.level.tiles = reshuffleTiles({
-				tiles: state.level.tiles,
-				shuffleSteps: state.level.shuffleSteps,
-			})
+			state.level.tiles = action.payload
 		},
 
 		processMove: (
@@ -85,8 +90,23 @@ export const puzzleReducer = puzzleSlice.reducer
 export const {
 	setPuzzleData: setPuzzleDataAction,
 	resetPuzzleData: resetPuzzleDataAction,
-	reshuffleTiles: reshuffleTilesAction,
 	processMove: processMoveAction,
 } = puzzleSlice.actions
+
+export function reshuffleTilesAction() {
+	return (dispatch: Dispatch, getState: () => RootState) => {
+		const puzzleData = getState().puzzle
+		if (puzzleData === null) {
+			return
+		}
+
+		const tiles = reshuffleTiles({
+			tiles: puzzleData.level.tiles,
+			shuffleSteps: puzzleData.level.shuffleSteps,
+		})
+		dispatch(puzzleSlice.actions.setPuzzleTiles(tiles))
+	}
+}
+
 export const { selectPuzzleData, selectPuzzleIsSolved, selectPuzzleTiles } =
 	puzzleSlice.selectors
