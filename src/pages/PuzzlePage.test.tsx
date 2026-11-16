@@ -283,9 +283,7 @@ describe("PuzzlePage", () => {
 			const restartButton = getRestartButton()
 			const { tile: tileElement } = getTileElements("1-1")
 			const reshuffledTiles = [...selectPuzzleTiles(store.getState())]
-			vi.mocked(tilesDomain.reshuffleTiles).mockReturnValueOnce(
-				reshuffledTiles
-			)
+			vi.mocked(tilesDomain.reshuffleTiles).mockReturnValueOnce(reshuffledTiles)
 
 			fireEvent.click(restartButton)
 
