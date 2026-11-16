@@ -121,7 +121,7 @@ export function PuzzlePage() {
 	const dispatch = useAppDispatch()
 	const { puzzleData, isError } = useLoadPuzzle()
 	const [boardVersion, setBoardVersion] = useState(0)
-	const { isDelayed: isUpdating, startDelay: stratUpdating } = useDelay()
+	const { isDelayed: isUpdating, startDelay: startUpdating } = useDelay()
 	const winHeaderRef = useRef<HTMLHeadingElement>(null)
 	const isFinished = puzzleData?.isSolved ?? false
 
@@ -157,7 +157,7 @@ export function PuzzlePage() {
 			return
 		}
 
-		void stratUpdating().then(() => {
+		void startUpdating().then(() => {
 			dispatch(resetPuzzleDataAction())
 		})
 	}

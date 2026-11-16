@@ -49,14 +49,14 @@ export function StartPage({
 }: {
 	setPage: React.Dispatch<React.SetStateAction<AppRoute>>
 }) {
-	const { isDelayed: isUpdating, startDelay: stratUpdating } = useDelay()
+	const { isDelayed: isUpdating, startDelay: startUpdating } = useDelay()
 
 	const handleStartClick = () => {
 		if (isUpdating) {
 			return
 		}
 
-		void stratUpdating().then(() => {
+		void startUpdating().then(() => {
 			setPage(AppRoute.Game)
 		})
 	}
