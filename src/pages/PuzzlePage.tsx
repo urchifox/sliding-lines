@@ -5,6 +5,7 @@ import { useLayoutEffect, useRef, useState } from "react"
 
 import { theme } from "../assets/styles/theme"
 import { useAppDispatch } from "../hooks"
+import { useDelay } from "../hooks/delay"
 import { useLoadPuzzle } from "../hooks/loadPuzzle"
 import { Puzzle } from "../puzzle/components/Puzzle"
 import type { BoardState } from "../puzzle/domain/types"
@@ -120,7 +121,7 @@ export function PuzzlePage() {
 	const dispatch = useAppDispatch()
 	const { puzzleData, isError } = useLoadPuzzle()
 	const [boardVersion, setBoardVersion] = useState(0)
-	const [isUpdating, setIsUpdating] = useState(false)
+	const { isDelayed: isUpdating, startDelay: stratUpdating } = useDelay()
 	const winHeaderRef = useRef<HTMLHeadingElement>(null)
 	const isFinished = puzzleData?.isSolved ?? false
 
@@ -156,12 +157,9 @@ export function PuzzlePage() {
 			return
 		}
 
-		setIsUpdating(true)
-
-		setTimeout(() => {
+		void stratUpdating().then(() => {
 			dispatch(resetPuzzleDataAction())
-			setIsUpdating(false)
-		}, 1 * 1000)
+		})
 	}
 
 	const boardState: BoardState = isFinished

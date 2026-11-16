@@ -1,8 +1,8 @@
 import styled from "@emotion/styled"
-import { useState } from "react"
 
 import { AppRoute } from "../AppRoute"
 import { theme } from "../assets/styles/theme"
+import { useDelay } from "../hooks/delay"
 import { ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { Lines } from "../ui/Lines"
@@ -49,17 +49,16 @@ export function StartPage({
 }: {
 	setPage: React.Dispatch<React.SetStateAction<AppRoute>>
 }) {
-	const [isUpdating, setUpdateState] = useState<boolean>(false)
+	const { isDelayed: isUpdating, startDelay: stratUpdating } = useDelay()
 
 	const handleStartClick = () => {
 		if (isUpdating) {
 			return
 		}
 
-		setUpdateState(true)
-		setTimeout(() => {
+		void stratUpdating().then(() => {
 			setPage(AppRoute.Game)
-		}, 1 * 1000)
+		})
 	}
 
 	return (
