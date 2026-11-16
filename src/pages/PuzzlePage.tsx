@@ -11,6 +11,7 @@ import {
 	loadPuzzleData,
 	resetPuzzleDataAction,
 	reshuffleTilesAction,
+	selectPuzzleData,
 } from "../store/puzzleSlice"
 import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
@@ -117,7 +118,7 @@ const PuzzleWrapper = styled.div`
 `
 
 export function PuzzlePage() {
-	const puzzleData = useAppSelector((state) => state.puzzle)
+	const puzzleData = useAppSelector(selectPuzzleData)
 	const dispatch = useAppDispatch()
 
 	const [boardVersion, setBoardVersion] = useState(0)

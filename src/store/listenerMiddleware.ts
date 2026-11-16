@@ -2,7 +2,7 @@ import { createListenerMiddleware } from "@reduxjs/toolkit"
 
 import type { RootState } from "."
 import { upgradeLevelselectsCompletedCount } from "./progressSlice"
-import { selectPuzzleIsSolved } from "./selectors"
+import { selectPuzzleIsSolved } from "./puzzleSlice"
 
 export const listenerMiddleware = createListenerMiddleware()
 

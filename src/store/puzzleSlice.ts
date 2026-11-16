@@ -18,7 +18,7 @@ export const loadPuzzleData = createAsyncThunk<
 	void,
 	{ state: RootState }
 >("puzzle/loadPuzzleData", async (_, { getState }) => {
-	const { selectLevelsCompletedCount } = await import("./selectors")
+	const { selectLevelsCompletedCount } = await import("./progressSlice")
 	const levelNumber = selectLevelsCompletedCount(getState())
 	const puzzleData = await createPuzzleData(levelNumber)
 	return puzzleData
@@ -73,6 +73,12 @@ const puzzleSlice = createSlice({
 			}
 		)
 	},
+
+	selectors: {
+		selectPuzzleData: (state) => state,
+		selectPuzzleIsSolved: (state) => state?.isSolved ?? false,
+		selectPuzzleTiles: (state) => state?.level.tiles ?? [],
+	},
 })
 
 export const puzzleReducer = puzzleSlice.reducer
@@ -82,3 +88,5 @@ export const {
 	reshuffleTiles: reshuffleTilesAction,
 	processMove: processMoveAction,
 } = puzzleSlice.actions
+export const { selectPuzzleData, selectPuzzleIsSolved, selectPuzzleTiles } =
+	puzzleSlice.selectors

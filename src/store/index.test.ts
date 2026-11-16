@@ -3,13 +3,17 @@ import { REHYDRATE } from "redux-persist"
 
 import { persistor, store } from "."
 import { createTestPuzzleData } from "../test/testHelpers"
-import { resetProgress, upgradeLevelselectsCompletedCount } from "./progressSlice"
-import { resetPuzzleDataAction, setPuzzleDataAction } from "./puzzleSlice"
 import {
+	resetProgress,
 	selectLevelsCompletedCount,
+	upgradeLevelselectsCompletedCount,
+} from "./progressSlice"
+import {
+	resetPuzzleDataAction,
 	selectPuzzleIsSolved,
 	selectPuzzleTiles,
-} from "./selectors"
+	setPuzzleDataAction,
+} from "./puzzleSlice"
 
 async function waitUntilBootstrapped() {
 	if (persistor.getState().bootstrapped) {
@@ -37,7 +41,7 @@ describe("store", () => {
 		store.dispatch(resetPuzzleDataAction())
 		store.dispatch(resetProgress())
 		expect(store.getState().puzzle).toBeNull()
-		expect(selectLevelsCompletedCount()).toBe(0)
+		expect(selectLevelsCompletedCount(store.getState())).toBe(0)
 
 		const saved = localStorage.getItem("persist:root")
 		expect(saved).toEqual(expect.any(String))
@@ -54,9 +58,9 @@ describe("store", () => {
 			},
 		})
 
-		expect(selectLevelsCompletedCount()).toBe(1)
-		expect(selectPuzzleIsSolved()).toBe(false)
-		expect(selectPuzzleTiles()).toEqual(puzzleData.level.tiles)
+		expect(selectLevelsCompletedCount(store.getState())).toBe(1)
+		expect(selectPuzzleIsSolved(store.getState())).toBe(false)
+		expect(selectPuzzleTiles(store.getState())).toEqual(puzzleData.level.tiles)
 		expect(store.getState().puzzle?.levelNumber).toBe(2)
 	})
 })
