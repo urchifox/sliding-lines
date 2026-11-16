@@ -2,12 +2,13 @@ import { createListenerMiddleware } from "@reduxjs/toolkit"
 
 import type { RootState } from "."
 import { incrementLevelsCompletedCount } from "./progressSlice"
-import { selectPuzzleIsSolved } from "./puzzleSlice"
+import { processMoveAction, selectPuzzleIsSolved } from "./puzzleSlice"
 
 export const listenerMiddleware = createListenerMiddleware()
 
 listenerMiddleware.startListening({
-	predicate: (_, currentState, previousState) =>
+	predicate: (action, currentState, previousState) =>
+		processMoveAction.match(action) &&
 		selectPuzzleIsSolved(previousState as RootState) === false &&
 		selectPuzzleIsSolved(currentState as RootState) === true,
 	effect: (_, listenerApi) => {
