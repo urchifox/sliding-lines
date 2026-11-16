@@ -1,17 +1,17 @@
 import replayIcon from "../assets/images/replay.svg"
 
 import styled from "@emotion/styled"
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 
 import { theme } from "../assets/styles/theme"
-import { useAppDispatch, useAppSelector } from "../hooks"
+import { useAppDispatch } from "../hooks/redux"
+import { useDelay } from "../hooks/useDelay"
+import { useLoadPuzzle } from "../hooks/useLoadPuzzle"
 import { Puzzle } from "../puzzle/components/Puzzle"
 import type { BoardState } from "../puzzle/domain/types"
 import {
-	loadPuzzleData,
 	resetPuzzleDataAction,
 	reshuffleTilesAction,
-	selectPuzzleData,
 } from "../store/puzzleSlice"
 import { ButtonIconStyled, ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
@@ -118,38 +118,12 @@ const PuzzleWrapper = styled.div`
 `
 
 export function PuzzlePage() {
-	const puzzleData = useAppSelector(selectPuzzleData)
 	const dispatch = useAppDispatch()
-
+	const { puzzleData, isError } = useLoadPuzzle()
 	const [boardVersion, setBoardVersion] = useState(0)
-	const [isUpdating, setIsUpdating] = useState(false)
-	const [isError, setError] = useState<boolean>(false)
+	const { isDelayed: isUpdating, startDelay: startUpdating } = useDelay()
 	const winHeaderRef = useRef<HTMLHeadingElement>(null)
 	const isFinished = puzzleData?.isSolved ?? false
-
-	useEffect(() => {
-		if (puzzleData !== null) {
-			return
-		}
-
-		const request = dispatch(loadPuzzleData())
-		request.unwrap().catch((error: unknown) => {
-			if (
-				typeof error === "object" &&
-				error !== null &&
-				"name" in error &&
-				error.name === "AbortError"
-			) {
-				return
-			}
-
-			setError(true)
-		})
-
-		return () => {
-			request.abort()
-		}
-	}, [dispatch, puzzleData])
 
 	useLayoutEffect(() => {
 		if (!isFinished) {
@@ -183,12 +157,9 @@ export function PuzzlePage() {
 			return
 		}
 
-		setIsUpdating(true)
-
-		setTimeout(() => {
+		void startUpdating()?.then(() => {
 			dispatch(resetPuzzleDataAction())
-			setIsUpdating(false)
-		}, 1 * 1000)
+		})
 	}
 
 	const boardState: BoardState = isFinished

@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 
 import { theme } from "../../assets/styles/theme"
-import { useAppDispatch } from "../../hooks"
+import { useAppDispatch } from "../../hooks/redux"
 import { processMoveAction } from "../../store/puzzleSlice"
 import type { PuzzleTileInfo } from "../domain/types"
 import { getTileButtonText, getTileElementId, getTileLabel } from "./helpers"
