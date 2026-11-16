@@ -1,8 +1,8 @@
 import styled from "@emotion/styled"
-import { useState } from "react"
 
 import { clearList } from "../../assets/styles/mixins"
 import { theme } from "../../assets/styles/theme"
+import { useRovingTabindex } from "../../hooks/rovingTabindex"
 import { getTileByCurrentPosition } from "../domain/tiles"
 import {
 	type BoardState,
@@ -10,7 +10,6 @@ import {
 	type PuzzleTilesArray,
 	type TileKey,
 } from "../domain/types"
-import { handleRovingTabindex } from "../flow/handleRovingTabindex"
 import { PuzzleTile } from "./PuzzleTile"
 import { getTileElementId, puzzleBoardName } from "./helpers"
 
@@ -125,38 +124,12 @@ export function Puzzle({
 	columns: number
 	rows: number
 }) {
-	const [focusedTileKey, setFocusedTileKey] = useState<TileKey | null>(
-		getFirstClickableTileKey(tiles)
-	)
-
-	const onKeyDown = (event: React.KeyboardEvent<HTMLUListElement>) => {
-		const target = event.target as HTMLButtonElement
-		const arrowKey = event.key
-		if (arrowKey.startsWith("Arrow")) {
-			event.preventDefault()
-		}
-		const tileKey = target.dataset.key as TileKey
-
-		const tileToFocusKey = handleRovingTabindex({
-			tiles,
-			tileKey,
-			arrowKey,
-			columns,
-			rows,
-		})
-		if (tileToFocusKey === null) {
-			return
-		}
-
-		event.currentTarget
-			.querySelector<HTMLButtonElement>(`button[data-key="${tileToFocusKey}"]`)
-			?.focus()
-	}
-
-	const onFocus = (event: React.FocusEvent<HTMLUListElement>) => {
-		const tileKey = event.target.dataset.key as TileKey
-		setFocusedTileKey(tileKey)
-	}
+	const { focusedTileKey, onKeyDown, onFocus } = useRovingTabindex({
+		initialFocusedTileKey: getFirstClickableTileKey(tiles),
+		tiles,
+		columns,
+		rows,
+	})
 
 	const tileElements = tiles.map((tile) => {
 		const tabIndex = tile.key === focusedTileKey ? 0 : -1
