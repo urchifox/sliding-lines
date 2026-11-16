@@ -1,6 +1,6 @@
 # Sliding Lines
 
-A minimalist "15 Puzzle" game created as a training project to deepen practical experience with React.
+A minimalist "15 Puzzle" game created as a training project to deepen practical experience with React and Redux Toolkit.
 
 ## Styling Approach
 
