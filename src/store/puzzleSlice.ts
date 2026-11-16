@@ -1,11 +1,10 @@
 import {
-	type Dispatch,
 	type PayloadAction,
 	createAsyncThunk,
 	createSlice,
 } from "@reduxjs/toolkit"
 
-import type { RootState } from "."
+import type { AppThunk, RootState } from "."
 import { isPuzzleSolved, tryMove } from "../puzzle/domain/game"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
 import { reshuffleTiles } from "../puzzle/domain/tiles"
@@ -93,8 +92,8 @@ export const {
 	processMove: processMoveAction,
 } = puzzleSlice.actions
 
-export function reshuffleTilesAction() {
-	return (dispatch: Dispatch, getState: () => RootState) => {
+export function reshuffleTilesAction(): AppThunk {
+	return (dispatch, getState) => {
 		const puzzleData = getState().puzzle
 		if (puzzleData === null) {
 			return
