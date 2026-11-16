@@ -52,11 +52,7 @@ export function StartPage({
 	const { isDelayed: isUpdating, startDelay: startUpdating } = useDelay()
 
 	const handleStartClick = () => {
-		if (isUpdating) {
-			return
-		}
-
-		void startUpdating().then(() => {
+		void startUpdating()?.then(() => {
 			setPage(AppRoute.Game)
 		})
 	}

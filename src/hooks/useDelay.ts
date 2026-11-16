@@ -7,11 +7,15 @@ export function useDelay(delayMs = 1000) {
 	useEffect(() => () => clearTimeout(timeoutRef.current), [])
 
 	const startDelay = () => {
+		if (isDelayed) {
+			return
+		}
+
 		setIsDelayed(true)
-		return new Promise((resolve) => {
+		return new Promise<void>((resolve) => {
 			timeoutRef.current = window.setTimeout(() => {
 				setIsDelayed(false)
-				resolve(true)
+				resolve()
 			}, delayMs)
 		})
 	}

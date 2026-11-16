@@ -157,7 +157,7 @@ export function PuzzlePage() {
 			return
 		}
 
-		void startUpdating().then(() => {
+		void startUpdating()?.then(() => {
 			dispatch(resetPuzzleDataAction())
 		})
 	}
