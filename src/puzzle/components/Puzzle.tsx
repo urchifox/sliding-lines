@@ -2,7 +2,6 @@ import styled from "@emotion/styled"
 
 import { clearList } from "../../assets/styles/mixins"
 import { theme } from "../../assets/styles/theme"
-import { useRovingTabindex } from "../../hooks/useRovingTabindex"
 import { getTileByCurrentPosition } from "../domain/tiles"
 import {
 	type BoardState,
@@ -10,6 +9,7 @@ import {
 	type PuzzleTilesArray,
 	type TileKey,
 } from "../domain/types"
+import { useRovingTabindex } from "../hooks/useRovingTabindex"
 import { PuzzleTile } from "./PuzzleTile"
 import { getTileElementId, puzzleBoardName } from "./helpers"
 

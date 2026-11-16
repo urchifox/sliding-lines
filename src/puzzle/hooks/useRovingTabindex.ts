@@ -1,7 +1,7 @@
 import { useState } from "react"
 
-import type { PuzzleTilesArray, TileKey } from "../puzzle/domain/types"
-import { handleRovingTabindex } from "../puzzle/flow/handleRovingTabindex"
+import type { PuzzleTilesArray, TileKey } from "../domain/types"
+import { handleRovingTabindex } from "../flow/handleRovingTabindex"
 
 export function useRovingTabindex({
 	initialFocusedTileKey,
