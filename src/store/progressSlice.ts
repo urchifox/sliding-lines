@@ -11,7 +11,7 @@ const progressSlice = createSlice({
 	name: "progress",
 	initialState,
 	reducers: {
-		upgradeLevelselectsCompletedCount: (state) => {
+		incrementLevelsCompletedCount: (state) => {
 			state.levelsCompletedCount++
 		},
 		resetProgress: () => initialState,
@@ -22,6 +22,6 @@ const progressSlice = createSlice({
 })
 
 export const progressReducer = progressSlice.reducer
-export const { upgradeLevelselectsCompletedCount, resetProgress } =
+export const { incrementLevelsCompletedCount, resetProgress } =
 	progressSlice.actions
 export const { selectLevelsCompletedCount } = progressSlice.selectors

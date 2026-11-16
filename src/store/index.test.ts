@@ -4,9 +4,9 @@ import { REHYDRATE } from "redux-persist"
 import { persistor, store } from "."
 import { createTestPuzzleData } from "../test/testHelpers"
 import {
+	incrementLevelsCompletedCount,
 	resetProgress,
 	selectLevelsCompletedCount,
-	upgradeLevelselectsCompletedCount,
 } from "./progressSlice"
 import {
 	resetPuzzleDataAction,
@@ -35,7 +35,7 @@ describe("store", () => {
 		await waitUntilBootstrapped()
 		const puzzleData = createTestPuzzleData({ levelNumber: 2 })
 		store.dispatch(setPuzzleDataAction(puzzleData))
-		store.dispatch(upgradeLevelselectsCompletedCount())
+		store.dispatch(incrementLevelsCompletedCount())
 		await persistor.flush()
 
 		store.dispatch(resetPuzzleDataAction())
