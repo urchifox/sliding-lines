@@ -13,7 +13,7 @@ import type {
 } from "../puzzle/domain/types"
 import { store } from "../store"
 import { reshuffleTilesAction } from "../store/puzzleSlice"
-import { selectLevelNumber } from "../store/selectors"
+import { selectLevelsCompletedCount } from "../store/selectors"
 import { renderWithStore } from "../test/storeTestHelpers"
 import {
 	createAlmostSolvedTiles,
@@ -227,7 +227,7 @@ describe("PuzzlePage", () => {
 			renderPageWithStore()
 
 			expect(await findLevelName(3)).toBeInTheDocument()
-			expect(selectLevelNumber()).toBe(0)
+			expect(selectLevelsCompletedCount()).toBe(0)
 		})
 
 		it("ignores promise resolution of cancelled request", async () => {
@@ -319,7 +319,7 @@ describe("PuzzlePage", () => {
 			button.disabled = false
 			fireEvent.click(button)
 
-			expect(selectLevelNumber()).toBe(0)
+			expect(selectLevelsCompletedCount()).toBe(0)
 			expectTilesUnmoved(tiles)
 		})
 
@@ -341,7 +341,7 @@ describe("PuzzlePage", () => {
 			await renderPageWithBoard()
 			finishLevel()
 
-			expect(selectLevelNumber()).toBe(1)
+			expect(selectLevelsCompletedCount()).toBe(1)
 		})
 
 		it("keeps finished level name after level number is updated", async () => {
@@ -500,7 +500,7 @@ describe("PuzzlePage", () => {
 			await advanceLevelTransition()
 			vi.useRealTimers()
 			await act(async () => {
-				resolve(createTestPuzzleData({ levelNumber: selectLevelNumber() }))
+				resolve(createTestPuzzleData({ levelNumber: selectLevelsCompletedCount() }))
 				await promise
 			})
 

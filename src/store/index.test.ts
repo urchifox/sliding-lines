@@ -3,10 +3,10 @@ import { REHYDRATE } from "redux-persist"
 
 import { persistor, store } from "."
 import { createTestPuzzleData } from "../test/testHelpers"
-import { resetProgress, upgradeLevel } from "./progressSlice"
+import { resetProgress, upgradeLevelselectsCompletedCount } from "./progressSlice"
 import { resetPuzzleDataAction, setPuzzleDataAction } from "./puzzleSlice"
 import {
-	selectLevelNumber,
+	selectLevelsCompletedCount,
 	selectPuzzleIsSolved,
 	selectPuzzleTiles,
 } from "./selectors"
@@ -31,13 +31,13 @@ describe("store", () => {
 		await waitUntilBootstrapped()
 		const puzzleData = createTestPuzzleData({ levelNumber: 2 })
 		store.dispatch(setPuzzleDataAction(puzzleData))
-		store.dispatch(upgradeLevel())
+		store.dispatch(upgradeLevelselectsCompletedCount())
 		await persistor.flush()
 
 		store.dispatch(resetPuzzleDataAction())
 		store.dispatch(resetProgress())
 		expect(store.getState().puzzle).toBeNull()
-		expect(selectLevelNumber()).toBe(0)
+		expect(selectLevelsCompletedCount()).toBe(0)
 
 		const saved = localStorage.getItem("persist:root")
 		expect(saved).toEqual(expect.any(String))
@@ -54,7 +54,7 @@ describe("store", () => {
 			},
 		})
 
-		expect(selectLevelNumber()).toBe(1)
+		expect(selectLevelsCompletedCount()).toBe(1)
 		expect(selectPuzzleIsSolved()).toBe(false)
 		expect(selectPuzzleTiles()).toEqual(puzzleData.level.tiles)
 		expect(store.getState().puzzle?.levelNumber).toBe(2)

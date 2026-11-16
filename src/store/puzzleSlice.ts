@@ -18,8 +18,8 @@ export const loadPuzzleData = createAsyncThunk<
 	void,
 	{ state: RootState }
 >("puzzle/loadPuzzleData", async (_, { getState }) => {
-	const { selectLevelNumber } = await import("./selectors")
-	const levelNumber = selectLevelNumber(getState())
+	const { selectLevelsCompletedCount } = await import("./selectors")
+	const levelNumber = selectLevelsCompletedCount(getState())
 	const puzzleData = await createPuzzleData(levelNumber)
 	return puzzleData
 })
