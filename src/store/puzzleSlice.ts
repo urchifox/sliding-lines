@@ -9,6 +9,7 @@ import { isPuzzleSolved, tryMove } from "../puzzle/domain/game"
 import { createPuzzleData } from "../puzzle/domain/puzzleData"
 import { reshuffleTiles } from "../puzzle/domain/tiles"
 import type { PuzzleData, PuzzleTileInfo } from "../puzzle/domain/types"
+import { selectLevelsCompletedCount } from "./progressSlice"
 
 type PuzzleState = (PuzzleData & { isSolved: boolean }) | null
 const initialState = null as PuzzleState
@@ -18,7 +19,6 @@ export const loadPuzzleData = createAsyncThunk<
 	void,
 	{ state: RootState }
 >("puzzle/loadPuzzleData", async (_, { getState }) => {
-	const { selectLevelsCompletedCount } = await import("./progressSlice")
 	const levelNumber = selectLevelsCompletedCount(getState())
 	const puzzleData = await createPuzzleData(levelNumber)
 	return puzzleData
