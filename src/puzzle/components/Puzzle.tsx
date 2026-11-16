@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 
 import { clearList } from "../../assets/styles/mixins"
 import { theme } from "../../assets/styles/theme"
-import { useRovingTabindex } from "../../hooks/rovingTabindex"
+import { useRovingTabindex } from "../../hooks/useRovingTabindex"
 import { getTileByCurrentPosition } from "../domain/tiles"
 import {
 	type BoardState,

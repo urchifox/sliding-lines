@@ -4,9 +4,9 @@ import styled from "@emotion/styled"
 import { useLayoutEffect, useRef, useState } from "react"
 
 import { theme } from "../assets/styles/theme"
-import { useAppDispatch } from "../hooks"
-import { useDelay } from "../hooks/delay"
-import { useLoadPuzzle } from "../hooks/loadPuzzle"
+import { useAppDispatch } from "../hooks/redux"
+import { useDelay } from "../hooks/useDelay"
+import { useLoadPuzzle } from "../hooks/useLoadPuzzle"
 import { Puzzle } from "../puzzle/components/Puzzle"
 import type { BoardState } from "../puzzle/domain/types"
 import {

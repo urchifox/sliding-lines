@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
-import { useAppDispatch, useAppSelector } from "."
 import { loadPuzzleData, selectPuzzleData } from "../store/puzzleSlice"
+import { useAppDispatch, useAppSelector } from "./redux"
 
 export function useLoadPuzzle() {
 	const dispatch = useAppDispatch()

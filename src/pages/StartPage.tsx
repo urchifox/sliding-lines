@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 
 import { AppRoute } from "../AppRoute"
 import { theme } from "../assets/styles/theme"
-import { useDelay } from "../hooks/delay"
+import { useDelay } from "../hooks/useDelay"
 import { ButtonWithTextStyled } from "../ui/Button"
 import { HeaderStyled } from "../ui/Header"
 import { Lines } from "../ui/Lines"
